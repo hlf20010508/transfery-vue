@@ -3,8 +3,7 @@
     <el-row>
       <div class="index-mb">
         <el-scrollbar
-          wrapClass="index-scrw"
-          :noresize="false"
+          class="index-scrw"
           ref="myScrollbar"
           :native="true"
         >
@@ -38,11 +37,7 @@
           :show-file-list="false"
         >
           <div class="index-upload-div">
-            <i
-              slot="trigger"
-              class="el-icon-folder index-upload"
-              @click="upload"
-            ></i>
+            <i slot="trigger" class="el-icon-folder index-upload"></i>
           </div>
         </el-upload>
       </el-col>
@@ -139,9 +134,6 @@ export default {
       this.$nextTick(() => this.toBottom());
       this.input = null;
     },
-    upload() {
-      console.log("upload");
-    },
     uploadSuccess(response, file) {
       console.log(response, file);
 
@@ -162,6 +154,8 @@ export default {
         url: response.url,
       };
       this.list.push(newItem);
+      this.axios.post("/post/message", newItem);
+      this.$nextTick(() => this.toBottom());
     },
   },
 };
