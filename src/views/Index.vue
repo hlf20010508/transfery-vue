@@ -18,7 +18,7 @@
             </div>
             <div class="index-content">
               <span v-if="item.type == 'text'">{{ item.content }}</span>
-              <a :href="item.url" v-if="item.type == 'file'">
+              <a :href="item.url" download v-if="item.type == 'file'">
                 {{ item.content }}
               </a>
             </div>
