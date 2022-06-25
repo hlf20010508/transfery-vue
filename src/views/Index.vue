@@ -2,11 +2,7 @@
   <div class="index">
     <el-row>
       <div class="index-mb">
-        <el-scrollbar
-          class="index-scrw"
-          ref="myScrollbar"
-          :native="true"
-        >
+        <el-scrollbar class="index-scrw" ref="myScrollbar" :native="true">
           <infinite-loading
             direction="top"
             @infinite="getNewData"
@@ -16,11 +12,18 @@
             <div class="index-time" v-if="item.showTime">
               {{ time(item.time) }}
             </div>
-            <div class="index-content">
-              <span v-if="item.type == 'text'">{{ item.content }}</span>
-              <a :href="item.url" download v-if="item.type == 'file'">
+            <div class="index-text" v-if="item.type == 'text'">
+              {{ item.content }}
+            </div>
+            <div
+              class="index-file"
+              v-if="item.type == 'file'"
+              @click="download(item.content)"
+            >
+              <span class="index-file-span">
+                <i class="el-icon-document"></i>
                 {{ item.content }}
-              </a>
+              </span>
             </div>
           </div>
         </el-scrollbar>
@@ -30,7 +33,7 @@
     <el-row :gutter="20">
       <el-col :span="4">
         <el-upload
-          action="/post/files"
+          action="/post/upload"
           multiple
           :file-list="uploadFileList"
           :on-success="uploadSuccess"
@@ -56,6 +59,8 @@
 </template>
 
 <script>
+const Moment = require("moment");
+
 export default {
   data() {
     return {
@@ -67,26 +72,8 @@ export default {
   },
   methods: {
     time(timeParse) {
-      let date = new Date(timeParse);
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDay();
-      let hour = date.getHours();
-      let minute = date.getMinutes();
-      let second = date.getSeconds();
-      return (
-        year +
-        "/" +
-        month +
-        "/" +
-        day +
-        "/ " +
-        hour +
-        ":" +
-        minute +
-        ":" +
-        second
-      );
+      let date = new Moment(timeParse);
+      return date.format("YYYY-MM-DD HH:mm:ss");
     },
     toBottom() {
       this.$refs["myScrollbar"].wrap.scrollTop =
@@ -111,15 +98,18 @@ export default {
         });
     },
     submit() {
-      console.log("submit", this.input);
-
+      // console.log("submit", this.input);
       let date = new Date();
 
       let showTime = false;
       let size = this.list.length;
 
-      let itemDate = new Date(this.list[size - 1].time);
-      if (date.getTime() - itemDate.getTime() > 1000 * 60) {
+      if (size > 0) {
+        let itemDate = new Date(this.list[size - 1].time);
+        if (date.getTime() - itemDate.getTime() > 1000 * 60) {
+          showTime = true;
+        }
+      } else {
         showTime = true;
       }
 
@@ -134,9 +124,25 @@ export default {
       this.$nextTick(() => this.toBottom());
       this.input = null;
     },
+    download(name) {
+      // console.log("download: ", name);
+      let item = {
+        name: name,
+      };
+      this.axios.post("/post/download", item).then((response) => {
+        let blob = new Blob([response.data]);
+        let url = URL.createObjectURL(blob);
+        var eleLink = document.createElement("a");
+        eleLink.download = name;
+        eleLink.style.display = "none";
+        eleLink.href = url;
+        document.body.appendChild(eleLink);
+        eleLink.click();
+        document.body.removeChild(eleLink);
+      });
+    },
     uploadSuccess(response, file) {
-      console.log(response, file);
-
+      // console.log(response, file);
       let date = new Date(response.time);
 
       let showTime = false;
@@ -151,7 +157,6 @@ export default {
         type: "file",
         showTime: showTime,
         time: response.time,
-        url: response.url,
       };
       this.list.push(newItem);
       this.axios.post("/post/message", newItem);
@@ -178,12 +183,23 @@ export default {
   color: #aaaaaa;
   text-align: left;
 }
-.index-content {
+.index-text {
   word-wrap: break-word;
   word-break: normal;
   font-size: 16px;
   margin: 10px 0 10px 0;
   text-align: left;
+}
+.index-file {
+  word-wrap: break-word;
+  word-break: normal;
+  font-size: 16px;
+  margin: 10px 0 10px 0;
+  text-align: left;
+}
+.index-file-span:hover {
+  cursor: pointer;
+  color: #409eff;
 }
 .index-divider {
   margin: 0;

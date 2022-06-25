@@ -10,10 +10,12 @@ Mock.mock("/post/message", "post", (request) => {
         success: true
     }
 })
-Mock.mock("/post/files", "post", (request) => {
+Mock.mock("/post/download", "post", (request) => {
+    console.log('request: ', request)
+})
+Mock.mock("/post/upload", "post", (request) => {
     console.log('request: ', request)
     return {
         time: Date.parse(new Date()),
-        url: "http://124.223.224.49:9000/transfer/test.sh"
     }
 })
