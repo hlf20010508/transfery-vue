@@ -171,15 +171,15 @@ export default {
       });
     },
     upload() {
-      this.remove();
+      this.unremove();
     },
     uploadSuccess(response, file) {
       // console.log(response, file);
       let size = this.list.length;
-      let showTime = this.shouldShowTime(
-        response.time,
-        this.list[size - 1].time
-      );
+      let showTime = true;
+      if (size > 0) {
+        showTime = this.shouldShowTime(response.time, this.list[size - 1].time);
+      }
 
       let newItem = {
         content: file.name,
@@ -197,6 +197,10 @@ export default {
     remove() {
       //开关删除模式
       this.removing = !this.removing;
+    },
+    unremove() {
+      //关闭删除模式
+      this.removing = false;
     },
     removeItem(id, index) {
       //删除项目
