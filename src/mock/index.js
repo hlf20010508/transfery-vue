@@ -19,3 +19,9 @@ Mock.mock("/post/upload", "post", (request) => {
         time: Date.parse(new Date()),
     }
 })
+Mock.mock("/post/remove", "post", (request) => {
+    console.log('request: ', request)
+    return {
+        success: true
+    }
+})

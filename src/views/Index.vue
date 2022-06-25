@@ -13,25 +13,33 @@
               {{ time(item.time) }}
             </div>
             <div class="index-text" v-if="item.type == 'text'">
-              {{ item.content }}
+              <span>
+                {{ item.content }}
+                <i
+                  class="el-icon-error index-remove-item"
+                  v-show="removing"
+                  @click="removeItem(item.time, index)"
+                ></i>
+              </span>
             </div>
-            <div
-              class="index-file"
-              v-if="item.type == 'file'"
-              @click="download(item.content)"
-            >
-              <span class="index-file-span">
+            <div class="index-file" v-if="item.type == 'file'">
+              <span class="index-file-span" @click="download(item.content)">
                 <i class="el-icon-document"></i>
                 {{ item.content }}
               </span>
+              <i
+                class="el-icon-error index-remove-item"
+                v-show="removing"
+                @click="removeItem(item.time, index)"
+              ></i>
             </div>
           </div>
         </el-scrollbar>
       </div>
     </el-row>
     <el-divider class="index-divider"></el-divider>
-    <el-row :gutter="20">
-      <el-col :span="4">
+    <el-row>
+      <el-col :span="2">
         <el-upload
           action="/post/upload"
           multiple
@@ -40,9 +48,18 @@
           :show-file-list="false"
         >
           <div class="index-upload-div">
-            <i slot="trigger" class="el-icon-folder index-upload"></i>
+            <i
+              slot="trigger"
+              class="el-icon-folder index-upload"
+              @click="upload"
+            ></i>
           </div>
         </el-upload>
+      </el-col>
+      <el-col :span="2">
+        <div class="index-remove-div" @click="remove">
+          <i class="el-icon-close index-remove"></i>
+        </div>
       </el-col>
     </el-row>
     <el-row>
@@ -68,12 +85,21 @@ export default {
       list: [],
       input: null,
       uploadFileList: [],
+      removing: false,
     };
   },
   methods: {
     time(timeParse) {
       let date = new Moment(timeParse);
       return date.format("YYYY-MM-DD HH:mm:ss");
+    },
+    shouldShowTime(time1, time2) {
+      let date1 = new Date(time1);
+      let date2 = new Date(time2);
+      if (Math.abs(date1.getTime() - date2.getTime()) > 1000 * 60) {
+        return true;
+      }
+      return false;
     },
     toBottom() {
       this.$refs["myScrollbar"].wrap.scrollTop =
@@ -98,31 +124,34 @@ export default {
         });
     },
     submit() {
-      // console.log("submit", this.input);
-      let date = new Date();
-
-      let showTime = false;
-      let size = this.list.length;
-
-      if (size > 0) {
-        let itemDate = new Date(this.list[size - 1].time);
-        if (date.getTime() - itemDate.getTime() > 1000 * 60) {
+      if (this.input != "\n") {
+        // console.log("submit", this.input);
+        let date = new Date();
+        let time = Date.parse(date);
+        let showTime = false;
+        let size = this.list.length;
+        if (size > 0) {
+          showTime = this.shouldShowTime(time, this.list[size - 1].time);
+        } else {
           showTime = true;
         }
-      } else {
-        showTime = true;
-      }
 
-      let newItem = {
-        content: this.input,
-        type: "text",
-        showTime: showTime,
-        time: Date.parse(date),
-      };
-      this.list.push(newItem);
-      this.axios.post("/post/message", newItem);
-      this.$nextTick(() => this.toBottom());
-      this.input = null;
+        let newItem = {
+          content: this.input,
+          type: "text",
+          showTime: showTime,
+          time: time,
+        };
+        this.input = null;
+        this.axios.post("/post/message", newItem).then((response) => {
+          if (response.data.success) {
+            this.list.push(newItem);
+            this.$nextTick(() => this.toBottom());
+          }
+        });
+      } else {
+        this.input = null;
+      }
     },
     download(name) {
       // console.log("download: ", name);
@@ -141,17 +170,17 @@ export default {
         document.body.removeChild(eleLink);
       });
     },
+    upload() {
+      this.remove();
+    },
     uploadSuccess(response, file) {
       // console.log(response, file);
-      let date = new Date(response.time);
-
-      let showTime = false;
       let size = this.list.length;
+      let showTime = this.shouldShowTime(
+        response.time,
+        this.list[size - 1].time
+      );
 
-      let itemDate = new Date(this.list[size - 1].time);
-      if (date.getTime() - itemDate.getTime() > 1000 * 60) {
-        showTime = true;
-      }
       let newItem = {
         content: file.name,
         type: "file",
@@ -159,8 +188,42 @@ export default {
         time: response.time,
       };
       this.list.push(newItem);
-      this.axios.post("/post/message", newItem);
-      this.$nextTick(() => this.toBottom());
+      this.axios.post("/post/message", newItem).then((response) => {
+        if (response.data.success) {
+          this.$nextTick(() => this.toBottom());
+        }
+      });
+    },
+    remove() {
+      //开关删除模式
+      this.removing = !this.removing;
+    },
+    removeItem(id, index) {
+      //删除项目
+      // console.log("removed ", id);
+      let showTime = false;
+      let deletedItem = {
+        time: id,
+        change: null,
+      };
+      if (index != this.list.length - 1) {
+        if (this.list[index].showTime) {
+          //如果被删除的项目会显示时间，则将下一个项目改为会显示时间
+          showTime = true;
+          deletedItem = {
+            time: id,
+            change: this.list[index + 1].time,
+          };
+        }
+      }
+      this.axios.post("/post/remove", deletedItem).then((response) => {
+        if (response.data.success) {
+          if (showTime) {
+            this.list[index + 1].showTime = true;
+          }
+          this.list.splice(index, 1);
+        }
+      });
     },
   },
 };
@@ -201,17 +264,28 @@ export default {
   cursor: pointer;
   color: #409eff;
 }
+.index-remove-item:hover {
+  cursor: pointer;
+  color: #f56c6c;
+}
 .index-divider {
   margin: 0;
 }
-.index-upload-div {
+.index-upload-div,
+.index-remove-div {
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.index-upload {
+.index-upload,
+.index-remove {
   font-size: 34px;
+}
+.index-upload:hover,
+.index-remove:hover {
+  cursor: pointer;
+  color: #409eff;
 }
 .index-input textarea {
   resize: none;
