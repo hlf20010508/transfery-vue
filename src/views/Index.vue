@@ -18,19 +18,19 @@
                 <i
                   class="el-icon-error index-remove-item"
                   v-show="removing"
-                  @click="removeItem(item.time, index)"
+                  @click="removeItem(item, index)"
                 ></i>
               </span>
             </div>
             <div class="index-file" v-if="item.type == 'file'">
-              <span class="index-file-span" @click="download(item.content)">
+              <span class="index-file-span" @click="download(item)">
                 <i class="el-icon-document"></i>
                 {{ item.content }}
               </span>
               <i
                 class="el-icon-error index-remove-item"
                 v-show="removing"
-                @click="removeItem(item.time, index)"
+                @click="removeItem(item, index)"
               ></i>
             </div>
           </div>
@@ -153,22 +153,21 @@ export default {
         this.input = null;
       }
     },
-    download(name) {
+    download(item) {
       // console.log("download: ", name);
-      let item = {
-        name: name,
-      };
-      this.axios.post("/post/download", item).then((response) => {
-        let blob = new Blob([response.data]);
-        let url = URL.createObjectURL(blob);
-        var eleLink = document.createElement("a");
-        eleLink.download = name;
-        eleLink.style.display = "none";
-        eleLink.href = url;
-        document.body.appendChild(eleLink);
-        eleLink.click();
-        document.body.removeChild(eleLink);
-      });
+      this.axios
+        .post("/post/download", item, { responseType: "blob" })
+        .then((response) => {
+          let blob = new Blob([response.data]);
+          let url = URL.createObjectURL(blob);
+          var eleLink = document.createElement("a");
+          eleLink.download = item.content;
+          eleLink.style.display = "none";
+          eleLink.href = url;
+          document.body.appendChild(eleLink);
+          eleLink.click();
+          document.body.removeChild(eleLink);
+        });
     },
     upload() {
       this.unremove();
@@ -187,9 +186,9 @@ export default {
         showTime: showTime,
         time: response.time,
       };
-      this.list.push(newItem);
       this.axios.post("/post/message", newItem).then((response) => {
         if (response.data.success) {
+          this.list.push(newItem);
           this.$nextTick(() => this.toBottom());
         }
       });
@@ -202,22 +201,21 @@ export default {
       //关闭删除模式
       this.removing = false;
     },
-    removeItem(id, index) {
+    removeItem(item, index) {
       //删除项目
       // console.log("removed ", id);
       let showTime = false;
       let deletedItem = {
-        time: id,
+        time: item.time,
         change: null,
+        type: item.type,
+        content: item.content,
       };
       if (index != this.list.length - 1) {
         if (this.list[index].showTime) {
           //如果被删除的项目会显示时间，则将下一个项目改为会显示时间
           showTime = true;
-          deletedItem = {
-            time: id,
-            change: this.list[index + 1].time,
-          };
+          deletedItem.change = this.list[index + 1].time;
         }
       }
       this.axios.post("/post/remove", deletedItem).then((response) => {
