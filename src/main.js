@@ -4,10 +4,10 @@ import Vue from 'vue'
 import App from './App'
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
+import InfiniteLoading from 'vue-infinite-loading';
 import router from './router'
 import axios from "axios";
 import VueAxios from "vue-axios";
-import InfiniteLoading from 'vue-infinite-loading';
 
 Vue.use(ElementUI);
 Vue.use(VueAxios, axios);
