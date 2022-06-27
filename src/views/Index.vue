@@ -81,7 +81,6 @@
         v-model="input"
         placeholder="请输入消息内容或拖入文件"
         @keyup.enter.native="submit"
-        :autofocus="true"
       ></el-input>
     </el-row>
   </div>
