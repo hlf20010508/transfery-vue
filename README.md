@@ -64,7 +64,7 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 运行Transfery，你需要
 - <a href="https://github.com/minio/minio.git">Minio</a>，作为对象存储服务
 - MySQL，作为数据库
-- Flask，作为后端服务。
+- Flask，作为后端服务
 - 一台服务器，以便随时随地使用	
 
 <br/>
