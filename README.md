@@ -73,7 +73,7 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 <br/>
 
-# 注意
+### 注意
 
 transfery-vue使用vue-cli 2.0编写。
 
