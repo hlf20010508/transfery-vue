@@ -49,11 +49,6 @@
         </div>
       </el-scrollbar>
     </el-row>
-    <el-row v-if="removing" class="index-row-remove">
-      <div class="index-remove-all-div">
-        <i class="el-icon-circle-close index-remove-all" @click="removeAll"></i>
-      </div>
-    </el-row>
     <el-row class="index-row3">
       <el-divider class="index-divider"></el-divider>
     </el-row>
@@ -80,9 +75,21 @@
         </div>
       </el-col>
     </el-row>
-    <el-row class="index-row5">
+    <el-row class="index-row5 index-input">
+      <div v-if="removing" class="index-remove-all-div">
+        <div>
+          <i
+            class="el-icon-circle-close index-remove-all"
+            @click="removeAll"
+          ></i>
+          <i
+            class="el-icon-circle-check index-remove-complete"
+            @click="unremove"
+          ></i>
+        </div>
+      </div>
       <el-input
-        class="index-input"
+        v-if="!removing"
         type="textarea"
         v-model="input"
         placeholder="请输入消息内容"
@@ -109,23 +116,6 @@ export default {
   mounted() {
     this.updateTime();
     this.adjustCSS();
-    document.addEventListener("click", (e) => {
-      let items = document.getElementsByClassName("index-remove-item"); //获取删除键
-      let removeAll = document.getElementsByClassName("index-remove-all")[0]; //获取删除全部键
-      let remove = document.getElementsByClassName("index-remove")[0]; //获取删除键开关
-      if (items.length > 0) {
-        if (e.target != remove && e.target != removeAll) {
-          //获取到删除键且没有点击删除键开关则继续
-          if (e.target.className != items[0].className) {
-            //点击的不是删除键则继续
-            this.unremove(); //关闭删除键开关
-          }
-        }
-      }
-      else{
-        this.unremove()
-      }
-    });
   },
   methods: {
     adjustCSS() {
@@ -135,7 +125,11 @@ export default {
       height += jquery(".index-row3").outerHeight();
       height += jquery(".index-row4").outerHeight();
       let heightHTML = jquery("body").outerHeight();
-      jquery(".index-input textarea").css("height", heightHTML - height + "px");
+      jquery(".index-input").css("height", heightHTML - height + "px");
+      jquery(".index-input textarea").css(
+        "height",
+        heightHTML - height - 10 + "px"
+      );
     },
     time(timeParse) {
       let date = new Moment(timeParse);
@@ -289,32 +283,22 @@ export default {
         return 100;
       }
     },
-    getProgressContent(percentage){
-      return percentage === 100 ? '已上传到服务器，正在处理中' : percentage+'%';
+    getProgressContent(percentage) {
+      return percentage === 100
+        ? "已上传到服务器，正在处理中"
+        : percentage + "%";
     },
     remove() {
       //开关删除模式
       if (!this.removing) {
         this.removing = true;
-        let height = 0;
-        height += jquery(".index-row1").outerHeight();
-        height += jquery(".index-row3").outerHeight();
-        height += jquery(".index-row4").outerHeight();
-        height += jquery(".index-row5").outerHeight();
-        height += 54; //.index-row-remove的height
-        let heightHTML = jquery("body").outerHeight();
-        jquery(".index-row2").css("height", heightHTML - height + "px");
       } else {
-        this.unremove()
+        this.unremove();
       }
     },
     unremove() {
       //关闭删除模式
-      if (this.removing) {
-        let row2Height = jquery(".index-row2").outerHeight();
-        jquery(".index-row2").css("height", row2Height + 54 + "px");
-        this.removing = false;
-      }
+      this.removing = false;
     },
     removeItem(item, index) {
       //删除项目
@@ -342,12 +326,14 @@ export default {
       });
     },
     removeAll() {
-      for (let item of this.list) {
-        item.change = null;
-        this.axios.post("/post/remove", item);
+      if (confirm("确定要删除全部吗")) {
+        for (let item of this.list) {
+          item.change = null;
+          this.axios.post("/post/remove", item);
+        }
+        this.list = [];
+        this.unremove();
       }
-      this.list = [];
-      this.unremove();
     },
   },
 };
@@ -389,10 +375,6 @@ export default {
   margin: 10px 0 10px 0;
   text-align: left;
 }
-.index-file-span:hover {
-  cursor: pointer;
-  color: #409eff;
-}
 .index-remove-item:hover,
 .index-remove-all:hover {
   cursor: pointer;
@@ -407,27 +389,32 @@ export default {
   align-items: center;
   justify-content: center;
 }
+.index-upload,
+.index-remove {
+  font-size: 34px;
+}
+.index-remove-all,
+.index-remove-complete {
+  font-size: 34px;
+  margin: 20px;
+}
+.index-file-span:hover,
+.index-upload:hover,
+.index-remove:hover,
+.index-remove-complete:hover {
+  cursor: pointer;
+  color: #409eff;
+}
 .index-remove-all-div {
-  margin: 10px 0 10px 0;
-  height: 34px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.index-upload,
-.index-remove,
-.index-remove-all {
-  font-size: 34px;
-}
-.index-upload:hover,
-.index-remove:hover {
-  cursor: pointer;
-  color: #409eff;
 }
 .index-input textarea {
   resize: none;
   background: #f3f3f3;
   border: 0px;
-  height: 96px;
+  height: 100px;
 }
 </style>
