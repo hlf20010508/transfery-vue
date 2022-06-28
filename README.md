@@ -26,26 +26,49 @@
 
 然而这些都需要进行登录操作，可能会让台下的人长时间观摩你的操作。
 
+<br/>
+
 再假设一个场景：
 
 你拥有三台电脑，一台是Windows电脑，一台是Mac电脑，一台是Linux电脑。
 
-生活中难免会遇到需要操作别人的或者公共的电脑时候，亦或者自己有很多不同平台的设备，此时如果手上没有传输介质，而且不便在设备上下载传输软件
+你需要在这三台电脑之间发送大量的小文件，同时还要时不时传递文字信息。
 
-## Build Setup
+如果是在手机和电脑上，你应该会直接使用通讯软件，这的确很方便。
+
+然而现在是三台电脑，三种操作系统，可能有一个操作系统无法装你想要的通讯软件，也有可能通讯软件不能同时登录三台电脑
+
+<br/>
+
+生活中难免会遇到需要操作别人的或者公共的电脑时候，亦或者自己有很多不同平台的设备，此时传送小文件、发送文字是挺麻烦的一件事。
+
+<br/>
+
+Transfery的意义，就是传送小型的临时文件，共享剪贴板，而无需登录，无设备数量限制。
+
+## 项目所需环境
+
+Transfery最适合运行在私有的云服务器上。
+
+由于没有设置密码，因此请不要将Transfery的服务网址分享到网络上，以免被恶意上传。
+
+<br/>
+
+Transfery项目使用<a href="https://github.com/minio/minio.git">Minio</a>作为对象存储服务，使用MySQL作为数据库，使用Flask作为后端服务
+
+transfery-vue使用vue-cli 2.0编写
+
+## 运行
 
 ``` bash
-# install dependencies
+# 安装依赖
 npm install
 
-# serve with hot reload at localhost:8080
+# 在127.0.0.1:8080上运行开发环境
 npm run dev
 
-# build for production with minification
+# 使用webpack编译，得到html和js
+# 项目中已设置自动将编译好的文件复制到transfery后端项目中
+# 默认后端项目文件夹名为transfery且与transfery-vue同级
+# 请根据实际情况编辑package.json第十行
 npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
