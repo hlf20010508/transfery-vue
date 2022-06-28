@@ -30,6 +30,7 @@
                 :text-inside="true"
                 :stroke-width="24"
                 :percentage="getUploadingPercentage(item)"
+                :format="getProgressContent"
                 status="success"
               />
             </div>
@@ -287,6 +288,9 @@ export default {
         console.log(err);
         return 100;
       }
+    },
+    getProgressContent(percentage){
+      return percentage === 100 ? '已上传到服务器，正在处理中' : percentage+'%';
     },
     remove() {
       //开关删除模式
