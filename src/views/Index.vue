@@ -6,7 +6,7 @@
     <el-row class="index-mb index-row2">
       <el-scrollbar class="index-scrw" ref="myScrollbar" :native="true">
         <infinite-loading direction="top" @infinite="getNewData" :distance="10">
-          <template slot="no-results">还没有任何内容</template>
+          <template slot="no-results">没有更多了</template>
           <template slot="no-more">没有更多了</template>
         </infinite-loading>
         <div v-for="(item, index) in list" :key="index">
@@ -34,7 +34,7 @@
               />
             </div>
             <div>
-              <span class="index-file-span" @click="download(item.content)">
+              <span class="index-file-span" @click="download(item)">
                 <i class="el-icon-document"></i>
                 {{ item.content }}
               </span>
@@ -47,6 +47,11 @@
           </div>
         </div>
       </el-scrollbar>
+    </el-row>
+    <el-row v-if="removing" class="index-row-remove">
+      <div class="index-remove-all-div">
+        <i class="el-icon-circle-close index-remove-all" @click="removeAll"></i>
+      </div>
     </el-row>
     <el-row class="index-row3">
       <el-divider class="index-divider"></el-divider>
@@ -74,12 +79,12 @@
         </div>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row class="index-row5">
       <el-input
         class="index-input"
         type="textarea"
         v-model="input"
-        placeholder="请输入消息内容或拖入文件"
+        placeholder="请输入消息内容"
         @keyup.enter.native="submit"
       ></el-input>
     </el-row>
@@ -105,13 +110,19 @@ export default {
     this.adjustCSS();
     document.addEventListener("click", (e) => {
       let items = document.getElementsByClassName("index-remove-item"); //获取删除键
+      let removeAll = document.getElementsByClassName("index-remove-all")[0]; //获取删除全部键
       let remove = document.getElementsByClassName("index-remove")[0]; //获取删除键开关
-      if (items.length > 0 && e.target != remove) {
-        //获取到删除键且没有点击删除键开关则继续
-        if (e.target.className != items[0].className) {
-          //点击的不是删除键则继续
-          this.removing = false; //关闭删除键开关
+      if (items.length > 0) {
+        if (e.target != remove && e.target != removeAll) {
+          //获取到删除键且没有点击删除键开关则继续
+          if (e.target.className != items[0].className) {
+            //点击的不是删除键则继续
+            this.unremove(); //关闭删除键开关
+          }
         }
+      }
+      else{
+        this.unremove()
       }
     });
   },
@@ -192,16 +203,16 @@ export default {
         this.input = null;
       }
     },
-    download(content) {
+    download(item) {
       // console.log("download: ", item.content);
       this.axios
-        .get("/get/download", { params: { content: content } })
+        .get("/get/download", { params: { fileName: item.fileName } })
         .then((res) => {
           let data = res.data;
           if (data.success) {
             var eleLink = document.createElement("a");
-            eleLink.download = content;
-            eleLink.target='_blank'
+            eleLink.download = item.content;
+            eleLink.target = "_blank";
             eleLink.style.display = "none";
             eleLink.href = data.url;
             document.body.appendChild(eleLink);
@@ -235,6 +246,7 @@ export default {
       let form = new FormData();
       form.append("file", file);
       form.append("size", file.size);
+      form.append("time", time);
       this.axios({
         method: "post",
         url: "/post/upload",
@@ -249,6 +261,7 @@ export default {
         if (res.data.success) {
           delete this.list[newItemIndex].uploading;
           delete this.list[newItemIndex].uploadingPercentage;
+          this.list[newItemIndex].fileName = res.data.fileName;
           this.axios
             .post("/post/message", this.list[newItemIndex])
             .then((response) => {
@@ -277,27 +290,42 @@ export default {
     },
     remove() {
       //开关删除模式
-      this.removing = !this.removing;
+      if (!this.removing) {
+        this.removing = true;
+        let height = 0;
+        height += jquery(".index-row1").outerHeight();
+        height += jquery(".index-row3").outerHeight();
+        height += jquery(".index-row4").outerHeight();
+        height += jquery(".index-row5").outerHeight();
+        height += 54; //.index-row-remove的height
+        let heightHTML = jquery("body").outerHeight();
+        jquery(".index-row2").css("height", heightHTML - height + "px");
+      } else {
+        this.unremove()
+      }
     },
     unremove() {
       //关闭删除模式
-      this.removing = false;
+      if (this.removing) {
+        let row2Height = jquery(".index-row2").outerHeight();
+        jquery(".index-row2").css("height", row2Height + 54 + "px");
+        this.removing = false;
+      }
     },
     removeItem(item, index) {
       //删除项目
       // console.log("removed ", id);
       let showTime = false;
-      let deletedItem = {
-        time: item.time,
-        change: null,
-        type: item.type,
-        content: item.content,
-      };
+      let deletedItem = item;
+      deletedItem.change = null;
       if (index != this.list.length - 1) {
         if (this.list[index].showTime) {
           //如果被删除的项目会显示时间，则将下一个项目改为会显示时间
           showTime = true;
-          deletedItem.change = this.list[index + 1].time;
+          deletedItem.change = {
+            content: this.list[index + 1].content,
+            time: this.list[index + 1].time,
+          };
         }
       }
       this.axios.post("/post/remove", deletedItem).then((response) => {
@@ -308,6 +336,14 @@ export default {
           this.list.splice(index, 1);
         }
       });
+    },
+    removeAll() {
+      for (let item of this.list) {
+        item.change = null;
+        this.axios.post("/post/remove", item);
+      }
+      this.list = [];
+      this.unremove();
     },
   },
 };
@@ -324,7 +360,7 @@ export default {
   margin: 10px 0 10px 0;
 }
 .index-mb {
-  height: 75%;
+  height: 70%;
 }
 .index-scrw {
   height: 100%;
@@ -353,7 +389,8 @@ export default {
   cursor: pointer;
   color: #409eff;
 }
-.index-remove-item:hover {
+.index-remove-item:hover,
+.index-remove-all:hover {
   cursor: pointer;
   color: #f56c6c;
 }
@@ -366,8 +403,16 @@ export default {
   align-items: center;
   justify-content: center;
 }
+.index-remove-all-div {
+  margin: 10px 0 10px 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .index-upload,
-.index-remove {
+.index-remove,
+.index-remove-all {
   font-size: 34px;
 }
 .index-upload:hover,
