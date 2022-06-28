@@ -67,9 +67,15 @@ Transfery最适合运行在私有的云服务器上。
 
 <br/>
 
-Transfery项目使用<a href="https://github.com/minio/minio.git">Minio</a>作为对象存储服务，使用MySQL作为数据库，使用Flask作为后端服务
+Transfery项目使用<a href="https://github.com/minio/minio.git">Minio</a>作为对象存储服务，使用MySQL作为数据库，使用Flask作为后端服务。
 
-transfery-vue使用vue-cli 2.0编写
+transfery-vue使用vue-cli 2.0编写。
+
+<br/>
+
+注意，本项目仅为前端，在开发环境下使用mock.js传递json数据，无法很好地测试文件上传下载的功能。
+
+在生产环境下会自动屏蔽mock.js，使用后端数据。
 
 <br/>
 
