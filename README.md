@@ -61,15 +61,19 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 ## 项目所需环境
 
-Transfery最适合运行在私有的云服务器上。
+运行Transfery，你需要
+- <a href="https://github.com/minio/minio.git">Minio</a> 	作为对象存储服务
+- MySQL 	作为数据库
+- Flask 	作为后端服务。
+- 一台服务器 	
 
-由于没有设置密码，因此请不要将Transfery的服务网址分享到网络上，以免被恶意上传。
+transfery-vue使用vue-cli 2.0编写。
 
 <br/>
 
-Transfery项目使用<a href="https://github.com/minio/minio.git">Minio</a>作为对象存储服务，使用MySQL作为数据库，使用Flask作为后端服务。
+Transfery最适合运行在私有的云服务器上。
 
-transfery-vue使用vue-cli 2.0编写。
+由于没有设置密码，因此请不要将Transfery的服务网址分享到网络上，以免被恶意上传。
 
 <br/>
 
