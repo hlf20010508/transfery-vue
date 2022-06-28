@@ -15,12 +15,12 @@
           </div>
           <div class="index-text" v-if="item.type == 'text'">
             <span>
-              {{ item.content }}
               <i
                 class="el-icon-error index-remove-item"
                 v-show="removing"
                 @click="removeItem(item, index)"
               ></i>
+              {{ item.content }}
             </span>
           </div>
           <div class="index-file" v-if="item.type == 'file'">
@@ -34,15 +34,15 @@
               />
             </div>
             <div>
-              <span class="index-file-span" @click="download(item)">
-                <i class="el-icon-document"></i>
-                {{ item.content }}
-              </span>
               <i
                 class="el-icon-error index-remove-item"
                 v-show="removing"
                 @click="removeItem(item, index)"
               ></i>
+              <span class="index-file-span" @click="download(item)">
+                <i class="el-icon-document"></i>
+                {{ item.content }}
+              </span>
             </div>
           </div>
         </div>
