@@ -102,6 +102,7 @@
 <script>
 import Moment from "moment";
 import jquery from "jquery";
+import device from "current-device"
 
 export default {
   data() {
@@ -130,6 +131,10 @@ export default {
         "height",
         heightHTML - height - 10 + "px"
       );
+
+      if(device.mobile()){
+        jquery('body').css('background',"#409eff")
+      }
     },
     time(timeParse) {
       let date = new Moment(timeParse);
