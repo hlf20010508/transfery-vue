@@ -104,9 +104,6 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 - vue-socket.io 3.0.10
 - jquery 3.6.0
 - vue-infinite-loading 2.4.5
-- current-device 0.10.2
-- moment 2.29.3
-- mockjs 1.1.0
 
 更多依赖请参考package.json
 
