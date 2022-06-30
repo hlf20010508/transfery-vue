@@ -74,6 +74,11 @@
           <i class="el-icon-close index-remove"></i>
         </div>
       </el-col>
+      <el-col :span="3">
+        <div class="index-refresh-div" @click="refresh">
+          <i class="el-icon-refresh index-refresh"></i>
+        </div>
+      </el-col>
     </el-row>
     <el-row class="index-row5 index-input">
       <div v-if="removing" class="index-remove-all-div">
@@ -171,6 +176,9 @@ export default {
       if (device.mobile()) { //手机
         jquery("body").css("background", "#409eff");
       }
+    },
+    refresh(){
+      location.reload();
     },
     listenResize() { //安卓
       let newWindowHeight = document.documentElement.clientHeight;
@@ -486,13 +494,15 @@ export default {
   margin: 0 0 10px 0;
 }
 .index-upload-div,
-.index-remove-div {
+.index-remove-div,
+.index-refresh-div {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .index-upload,
-.index-remove {
+.index-remove,
+.index-refresh {
   font-size: 34px;
 }
 .index-remove-all,
@@ -503,7 +513,8 @@ export default {
 .index-file-span:hover,
 .index-upload:hover,
 .index-remove:hover,
-.index-remove-complete:hover {
+.index-remove-complete:hover,
+.index-refresh:hover {
   cursor: pointer;
   color: #409eff;
 }
