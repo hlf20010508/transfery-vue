@@ -5,7 +5,7 @@
     </el-row>
     <el-row class="index-mb index-row2">
       <el-scrollbar class="index-scrw" ref="myScrollbar" :native="true">
-        <infinite-loading direction="top" @infinite="getNewData" :distance="10">
+        <infinite-loading direction="top" @infinite="getNewPage" :distance="10">
           <template slot="no-results">没有更多了</template>
           <template slot="no-more">没有更多了</template>
         </infinite-loading>
@@ -102,7 +102,7 @@
 <script>
 import Moment from "moment";
 import jquery from "jquery";
-import device from "current-device"
+import device from "current-device";
 
 export default {
   data() {
@@ -118,6 +118,34 @@ export default {
     this.updateTime();
     this.adjustCSS();
   },
+  sockets: {
+    connect: function () {
+      console.log(`client ${this.$socket.id} connected`);
+    },
+    disconnect() {
+      console.log(`client ${this.$socket.id} disconnected`);
+    },
+    getNewItem(item) {
+      console.log("got new item");
+      this.list.push(item);
+      console.log("new item pushed");
+      this.$nextTick(() => this.toBottom());
+    },
+    removeItem(id) {
+      console.log("got item to be removed");
+      for (let i in this.list) {
+        if (this.list[i].id == id) {
+          this.list.splice(i, 1);
+          console.log("item removed");
+          break;
+        }
+      }
+    },
+    removeAll() {
+      this.list = [];
+      console.log("all items removed");
+    },
+  },
   methods: {
     adjustCSS() {
       let height = 0;
@@ -132,8 +160,8 @@ export default {
         heightHTML - height - 10 + "px"
       );
 
-      if(device.mobile()){
-        jquery('body').css('background',"#409eff")
+      if (device.mobile()) {
+        jquery("body").css("background", "#409eff");
       }
     },
     time(timeParse) {
@@ -155,7 +183,7 @@ export default {
       this.$refs["myScrollbar"].wrap.scrollTop =
         this.$refs["myScrollbar"].wrap.scrollHeight;
     },
-    getNewData($state) {
+    getNewPage($state) {
       this.axios
         .get("/get/page", {
           params: {
@@ -175,7 +203,7 @@ export default {
     },
     submit() {
       if (this.input != "\n") {
-        // console.log("submit", this.input);
+        console.log("submit: ", this.input);
         let date = new Date();
         let time = Date.parse(date);
         let showTime = false;
@@ -193,9 +221,11 @@ export default {
           time: time,
         };
         this.input = null;
-        this.axios.post("/post/message", newItem).then((response) => {
-          if (response.data.success) {
+        this.$socket.emit("pushItem", newItem, (id, success) => {
+          if (success) {
+            newItem.id = id;
             this.list.push(newItem);
+            console.log('pushed')
             this.$nextTick(() => this.toBottom());
           }
         });
@@ -204,7 +234,7 @@ export default {
       }
     },
     download(item) {
-      // console.log("download: ", item.content);
+      console.log("download: ", item.content);
       this.axios
         .get("/get/download", { params: { fileName: item.fileName } })
         .then((res) => {
@@ -218,6 +248,7 @@ export default {
             document.body.appendChild(eleLink);
             eleLink.click();
             document.body.removeChild(eleLink);
+            console.log('downloaded')
           }
         });
     },
@@ -240,7 +271,7 @@ export default {
         uploading: false,
         uploadingPercentage: 0,
       };
-      // console.log("add new item: ", newItem);
+      console.log("upload item: ", newItem);
       let newItemIndex = this.list.push(newItem) - 1;
       this.$nextTick(() => this.toBottom());
       let form = new FormData();
@@ -262,13 +293,13 @@ export default {
           delete this.list[newItemIndex].uploading;
           delete this.list[newItemIndex].uploadingPercentage;
           this.list[newItemIndex].fileName = res.data.fileName;
-          this.axios
-            .post("/post/message", this.list[newItemIndex])
-            .then((response) => {
-              if (response.data.success) {
-                this.$nextTick(() => this.toBottom());
-              }
-            });
+          this.$socket.emit("pushItem", this.list[newItemIndex], (id,success) => {
+            if (success) {
+              this.list[newItemIndex].id=id
+              console.log('uploaded')
+              this.$nextTick(() => this.toBottom());
+            }
+          });
         }
       });
     },
@@ -307,7 +338,7 @@ export default {
     },
     removeItem(item, index) {
       //删除项目
-      // console.log("removed ", id);
+      console.log("remove item: ", item);
       let showTime = false;
       let deletedItem = item;
       deletedItem.change = null;
@@ -316,28 +347,29 @@ export default {
           //如果被删除的项目会显示时间，则将下一个项目改为会显示时间
           showTime = true;
           deletedItem.change = {
-            content: this.list[index + 1].content,
-            time: this.list[index + 1].time,
+            id: this.list[index + 1].id,
           };
         }
       }
-      this.axios.post("/post/remove", deletedItem).then((response) => {
-        if (response.data.success) {
+      this.$socket.emit("remove", deletedItem, (success) => {
+        if (success) {
           if (showTime) {
             this.list[index + 1].showTime = true;
           }
           this.list.splice(index, 1);
+          console.log('removed')
         }
       });
     },
     removeAll() {
       if (confirm("确定要删除全部吗")) {
-        for (let item of this.list) {
-          item.change = null;
-          this.axios.post("/post/remove", item);
-        }
-        this.list = [];
-        this.unremove();
+        this.$socket.emit("removeAll", (success) => {
+          if (success) {
+            this.list = [];
+            this.unremove();
+            console.log('removed all items')
+          }
+        });
       }
     },
   },

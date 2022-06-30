@@ -8,10 +8,16 @@ import InfiniteLoading from 'vue-infinite-loading';
 import router from './router'
 import axios from "axios";
 import VueAxios from "vue-axios";
+import SocketIO from 'socket.io-client';
+import VueSocketIO from 'vue-socket.io';
 
 Vue.use(ElementUI);
 Vue.use(VueAxios, axios);
 Vue.use(InfiniteLoading);
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: SocketIO(location.protocol+'//'+document.domain+':'+location.port+'/') //xxx填后台给的socket地址，端口号根据实际后台端口写
+}))
 
 if (process.env.NODE_ENV == "development") { require("./mock"); }
 

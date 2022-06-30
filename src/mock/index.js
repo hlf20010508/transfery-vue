@@ -18,9 +18,3 @@ Mock.mock("/post/upload", "post", (request) => {
         fileName: 'fileName'
     }
 })
-Mock.mock("/post/remove", "post", (request) => {
-    console.log('request: ', request)
-    return {
-        success: true
-    }
-})
