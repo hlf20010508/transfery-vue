@@ -1,10 +1,22 @@
 {
     "messages": [
         {
-            "content": "message1",
+            "content": "message2",
             "type": "text",
             "showTime": false,
             "time": 1656058279129
+        },
+        {
+            "content": "message1",
+            "type": "text",
+            "showTime": true,
+            "time": 1656058257658
+        },
+        {
+            "content": "file1",
+            "type": "file",
+            "showTime": true,
+            "time": 1656058147658
         }
     ]
 }

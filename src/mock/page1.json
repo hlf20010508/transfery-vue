@@ -1,16 +1,3 @@
 {
-    "messages": [
-        {
-            "content": "message2",
-            "type": "text",
-            "showTime": true,
-            "time": 1656058257658
-        },
-        {
-            "content": "file1",
-            "type": "file",
-            "showTime": true,
-            "time": 1656058247658
-        }
-    ]
+    "messages": []
 }

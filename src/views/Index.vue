@@ -53,7 +53,7 @@
       <el-divider class="index-divider"></el-divider>
     </el-row>
     <el-row class="index-row4">
-      <el-col :span="2">
+      <el-col :span="3">
         <el-upload
           action="/post/upload"
           multiple
@@ -69,7 +69,7 @@
           </div>
         </el-upload>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="3">
         <div class="index-remove-div" @click="remove">
           <i class="el-icon-close index-remove"></i>
         </div>
@@ -93,6 +93,8 @@
         type="textarea"
         v-model="input"
         placeholder="请输入消息内容"
+        @focus="focus"
+        @blur="blur"
         @keyup.enter.native="submit"
       ></el-input>
     </el-row>
@@ -103,6 +105,7 @@
 import Moment from "moment";
 import jquery from "jquery";
 import device from "current-device";
+import keyboardObserver from "keyboard-height";
 
 export default {
   data() {
@@ -112,11 +115,16 @@ export default {
       input: null,
       removing: false,
       now: this.time(Date.parse(Date())),
+      htmlHeight: null, //苹果
+      displayHeight: null, //苹果
+      windowHeight: null, //安卓
     };
   },
   mounted() {
     this.updateTime();
     this.adjustCSS();
+    this.htmlHeight = jquery("html").outerHeight();
+    this.displayHeight = jquery(".index-mb").outerHeight();
   },
   sockets: {
     connect: function () {
@@ -160,8 +168,61 @@ export default {
         heightHTML - height - 10 + "px"
       );
 
-      if (device.mobile()) {
+      if (device.mobile()) { //手机
         jquery("body").css("background", "#409eff");
+      }
+    },
+    listenResize() { //安卓
+      let newWindowHeight = document.documentElement.clientHeight;
+      if (this.windowHeight == newWindowHeight) {
+        jquery(".index-mb").css("height", this.displayHeight + "px");
+      } else {
+        let keyboardHeight = keyboardObserver.getKeyboardHeight();
+        jquery(".index-mb").css(
+          "height",
+          this.displayHeight - keyboardHeight + "px"
+        );
+        this.toBottom();
+      }
+    },
+    focus() {
+      if (device.iphone() || device.ipod()) {
+        //苹果 输入法获取焦点时页面元素高度不变，整体向上移动，因此在键盘呼出后滚动到最上方并减小页面和显示框的高度，以保证整体在可视范围内
+        //需要延迟，不然检测时键盘还没呼出，得到的高度为0
+        setTimeout(() => {
+          let keyboardHeight = keyboardObserver.getKeyboardHeight(); //获取键盘高度
+          document.documentElement.scrollTop = 0; //滚动到页面最上方
+          jquery("html").css("height", this.htmlHeight - keyboardHeight + "px"); //减小页面高度
+          jquery(".index-mb").css(
+            "height",
+            this.displayHeight - keyboardHeight + "px"
+          ); //减小显示框高度
+          this.toBottom();
+        }, 300);
+      }
+      if (device.androidPhone()) {
+        //安卓 输入法获取焦点时页面元素高度改变，且收起键盘后不失去焦点。主要麻烦在于收起键盘不失去焦点。因此需要在获得焦点时监听页面高度
+        //若页面高度恢复初始高度，说明键盘收起，则恢复显示框高度；若页面高度小于初始高度，说明键盘又被调起，则减小显示框高度
+        setTimeout(() => {
+          let keyboardHeight = keyboardObserver.getKeyboardHeight();
+          jquery(".index-mb").css(
+            "height",
+            this.displayHeight - keyboardHeight + "px"
+          );
+          this.toBottom();
+        }, 300);
+        this.windowHeight = document.documentElement.clientHeight;
+        window.addEventListener("resize", this.listenResize);
+      }
+    },
+    blur() {
+      if (device.iphone() || device.ipod()) {
+        jquery("html").css("height", this.htmlHeight + "px");
+        jquery(".index-mb").css("height", this.displayHeight + "px");
+      }
+      if (device.androidPhone()) {
+        window.removeEventListener("resize", this.listenResize);
+        jquery(".index-mb").css("height", this.displayHeight + "px");
       }
     },
     time(timeParse) {
@@ -225,7 +286,7 @@ export default {
           if (success) {
             newItem.id = id;
             this.list.push(newItem);
-            console.log('pushed')
+            console.log("pushed");
             this.$nextTick(() => this.toBottom());
           }
         });
@@ -248,7 +309,7 @@ export default {
             document.body.appendChild(eleLink);
             eleLink.click();
             document.body.removeChild(eleLink);
-            console.log('downloaded')
+            console.log("downloaded");
           }
         });
     },
@@ -293,13 +354,17 @@ export default {
           delete this.list[newItemIndex].uploading;
           delete this.list[newItemIndex].uploadingPercentage;
           this.list[newItemIndex].fileName = res.data.fileName;
-          this.$socket.emit("pushItem", this.list[newItemIndex], (id,success) => {
-            if (success) {
-              this.list[newItemIndex].id=id
-              console.log('uploaded')
-              this.$nextTick(() => this.toBottom());
+          this.$socket.emit(
+            "pushItem",
+            this.list[newItemIndex],
+            (id, success) => {
+              if (success) {
+                this.list[newItemIndex].id = id;
+                console.log("uploaded");
+                this.$nextTick(() => this.toBottom());
+              }
             }
-          });
+          );
         }
       });
     },
@@ -357,7 +422,7 @@ export default {
             this.list[index + 1].showTime = true;
           }
           this.list.splice(index, 1);
-          console.log('removed')
+          console.log("removed");
         }
       });
     },
@@ -367,7 +432,7 @@ export default {
           if (success) {
             this.list = [];
             this.unremove();
-            console.log('removed all items')
+            console.log("removed all items");
           }
         });
       }
