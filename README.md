@@ -95,7 +95,7 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 ### transfery-vue 依赖<span id="sh41"></span>
 
-- vue-cli 2.5.2
+- vue-cli 2.9.6
 - vue-router 3.0.1
 - element-ui 2.15.9
 - axios 0.27.2
