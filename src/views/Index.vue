@@ -5,7 +5,7 @@
     </el-row>
     <el-row class="index-mb index-row2">
       <el-scrollbar class="index-scrw" ref="myScrollbar" :native="true">
-        <infinite-loading direction="top" @infinite="getNewPage" :distance="10">
+        <infinite-loading direction="top" @infinite="getNewPage" :distance="0" :key="keyInfinite">
           <template slot="no-results">没有更多了</template>
           <template slot="no-more">没有更多了</template>
         </infinite-loading>
@@ -123,6 +123,7 @@ export default {
       htmlHeight: null, //苹果
       displayHeight: null, //苹果
       windowHeight: null, //安卓
+      keyInfinite: 5000,
     };
   },
   mounted() {
@@ -130,6 +131,7 @@ export default {
     this.adjustCSS();
     this.htmlHeight = jquery("html").outerHeight();
     this.displayHeight = jquery(".index-mb").outerHeight();
+    window.addEventListener("visibilitychange", this.autoRefreshAfterResume);
   },
   sockets: {
     connect: function () {
@@ -173,14 +175,26 @@ export default {
         heightHTML - height - 10 + "px"
       );
 
-      if (device.mobile()) { //手机
+      if (device.mobile()) {
+        //手机
         jquery("body").css("background", "#409eff");
       }
     },
-    refresh(){
+    refresh() {
       location.reload();
     },
-    listenResize() { //安卓
+    autoRefreshAfterResume() {
+      // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
+      if (document.visibilityState === "visible") {
+        console.log("app resumed");
+        //只刷新数据，不刷新页面
+        this.page = 0;
+        this.list = [];
+        this.keyInfinite=-this.keyInfinite //刷新组件，自动重新载入数据
+      }
+    },
+    listenResize() {
+      //安卓
       let newWindowHeight = document.documentElement.clientHeight;
       if (this.windowHeight == newWindowHeight) {
         jquery(".index-mb").css("height", this.displayHeight + "px");
