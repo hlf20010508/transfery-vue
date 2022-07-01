@@ -16,7 +16,6 @@ Vue.use(VueAxios, axios);
 Vue.use(InfiniteLoading);
 Vue.use(new VueSocketIO({
   debug: true,
-  // connection: SocketIO(location.protocol+'//'+document.domain+':'+location.port+'/') //xxx填后台给的socket地址，端口号根据实际后台端口写
   connection: SocketIO('http://124.223.224.49:5020/') //xxx填后台给的socket地址，端口号根据实际后台端口写
 }))
 
