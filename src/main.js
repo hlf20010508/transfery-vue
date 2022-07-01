@@ -16,7 +16,7 @@ Vue.use(VueAxios, axios);
 Vue.use(InfiniteLoading);
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO(location.protocol+'//'+document.domain+':'+location.port+'/') //xxx填后台给的socket地址，端口号根据实际后台端口写
+  connection: SocketIO(location.protocol+'//'+document.domain+':'+location.port+'/')
 }))
 
 if (process.env.NODE_ENV == "development") { require("./mock"); }
