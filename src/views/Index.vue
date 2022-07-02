@@ -187,7 +187,7 @@ export default {
       if (document.visibilityState === "visible") {
         console.log("app resumed");
         //只刷新数据，不刷新页面
-        this.sync()
+        this.sync();
       }
     },
     listenResize() {
@@ -281,25 +281,50 @@ export default {
           }
         });
     },
-    sync(){
-      console.log('syncing...')
-      let size=this.list.length
-      let i=size-1
-      while(!this.list[i].id){
-        //寻找最后一个有id的item，可以跳过正在上传的没有id的item
-        i-=1
-      }
-      let lastId=this.list[i].id
-      this.axios.get('/get/sync',{
-        params:{
-          lastId: lastId
+    sync() {
+      console.log("syncing...");
+      let size = this.list.length;
+      let lastId;
+      if (size > 0) {
+        let i = size - 1;
+        while (!this.list[i].id) {
+          //寻找最后一个有id的item，可以跳过正在上传的没有id的item
+          i -= 1;
         }
-      }).then((res)=>{
-        let newItems=res.data.newItems
-        this.list.push(...newItems)
-        this.$nextTick(()=>this.toBottom())
-      })
-      console.log('synced')
+        lastId = this.list[i].id;
+      } else {
+        lastId = 0;
+      }
+      this.axios
+        .get("/get/sync", {
+          params: {
+            lastId: lastId,
+          },
+        })
+        .then((res) => {
+          let temp = res.data.newItems;
+          if (temp.length > 0) {
+            let i;
+            let idList = [];
+            for (i in this.list) {
+              idList.push(this.list[i].id);
+            }
+            let newItems;
+            for (i of temp) {
+              let result = jquery.inArray(i.id, idList);
+              if (result == -1) {
+                newItems.push(i);
+              }
+            }
+            this.list.push(...newItems);
+            this.$nextTick(() => this.toBottom());
+            console.log('get unsynced item')
+          }
+          else{
+            console.log('no unsynced item')
+          }
+        });
+      console.log("synced");
     },
     submit() {
       if (this.input != "\n") {
@@ -355,7 +380,7 @@ export default {
     selectFile() {
       this.unremove();
     },
-    async uploadFile(res) {
+    uploadFile(res) {
       let size = this.list.length;
       let time = Date.parse(Date());
       let showTime = true;
@@ -378,7 +403,7 @@ export default {
       form.append("file", file);
       form.append("size", file.size);
       form.append("time", time);
-      await this.axios({
+      this.axios({
         method: "post",
         url: "/post/upload",
         data: form,
