@@ -355,7 +355,7 @@ export default {
     selectFile() {
       this.unremove();
     },
-    uploadFile(res) {
+    async uploadFile(res) {
       let size = this.list.length;
       let time = Date.parse(Date());
       let showTime = true;
@@ -378,7 +378,7 @@ export default {
       form.append("file", file);
       form.append("size", file.size);
       form.append("time", time);
-      this.axios({
+      await this.axios({
         method: "post",
         url: "/post/upload",
         data: form,
