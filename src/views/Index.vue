@@ -123,7 +123,7 @@ export default {
       htmlHeight: null, //苹果
       displayHeight: null, //苹果
       windowHeight: null, //安卓
-      keyInfinite: 5000,
+      keyInfinite: -1,
     };
   },
   mounted() {
@@ -190,7 +190,7 @@ export default {
         //只刷新数据，不刷新页面
         this.page = 0;
         this.list = [];
-        this.keyInfinite=-this.keyInfinite //刷新组件，自动重新载入数据
+        this.keyInfinite-=1 //刷新组件，自动重新载入数据
       }
     },
     listenResize() {
