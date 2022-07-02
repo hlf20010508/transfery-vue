@@ -55,7 +55,7 @@
     <el-row class="index-row4">
       <el-col :span="3">
         <el-upload
-          action="/post/upload"
+          action="fakeaction"
           multiple
           :http-request="uploadFile"
           :show-file-list="false"
