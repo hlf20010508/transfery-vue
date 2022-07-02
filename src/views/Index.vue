@@ -5,7 +5,7 @@
     </el-row>
     <el-row class="index-mb index-row2">
       <el-scrollbar class="index-scrw" ref="myScrollbar" :native="true">
-        <infinite-loading direction="top" @infinite="getNewPage" :distance="0" :key="keyInfinite">
+        <infinite-loading direction="top" @infinite="getNewPage" :distance="0">
           <template slot="no-results">没有更多了</template>
           <template slot="no-more">没有更多了</template>
         </infinite-loading>
@@ -55,7 +55,7 @@
     <el-row class="index-row4">
       <el-col :span="3">
         <el-upload
-          action="fakeaction"
+          action="/post/upload"
           multiple
           :http-request="uploadFile"
           :show-file-list="false"
@@ -123,7 +123,6 @@ export default {
       htmlHeight: null, //苹果
       displayHeight: null, //苹果
       windowHeight: null, //安卓
-      keyInfinite: -1,
     };
   },
   mounted() {
@@ -188,9 +187,7 @@ export default {
       if (document.visibilityState === "visible") {
         console.log("app resumed");
         //只刷新数据，不刷新页面
-        this.page = 0;
-        this.list = [];
-        this.keyInfinite-=1 //刷新组件，自动重新载入数据
+        this.sync()
       }
     },
     listenResize() {
@@ -283,6 +280,26 @@ export default {
             $state.complete();
           }
         });
+    },
+    sync(){
+      console.log('syncing...')
+      let size=this.list.length
+      let i=size-1
+      while(!this.list[i].id){
+        //寻找最后一个有id的item，可以跳过正在上传的没有id的item
+        i-=1
+      }
+      let lastId=this.list[i].id
+      this.axios.get('/get/sync',{
+        params:{
+          lastId: lastId
+        }
+      }).then((res)=>{
+        let newItems=res.data.newItems
+        this.list.push(...newItems)
+        this.$nextTick(()=>this.toBottom())
+      })
+      console.log('synced')
     },
     submit() {
       if (this.input != "\n") {
