@@ -123,6 +123,7 @@ export default {
       htmlHeight: null, //苹果
       displayHeight: null, //苹果
       windowHeight: null, //安卓
+      refreshInterval: null //页面切出计时器
     };
   },
   mounted() {
@@ -184,8 +185,16 @@ export default {
     },
     autoRefreshAfterResume() {
       // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
+      if (document.visibilityState=== "hidden"){
+        //如果切出去太久，则会刷新页面
+        console.log('app hidden')
+        this.refreshInterval=setInterval(()=>{
+          this.refresh()
+        },30*60*1000) //超过30钟没有切回就刷新
+      }
       if (document.visibilityState === "visible") {
-        console.log("app resumed");
+        clearInterval(this.refreshInterval) //取消计时
+        console.log("app visible");
         //只刷新数据，不刷新页面
         this.sync();
       }
