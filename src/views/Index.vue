@@ -294,7 +294,7 @@ export default {
       console.log("syncing...");
       let size = this.list.length;
       let lastId;
-      if (size > 0) {
+      if (size > 0 && this.list[0].id) {
         let i = size - 1;
         while (!this.list[i].id) {
           //寻找最后一个有id的item，可以跳过正在上传的没有id的item
@@ -311,39 +311,39 @@ export default {
           },
         })
         .then((res) => {
-          // let temp = res.data.newItems;
-          // console.log('received synced new items:',temp)
-          // if (temp.length > 0) {
-            // let i;
-            // let idList = [];
-            // for (i of this.list) {
-            //   idList.push(i.id);
-            // }
-            // let newItems=[]
-            // for (i of temp) {
-            //   let result = jquery.inArray(i.id, idList);
-            //   if (result == -1) {
-            //     newItems.push(i);
-            //   }
-            // }
-            // console.log('final synced new items:',newItems)
-            // this.list.push(...newItems);
-          let newItems=res.data.newItems;
-          console.log('received synced new items:',newItems)
-          this.list.push(...newItems)
-          // if(newItems.length>0){
+          let temp = res.data.newItems;
+          console.log('received synced new items:',temp)
+          if (temp.length > 0) {
+            let i;
+            let idList = [];
+            for (i of this.list) {
+              idList.push(i.id);
+            }
+            let newItems=[]
+            for (i of temp) {
+              let result = jquery.inArray(i.id, idList);
+              if (result == -1) {
+                newItems.push(i);
+              }
+            }
+            console.log('final synced new items:',newItems)
+            this.list.push(...newItems);
 
-            // for(let item of newItems){
-            //   if(item.id>lastId){
-            //     this.list.push(item)
-            //     console.log('new item synced:',item)
-            //   }
-            // }
-          //   this.$nextTick(() => this.toBottom());
-          //   console.log("unsynced items pushed");
-          // } else {
-          //   console.log("no unsynced item");
-          // }
+          // let newItems=res.data.newItems;
+          // console.log('received synced new items:',newItems)
+          // this.list.push(...newItems)
+
+          // if(newItems.length>0){
+          //   for(let item of newItems){
+          //     if(item.id>lastId){
+          //       this.list.push(item)
+          //     }
+          //   }
+            this.$nextTick(() => this.toBottom());
+            console.log("unsynced items pushed");
+          } else {
+            console.log("no unsynced item");
+          }
         });
       console.log("synced");
     },
