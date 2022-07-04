@@ -181,6 +181,11 @@ export default {
       }
     },
     refresh() {
+      this.$loading({
+        fullscreen: true,
+        lock: true,
+        background: "rgba(255, 255, 255, 0.5)",
+      });
       location.reload();
     },
     autoRefreshAfterResume() {
@@ -312,33 +317,33 @@ export default {
         })
         .then((res) => {
           let temp = res.data.newItems;
-          console.log('received synced new items:',temp)
+          console.log("received synced new items:", temp);
           if (temp.length > 0) {
             let i;
             let idList = [];
             for (i of this.list) {
               idList.push(i.id);
             }
-            let newItems=[]
+            let newItems = [];
             for (i of temp) {
               let result = jquery.inArray(i.id, idList);
               if (result == -1) {
                 newItems.push(i);
               }
             }
-            console.log('final synced new items:',newItems)
+            console.log("final synced new items:", newItems);
             this.list.push(...newItems);
 
-          // let newItems=res.data.newItems;
-          // console.log('received synced new items:',newItems)
-          // this.list.push(...newItems)
+            // let newItems=res.data.newItems;
+            // console.log('received synced new items:',newItems)
+            // this.list.push(...newItems)
 
-          // if(newItems.length>0){
-          //   for(let item of newItems){
-          //     if(item.id>lastId){
-          //       this.list.push(item)
-          //     }
-          //   }
+            // if(newItems.length>0){
+            //   for(let item of newItems){
+            //     if(item.id>lastId){
+            //       this.list.push(item)
+            //     }
+            //   }
             this.$nextTick(() => this.toBottom());
             console.log("unsynced items pushed");
           } else {
@@ -606,5 +611,13 @@ export default {
   background: #f3f3f3;
   border: 0px;
   height: 100px;
+}
+.index-refreshing {
+  font-size: 60px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -30px;
+  margin-left: -30px;
 }
 </style>
