@@ -183,10 +183,9 @@ export default {
     refresh() {
       this.$loading({
         fullscreen: true,
-        lock: true,
         background: "rgba(255, 255, 255, 0.5)",
       });
-      location.reload();
+      setInterval(()=>location.reload(),500) //延迟0.5秒刷新，让loading图标能够显示全，不然只有一个点在转
     },
     autoRefreshAfterResume() {
       // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
