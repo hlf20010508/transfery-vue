@@ -16,7 +16,6 @@
     "jquery": "^3.6.0",
     "keyboard-height": "^1.0.5",
     "moment": "^2.29.3",
-    "pwa-manifest-webpack-plugin": "^1.0.5",
     "socket.io-client": "^4.5.1",
     "vue": "^2.5.2",
     "vue-axios": "^3.4.1",

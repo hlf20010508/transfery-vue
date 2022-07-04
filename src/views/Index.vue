@@ -123,7 +123,7 @@ export default {
       htmlHeight: null, //苹果
       displayHeight: null, //苹果
       windowHeight: null, //安卓
-      refreshInterval: null //页面切出计时器
+      refreshInterval: null, //页面切出计时器
     };
   },
   mounted() {
@@ -185,15 +185,15 @@ export default {
     },
     autoRefreshAfterResume() {
       // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
-      if (document.visibilityState=== "hidden"){
+      if (document.visibilityState === "hidden") {
         //如果切出去太久，则会刷新页面
-        console.log('app hidden')
-        this.refreshInterval=setInterval(()=>{
-          this.refresh()
-        },30*60*1000) //超过30钟没有切回就刷新
+        console.log("app hidden");
+        this.refreshInterval = setInterval(() => {
+          this.refresh();
+        }, 30 * 60 * 1000); //超过30钟没有切回就刷新
       }
       if (document.visibilityState === "visible") {
-        clearInterval(this.refreshInterval) //取消计时
+        clearInterval(this.refreshInterval); //取消计时
         console.log("app visible");
         //只刷新数据，不刷新页面
         this.sync();
@@ -311,26 +311,36 @@ export default {
           },
         })
         .then((res) => {
-          let temp = res.data.newItems;
-          if (temp.length > 0) {
-            let i;
-            let idList = [];
-            for (i in this.list) {
-              idList.push(this.list[i].id);
-            }
-            let newItems;
-            for (i of temp) {
-              let result = jquery.inArray(i.id, idList);
-              if (result == -1) {
-                newItems.push(i);
+          // let temp = res.data.newItems;
+          // console.log('received synced new items:',temp)
+          // if (temp.length > 0) {
+            // let i;
+            // let idList = [];
+            // for (i of this.list) {
+            //   idList.push(i.id);
+            // }
+            // let newItems=[]
+            // for (i of temp) {
+            //   let result = jquery.inArray(i.id, idList);
+            //   if (result == -1) {
+            //     newItems.push(i);
+            //   }
+            // }
+            // console.log('final synced new items:',newItems)
+            // this.list.push(...newItems);
+          let newItems=res.data.newItems;
+          console.log('received synced new items:',newItems)
+          if(newItems.length>0){
+            for(let item of newItems){
+              if(item.id>lastId){
+                this.list.push(item)
+                console.log('new item synced:',item)
               }
             }
-            this.list.push(...newItems);
             this.$nextTick(() => this.toBottom());
-            console.log('get unsynced item')
-          }
-          else{
-            console.log('no unsynced item')
+            console.log("unsynced items pushed");
+          } else {
+            console.log("no unsynced item");
           }
         });
       console.log("synced");
