@@ -19,8 +19,6 @@ Vue.use(new VueSocketIO({
   connection: SocketIO(location.protocol+'//'+document.domain+':'+location.port+'/')
 }))
 
-if (process.env.NODE_ENV == "development") { require("./mock"); }
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

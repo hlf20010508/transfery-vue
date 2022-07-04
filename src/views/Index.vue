@@ -276,7 +276,7 @@ export default {
       this.axios
         .get("/get/page", {
           params: {
-            page: this.page,
+            size: this.list.length,
           },
         })
         .then((response) => {
@@ -330,18 +330,20 @@ export default {
             // this.list.push(...newItems);
           let newItems=res.data.newItems;
           console.log('received synced new items:',newItems)
-          if(newItems.length>0){
-            for(let item of newItems){
-              if(item.id>lastId){
-                this.list.push(item)
-                console.log('new item synced:',item)
-              }
-            }
-            this.$nextTick(() => this.toBottom());
-            console.log("unsynced items pushed");
-          } else {
-            console.log("no unsynced item");
-          }
+          this.list.push(...newItems)
+          // if(newItems.length>0){
+
+            // for(let item of newItems){
+            //   if(item.id>lastId){
+            //     this.list.push(item)
+            //     console.log('new item synced:',item)
+            //   }
+            // }
+          //   this.$nextTick(() => this.toBottom());
+          //   console.log("unsynced items pushed");
+          // } else {
+          //   console.log("no unsynced item");
+          // }
         });
       console.log("synced");
     },
