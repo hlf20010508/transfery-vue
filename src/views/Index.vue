@@ -4,7 +4,7 @@
       <div class="index-now">{{ now }}</div>
     </el-row>
     <el-row class="index-mb index-row2">
-      <el-scrollbar class="index-scrw" ref="myScrollbar" :native="true">
+      <div class="index-scrw" ref="myScrollbar">
         <infinite-loading direction="top" @infinite="getNewPage" :distance="0">
           <template slot="no-results">没有更多了</template>
           <template slot="no-more">没有更多了</template>
@@ -47,7 +47,7 @@
             </div>
           </div>
         </div>
-      </el-scrollbar>
+      </div>
     </el-row>
     <el-row class="index-row3">
       <el-divider class="index-divider"></el-divider>
@@ -185,7 +185,7 @@ export default {
         fullscreen: true,
         background: "rgba(255, 255, 255, 0.5)",
       });
-      setInterval(()=>location.reload(),500) //延迟0.5秒刷新，让loading图标能够显示全，不然只有一个点在转
+      setInterval(() => location.reload(), 500); //延迟0.5秒刷新，让loading图标能够显示全，不然只有一个点在转
     },
     autoRefreshAfterResume() {
       // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
@@ -224,11 +224,12 @@ export default {
         setTimeout(() => {
           let keyboardHeight = keyboardObserver.getKeyboardHeight(); //获取键盘高度
           document.documentElement.scrollTop = 0; //滚动到页面最上方
-          jquery("html").css("height", this.htmlHeight - keyboardHeight + "px"); //减小页面高度
+          jquery("html").css("height", this.htmlHeight - keyboardHeight + "px"); //减小页面高度, 若不减小，输入框高度会变大
           jquery(".index-mb").css(
             "height",
             this.displayHeight - keyboardHeight + "px"
           ); //减小显示框高度
+
           this.toBottom();
         }, 300);
       }
@@ -273,8 +274,8 @@ export default {
       return false;
     },
     toBottom() {
-      this.$refs["myScrollbar"].wrap.scrollTop =
-        this.$refs["myScrollbar"].wrap.scrollHeight;
+      this.$refs.myScrollbar.scrollTop =
+        this.$refs.myScrollbar.scrollHeight;
     },
     getNewPage($state) {
       this.axios
@@ -545,7 +546,9 @@ export default {
 }
 .index-scrw {
   height: 100%;
-  margin: 0 20px 0 20px;
+  margin: 0 10px 0 20px;
+  padding-right: 10px;
+  overflow: auto;
 }
 .index-time {
   font-size: 14px;
@@ -610,13 +613,5 @@ export default {
   background: #f3f3f3;
   border: 0px;
   height: 100px;
-}
-.index-refreshing {
-  font-size: 60px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin-top: -30px;
-  margin-left: -30px;
 }
 </style>
