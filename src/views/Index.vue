@@ -427,7 +427,6 @@ export default {
       this.$nextTick(() => this.toBottom());
       let form = new FormData();
       form.append("file", file);
-      form.append("size", file.size);
       form.append("time", time);
       this.axios({
         method: "post",
