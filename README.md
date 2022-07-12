@@ -5,17 +5,19 @@
 <br/>
 
 ## 目录
-- <a href="#h1">项目部分界面展示</a>
-- <a href="#h2">项目功能</a>
-- <a href="#h3">项目意义</a>
-- <a href="#h4">项目所需环境</a>
-  - <a href="#sh41">transfery-vue 依赖</a>
-- <a href="#h5">注意</a>
-- <a href="#h6">项目运行</a>
+- [项目部分界面展示](#interface)
+- [项目功能](#functionality)
+- [项目意义](#significance)
+- [项目所需环境](#environment)
+  - [依赖](#dependencies)
+- [注意](#note)
+- [项目运行](#running)
 
 <br/>
 
-## 项目部分界面展示<span id="h1"></span>
+<span id="interface"></span>
+
+## 项目部分界面展示
 
 浏览器样式
 
@@ -35,7 +37,9 @@ ios webapp（增加到主屏幕）
 
 <br/>
 
-## 项目功能<span id="h2"></span>
+<span id="functionality"></span>
+
+## 项目功能
 
 - 发送文字消息
 - 传输文件，支持多文件
@@ -46,7 +50,9 @@ ios webapp（增加到主屏幕）
 
 <br/>
 
-## 项目意义<span id="h3"></span>
+<span id="significance"></span>
+
+## 项目意义
 
 假设一个场景：
 
@@ -84,7 +90,9 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 <br/>
 
-## 项目所需环境<span id="h4"></span>
+<span id="environment"></span>
+
+## 项目所需环境
 
 运行Transfery，你需要
 - <a href="https://github.com/minio/minio.git">Minio</a>，作为对象存储服务
@@ -94,7 +102,9 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 <br/>
 
-### transfery-vue 依赖<span id="sh41"></span>
+<span id="dependencies"></span>
+
+### 依赖
 
 - vue-cli 2.9.6
 - vue-router 3.0.1
@@ -110,7 +120,9 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 <br/>
 
-## 注意<span id="h5"></span>
+<span id="note"></span>
+
+## 注意
 
 - 由于没有设置密码，因此请不要将Transfery的服务网址分享到网络上，以免被恶意上传。
 - 本项目仅为前端，如需自定义后端服务，请前往<a href="https://github.com/hlf20010508/transfery.git">transfery</a>。
@@ -119,7 +131,9 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 
 <br/>
 
-## 项目运行<span id="h6"></span>
+<span id="running"></span>
+
+## 项目运行
 
 ``` bash
 # 安装依赖
