@@ -1,21 +1,3 @@
-/*
-transfery-vue
-(C) 2022 L-ING <hlf01@icloud.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 <template>
   <div class="index">
     <el-row class="index-row1">
@@ -33,31 +15,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
           </div>
           <div class="index-text" v-if="item.type == 'text'">
             <span>
-              <i
-                class="el-icon-error index-remove-item"
-                v-show="removing"
-                @click="removeItem(item, index)"
-              ></i>
+              <i class="el-icon-error index-remove-item" v-show="removing" @click="removeItem(item, index)"></i>
               {{ item.content }}
             </span>
           </div>
           <div class="index-file" v-if="item.type == 'file'">
             <div>
-              <el-progress
-                v-if="isUploading(item)"
-                :text-inside="true"
-                :stroke-width="24"
-                :percentage="getUploadingPercentage(item)"
-                :format="getProgressContent"
-                status="success"
-              />
+              <el-progress v-if="isUploading(item)" :text-inside="true" :stroke-width="24"
+                :percentage="getUploadingPercentage(item)" :format="getProgressContent" status="success" />
             </div>
             <div>
-              <i
-                class="el-icon-error index-remove-item"
-                v-show="removing"
-                @click="removeItem(item, index)"
-              ></i>
+              <i class="el-icon-error index-remove-item" v-show="removing" @click="removeItem(item, index)"></i>
               <span class="index-file-span" @click="download(item)">
                 <i class="el-icon-document"></i>
                 {{ item.content }}
@@ -72,18 +40,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     </el-row>
     <el-row class="index-row4">
       <el-col :span="3">
-        <el-upload
-          action="/post/upload"
-          multiple
-          :http-request="uploadFile"
-          :show-file-list="false"
-        >
+        <el-upload action="/post/upload" multiple :http-request="uploadFile" :show-file-list="false">
           <div class="index-upload-div">
-            <i
-              slot="trigger"
-              class="el-icon-folder index-upload"
-              @click="selectFile"
-            ></i>
+            <i slot="trigger" class="el-icon-folder index-upload" @click="selectFile"></i>
           </div>
         </el-upload>
       </el-col>
@@ -101,25 +60,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     <el-row class="index-row5 index-input">
       <div v-if="removing" class="index-remove-all-div">
         <div>
-          <i
-            class="el-icon-circle-close index-remove-all"
-            @click="removeAll"
-          ></i>
-          <i
-            class="el-icon-circle-check index-remove-complete"
-            @click="unremove"
-          ></i>
+          <i class="el-icon-circle-close index-remove-all" @click="removeAll"></i>
+          <i class="el-icon-circle-check index-remove-complete" @click="unremove"></i>
         </div>
       </div>
-      <el-input
-        v-if="!removing"
-        type="textarea"
-        v-model="input"
-        placeholder="请输入消息内容"
-        @focus="focus"
-        @blur="blur"
-        @keyup.enter.native="submit"
-      ></el-input>
+      <el-input v-if="!removing" type="textarea" v-model="input" placeholder="请输入消息内容" @focus="focus" @blur="blur"
+        @keyup.enter.native="submit"></el-input>
     </el-row>
   </div>
 </template>
@@ -437,43 +383,78 @@ export default {
         type: "file",
         showTime: showTime,
         time: time,
-        uploading: false,
+        uploading: true,
         uploadingPercentage: 0,
       };
       console.log("upload item: ", newItem);
       let newItemIndex = this.list.push(newItem) - 1;
       this.$nextTick(() => this.toBottom());
-      let form = new FormData();
-      form.append("file", file);
-      form.append("time", time);
-      this.axios({
-        method: "post",
-        url: "/post/upload",
-        data: form,
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          this.list[newItemIndex].uploading = true;
-          this.list[newItemIndex].uploadingPercentage =
-            ((progressEvent.loaded / progressEvent.total) * 100) | 0;
-        },
-      }).then((res) => {
+
+      let partNumber = 0;
+      const bytesPerPiece = 5 * 1024 * 1024;
+
+      this.axios.post('/post/getUploadId', { 'content': file.name, 'time': time }).then(async (res) => {
         if (res.data.success) {
-          delete this.list[newItemIndex].uploading;
-          delete this.list[newItemIndex].uploadingPercentage;
-          this.list[newItemIndex].fileName = res.data.fileName;
-          this.$socket.emit(
-            "pushItem",
-            this.list[newItemIndex],
-            (id, success) => {
-              if (success) {
-                this.list[newItemIndex].id = id;
-                console.log("uploaded");
-                this.$nextTick(() => this.toBottom());
-              }
+          let stop = false
+          let parts = []
+          let uploadId = res.data.uploadId
+          let fileName = res.data.fileName
+          console.log('get uploadId:', uploadId)
+          console.log('get fileName:', fileName)
+          this.list[newItemIndex].fileName = fileName;
+          while (!stop) {
+            let startBytes = partNumber * bytesPerPiece
+            let endBytes = startBytes + bytesPerPiece
+            if (endBytes > file.size) {
+              endBytes = file.size;
+              stop = true
             }
-          );
+            partNumber += 1
+            let filePart = file.slice(startBytes, endBytes);
+            let form = new FormData()
+            form.append('filePart', filePart)
+            form.append('content', fileName)
+            form.append('uploadId', uploadId)
+            form.append('partNumber', partNumber)
+            await this.axios({
+              method: 'post',
+              url: '/post/uploadPart',
+              data: form,
+              headers: { "Content-Type": "multipart/form-data" }
+            }).then((res) => {
+              if (res.data.success) {
+                this.list[newItemIndex].uploadingPercentage =
+                  ((endBytes / file.size) * 100) | 0;
+                parts.push({
+                  partNumber: partNumber,
+                  etag: res.data.etag
+                })
+              }
+            })
+          }
+          await this.axios.post('/post/completeUpload', {
+            content: fileName,
+            uploadId: uploadId,
+            parts: parts
+          }).then((res) => {
+            if (res.data.success) {
+              delete this.list[newItemIndex].uploading;
+              delete this.list[newItemIndex].uploadingPercentage;
+              this.$socket.emit(
+                "pushItem",
+                this.list[newItemIndex],
+                (id, success) => {
+                  if (success) {
+                    this.list[newItemIndex].id = id;
+                    console.log("uploaded");
+                    this.$nextTick(() => this.toBottom());
+                  }
+                }
+              );
+            }
+          })
         }
-      });
+      })
     },
     isUploading(item) {
       try {
@@ -555,23 +536,28 @@ export default {
   margin: 0 auto 0 auto;
   background: #f3f3f3;
 }
+
 .index-now {
   margin: 10px 0 10px 0;
 }
+
 .index-mb {
   height: 70%;
 }
+
 .index-scrw {
   height: 100%;
   margin: 0 10px 0 20px;
   padding-right: 10px;
   overflow: auto;
 }
+
 .index-time {
   font-size: 14px;
   color: #aaaaaa;
   text-align: left;
 }
+
 .index-text {
   word-wrap: break-word;
   word-break: normal;
@@ -579,6 +565,7 @@ export default {
   margin: 10px 0 10px 0;
   text-align: left;
 }
+
 .index-file {
   word-wrap: break-word;
   word-break: normal;
@@ -586,14 +573,17 @@ export default {
   margin: 10px 0 10px 0;
   text-align: left;
 }
+
 .index-remove-item:hover,
 .index-remove-all:hover {
   cursor: pointer;
   color: #f56c6c;
 }
+
 .index-divider {
   margin: 0 0 10px 0;
 }
+
 .index-upload-div,
 .index-remove-div,
 .index-refresh-div {
@@ -601,16 +591,19 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .index-upload,
 .index-remove,
 .index-refresh {
   font-size: 34px;
 }
+
 .index-remove-all,
 .index-remove-complete {
   font-size: 34px;
   margin: 20px;
 }
+
 .index-file-span:hover,
 .index-upload:hover,
 .index-remove:hover,
@@ -619,12 +612,14 @@ export default {
   cursor: pointer;
   color: #409eff;
 }
+
 .index-remove-all-div {
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .index-input textarea {
   resize: none;
   background: #f3f3f3;
