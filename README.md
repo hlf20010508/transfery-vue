@@ -9,7 +9,6 @@
 - [项目功能](#functionality)
 - [项目意义](#significance)
 - [项目所需环境](#environment)
-  - [依赖](#dependencies)
 - [注意](#note)
 - [项目运行](#running)
 
@@ -105,18 +104,8 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 <span id="dependencies"></span>
 
 ### 依赖
-
-- vue-cli 2.9.6
-- vue-router 3.0.1
-- element-ui 2.15.9
-- axios 0.27.2
-- vue-axios 3.4.1
-- socket.io-client 4.5.1
-- vue-socket.io 3.0.10
-- jquery 3.6.0
-- vue-infinite-loading 2.4.5
-
-更多依赖请参考package.json
+- [package.json](https://github.com/hlf20010508/transfery-vue/blob/master/package.json)
+- [package-lock.json](https://github.com/hlf20010508/transfery-vue/blob/master/package-lock.json)
 
 <br/>
 
