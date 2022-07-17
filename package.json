@@ -15,7 +15,7 @@
     "element-ui": "^2.15.9",
     "jquery": "^3.6.0",
     "keyboard-height": "^1.0.5",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "socket.io-client": "^4.5.1",
     "vue": "^2.7.7",
     "vue-axios": "^3.4.1",
