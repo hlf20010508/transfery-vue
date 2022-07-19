@@ -15,17 +15,21 @@
           </div>
           <div class="index-text" v-if="item.type == 'text'">
             <span>
-              <i class="el-icon-error index-remove-item" v-show="removing" @click="removeItem(item, index)"></i>
+              <i
+                class="el-icon-error index-remove-item"
+                v-show="removing"
+                @click="removeItem(item, index)"
+              ></i>
               {{ item.content }}
             </span>
           </div>
           <div class="index-file" v-if="item.type == 'file'">
             <div>
-              <el-progress v-if="isUploading(item)" :text-inside="true" :stroke-width="24"
-                :percentage="getUploadingPercentage(item)" :format="getProgressContent" status="success" />
-            </div>
-            <div>
-              <i class="el-icon-error index-remove-item" v-show="removing" @click="removeItem(item, index)"></i>
+              <i
+                class="el-icon-error index-remove-item"
+                v-show="removing"
+                @click="removeItem(item, index)"
+              ></i>
               <span class="index-file-span" @click="download(item)">
                 <i class="el-icon-document"></i>
                 {{ item.content }}
@@ -40,9 +44,18 @@
     </el-row>
     <el-row class="index-row4">
       <el-col :span="3">
-        <el-upload action="/post/upload" multiple :http-request="uploadFile" :show-file-list="false">
+        <el-upload
+          action="/post/upload"
+          multiple
+          :http-request="uploadFile"
+          :show-file-list="false"
+        >
           <div class="index-upload-div">
-            <i slot="trigger" class="el-icon-folder index-upload" @click="selectFile"></i>
+            <i
+              slot="trigger"
+              class="el-icon-folder index-upload"
+              @click="selectFile"
+            ></i>
           </div>
         </el-upload>
       </el-col>
@@ -56,16 +69,48 @@
           <i class="el-icon-refresh index-refresh"></i>
         </div>
       </el-col>
+      <el-col :span="3" v-if="uploadsList.length > 0" :offset="12">
+        <el-popover placement="top-end" width="400" trigger="click">
+          <div v-for="(item, index) in uploadsList" :key="index">
+            <div>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="24"
+                :percentage="item.uploadingPercentage"
+                :format="getProgressContent"
+                status="success"
+              />
+            </div>
+            <div>
+              {{ item.content }}
+            </div>
+          </div>
+          <i class="el-icon-upload2 index-uploads-status" slot="reference"></i>
+        </el-popover>
+      </el-col>
     </el-row>
     <el-row class="index-row5 index-input">
       <div v-if="removing" class="index-remove-all-div">
         <div>
-          <i class="el-icon-circle-close index-remove-all" @click="removeAll"></i>
-          <i class="el-icon-circle-check index-remove-complete" @click="unremove"></i>
+          <i
+            class="el-icon-circle-close index-remove-all"
+            @click="removeAll"
+          ></i>
+          <i
+            class="el-icon-circle-check index-remove-complete"
+            @click="unremove"
+          ></i>
         </div>
       </div>
-      <el-input v-if="!removing" type="textarea" v-model="input" placeholder="请输入消息内容" @focus="focus" @blur="blur"
-        @keyup.enter.native="submit"></el-input>
+      <el-input
+        v-if="!removing"
+        type="textarea"
+        v-model="input"
+        placeholder="请输入消息内容"
+        @focus="focus"
+        @blur="blur"
+        @keyup.enter.native="submit"
+      ></el-input>
     </el-row>
   </div>
 </template>
@@ -81,6 +126,7 @@ export default {
     return {
       page: 0,
       list: [],
+      uploadsList: [],
       input: null,
       removing: false,
       now: this.time(Date.parse(Date())),
@@ -238,8 +284,7 @@ export default {
       return false;
     },
     toBottom() {
-      this.$refs.myScrollbar.scrollTop =
-        this.$refs.myScrollbar.scrollHeight;
+      this.$refs.myScrollbar.scrollTop = this.$refs.myScrollbar.scrollHeight;
     },
     getNewPage($state) {
       this.axios
@@ -356,7 +401,7 @@ export default {
           let data = res.data;
           if (data.success) {
             var eleLink = document.createElement("a");
-            eleLink.download = item.content;
+            // eleLink.download = item.content;
             eleLink.target = "_blank";
             eleLink.style.display = "none";
             eleLink.href = data.url;
@@ -371,111 +416,117 @@ export default {
       this.unremove();
     },
     uploadFile(res) {
-      let size = this.list.length;
       let time = Date.parse(Date());
-      let showTime = true;
-      if (size > 0) {
-        showTime = this.shouldShowTime(time, this.list[size - 1].time);
-      }
       let file = res.file;
       let newItem = {
         content: file.name,
         type: "file",
-        showTime: showTime,
-        time: time,
-        uploading: true,
         uploadingPercentage: 0,
       };
       console.log("upload item: ", newItem);
-      let newItemIndex = this.list.push(newItem) - 1;
-      this.$nextTick(() => this.toBottom());
+      let newItemIndex = this.uploadsList.push(newItem) - 1;
 
       let partNumber = 0;
       const bytesPerPiece = 5 * 1024 * 1024;
 
-      this.axios.post('/post/getUploadId', { 'content': file.name, 'time': time }).then(async (res) => {
-        if (res.data.success) {
-          let stop = false
-          let parts = []
-          let uploadId = res.data.uploadId
-          let fileName = res.data.fileName
-          console.log('get uploadId:', uploadId)
-          console.log('get fileName:', fileName)
-          this.list[newItemIndex].fileName = fileName;
-          while (!stop) {
-            let startBytes = partNumber * bytesPerPiece
-            let endBytes = startBytes + bytesPerPiece
-            if (endBytes > file.size) {
-              endBytes = file.size;
-              stop = true
-            }
-            partNumber += 1
-            let filePart = file.slice(startBytes, endBytes);
-            let form = new FormData()
-            form.append('filePart', filePart)
-            form.append('content', fileName)
-            form.append('uploadId', uploadId)
-            form.append('partNumber', partNumber)
-            await this.axios({
-              method: 'post',
-              url: '/post/uploadPart',
-              data: form,
-              headers: { "Content-Type": "multipart/form-data" }
-            }).then((res) => {
-              if (res.data.success) {
-                this.list[newItemIndex].uploadingPercentage =
-                  ((endBytes / file.size) * 100) | 0;
-                parts.push({
-                  partNumber: partNumber,
-                  etag: res.data.etag
-                })
+      this.axios
+        .post("/post/getUploadId", { content: file.name, time: time })
+        .then(async (res) => {
+          if (res.data.success) {
+            let stop = false;
+            let parts = [];
+            let uploadId = res.data.uploadId;
+            let fileName = res.data.fileName;
+            console.log("get uploadId:", uploadId);
+            console.log("get fileName:", fileName);
+            this.uploadsList[newItemIndex].fileName = fileName;
+            while (!stop) {
+              let startBytes = partNumber * bytesPerPiece;
+              let endBytes = startBytes + bytesPerPiece;
+              if (endBytes > file.size) {
+                endBytes = file.size;
+                stop = true;
               }
-            })
-          }
-          await this.axios.post('/post/completeUpload', {
-            content: fileName,
-            uploadId: uploadId,
-            parts: parts
-          }).then((res) => {
-            if (res.data.success) {
-              delete this.list[newItemIndex].uploading;
-              delete this.list[newItemIndex].uploadingPercentage;
-              this.$socket.emit(
-                "pushItem",
-                this.list[newItemIndex],
-                (id, success) => {
-                  if (success) {
-                    this.list[newItemIndex].id = id;
-                    console.log("uploaded");
-                    this.$nextTick(() => this.toBottom());
-                  }
+              partNumber += 1;
+              let filePart = file.slice(startBytes, endBytes);
+              let form = new FormData();
+              form.append("filePart", filePart);
+              form.append("content", fileName);
+              form.append("uploadId", uploadId);
+              form.append("partNumber", partNumber);
+              await this.axios({
+                method: "post",
+                url: "/post/uploadPart",
+                data: form,
+                headers: { "Content-Type": "multipart/form-data" },
+              }).then((res) => {
+                if (res.data.success) {
+                  this.uploadsList[newItemIndex].uploadingPercentage =
+                    ((endBytes / file.size) * 100) | 0;
+                  parts.push({
+                    partNumber: partNumber,
+                    etag: res.data.etag,
+                  });
                 }
-              );
+              });
             }
-          })
-        }
-      })
-    },
-    isUploading(item) {
-      try {
-        return item.uploading;
-      } catch (err) {
-        return false;
-      }
-    },
-    getUploadingPercentage(item) {
-      try {
-        // console.log(item.uploadingPercentage);
-        return item.uploadingPercentage;
-      } catch (err) {
-        console.log(err);
-        return 100;
-      }
+            await this.axios
+              .post("/post/completeUpload", {
+                content: fileName,
+                uploadId: uploadId,
+                parts: parts,
+              })
+              .then((res) => {
+                if (res.data.success) {
+                  this.uploadsList[newItemIndex].uploadingPercentage = -1;
+
+                  let size = this.list.length;
+                  time = Date.parse(Date());
+                  let showTime = true;
+                  if (size > 0) {
+                    showTime = this.shouldShowTime(
+                      time,
+                      this.list[size - 1].time
+                    );
+                  }
+                  this.uploadsList[newItemIndex].showTime = showTime;
+                  this.uploadsList[newItemIndex].time = time;
+
+                  newItem = {
+                    content: this.uploadsList[newItemIndex].content,
+                    fileName: this.uploadsList[newItemIndex].fileName,
+                    type: this.uploadsList[newItemIndex].type,
+                    showTime: this.uploadsList[newItemIndex].showTime,
+                    time: this.uploadsList[newItemIndex].time,
+                  };
+
+                  newItemIndex = this.list.push(newItem) - 1;
+                  this.$socket.emit(
+                    "pushItem",
+                    this.list[newItemIndex],
+                    (id, success) => {
+                      if (success) {
+                        this.list[newItemIndex].id = id;
+                        console.log("uploaded");
+                        this.$nextTick(() => this.toBottom());
+                      }
+                    }
+                  );
+                }
+              });
+          }
+        });
     },
     getProgressContent(percentage) {
-      return percentage === 100
-        ? "已上传到服务器，正在处理中"
-        : percentage + "%";
+      if (percentage >= 0) {
+        if (percentage < 100) {
+          return percentage + "%";
+        } else {
+          return "已上传到服务器，正在处理中";
+        }
+      } else {
+        return "已上传";
+      }
     },
     remove() {
       //开关删除模式
@@ -531,7 +582,7 @@ export default {
 
 <style>
 .index {
-  width: 100%;
+  max-width: 600px;
   height: 100%;
   margin: 0 auto 0 auto;
   background: #f3f3f3;
@@ -594,7 +645,8 @@ export default {
 
 .index-upload,
 .index-remove,
-.index-refresh {
+.index-refresh,
+.index-uploads-status {
   font-size: 34px;
 }
 
@@ -608,7 +660,8 @@ export default {
 .index-upload:hover,
 .index-remove:hover,
 .index-remove-complete:hover,
-.index-refresh:hover {
+.index-refresh:hover,
+.index-uploads-status:hover {
   cursor: pointer;
   color: #409eff;
 }
