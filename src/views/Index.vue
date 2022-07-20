@@ -69,20 +69,57 @@
           <i class="el-icon-refresh index-refresh"></i>
         </div>
       </el-col>
-      <el-col :span="3" v-if="uploadsList.length > 0" :offset="12">
-        <el-popover placement="top-end" width="400" trigger="click">
-          <div v-for="(item, index) in uploadsList" :key="index">
+      <el-col :span="3" :offset="12">
+        <el-popover
+          popper-class="index-uploads-pop"
+          placement="top-end"
+          width="250"
+          trigger="click"
+          v-model="showUploadsArea"
+        >
+          <div>
             <div>
-              <el-progress
-                :text-inside="true"
-                :stroke-width="24"
-                :percentage="item.uploadingPercentage"
-                :format="getProgressContent"
-                status="success"
-              />
+              <el-row>
+                <el-col :span="18">
+                  <p class="index-uploads-area-name">上传项</p>
+                </el-col>
+                <el-col :span="6">
+                  <el-button
+                    class="index-remove-uploaded-items"
+                    @click="removeAllUploaded"
+                  >
+                    清除
+                  </el-button>
+                </el-col>
+              </el-row>
             </div>
-            <div>
-              {{ item.content }}
+            <div class="index-uploads-area-items">
+              <div v-for="(item, index) in uploadsList" :key="index">
+                <div>
+                  {{ item.content }}
+                </div>
+                <div>
+                  <i
+                    class="el-icon-error index-remove-uploads-item"
+                    @click="removeUploadsItem(index)"
+                  ></i>
+                  <el-progress
+                    class="index-uploads-progress"
+                    v-if="item.uploadingPercentage != -1"
+                    :percentage="item.uploadingPercentage"
+                  />
+                  <el-progress
+                    class="index-uploads-progress"
+                    v-else
+                    :percentage="100"
+                    status="success"
+                  />
+                </div>
+                <el-divider
+                  class="index-uploads-divider"
+                  v-if="index != uploadsList.length - 1"
+                ></el-divider>
+              </div>
             </div>
           </div>
           <i class="el-icon-upload2 index-uploads-status" slot="reference"></i>
@@ -126,7 +163,25 @@ export default {
     return {
       page: 0,
       list: [],
-      uploadsList: [],
+      uploadsList: [
+        // {
+        //   content: "test1",
+        //   uploadingPercentage: 0,
+        // },
+        // {
+        //   content: "test2",
+        //   uploadingPercentage: -1,
+        // },
+        // {
+        //   content: "test3",
+        //   uploadingPercentage: 30,
+        // },
+        // {
+        //   content: "test4",
+        //   uploadingPercentage: 80,
+        // },
+      ],
+      showUploadsArea: false,
       input: null,
       removing: false,
       now: this.time(Date.parse(Date())),
@@ -424,7 +479,8 @@ export default {
         uploadingPercentage: 0,
       };
       console.log("upload item: ", newItem);
-      let newItemIndex = this.uploadsList.push(newItem) - 1;
+      this.uploadsList.unshift(newItem);
+      this.showUploadsArea = true;
 
       let partNumber = 0;
       const bytesPerPiece = 5 * 1024 * 1024;
@@ -439,7 +495,7 @@ export default {
             let fileName = res.data.fileName;
             console.log("get uploadId:", uploadId);
             console.log("get fileName:", fileName);
-            this.uploadsList[newItemIndex].fileName = fileName;
+            newItem.fileName = fileName;
             while (!stop) {
               let startBytes = partNumber * bytesPerPiece;
               let endBytes = startBytes + bytesPerPiece;
@@ -461,7 +517,7 @@ export default {
                 headers: { "Content-Type": "multipart/form-data" },
               }).then((res) => {
                 if (res.data.success) {
-                  this.uploadsList[newItemIndex].uploadingPercentage =
+                  newItem.uploadingPercentage =
                     ((endBytes / file.size) * 100) | 0;
                   parts.push({
                     partNumber: partNumber,
@@ -478,7 +534,7 @@ export default {
               })
               .then((res) => {
                 if (res.data.success) {
-                  this.uploadsList[newItemIndex].uploadingPercentage = -1;
+                  newItem.uploadingPercentage = -1;
 
                   let size = this.list.length;
                   time = Date.parse(Date());
@@ -489,44 +545,29 @@ export default {
                       this.list[size - 1].time
                     );
                   }
-                  this.uploadsList[newItemIndex].showTime = showTime;
-                  this.uploadsList[newItemIndex].time = time;
+                  newItem.showTime = showTime;
+                  newItem.time = time;
 
                   newItem = {
-                    content: this.uploadsList[newItemIndex].content,
-                    fileName: this.uploadsList[newItemIndex].fileName,
-                    type: this.uploadsList[newItemIndex].type,
-                    showTime: this.uploadsList[newItemIndex].showTime,
-                    time: this.uploadsList[newItemIndex].time,
+                    content: newItem.content,
+                    fileName: newItem.fileName,
+                    type: newItem.type,
+                    showTime: newItem.showTime,
+                    time: newItem.time,
                   };
 
-                  newItemIndex = this.list.push(newItem) - 1;
-                  this.$socket.emit(
-                    "pushItem",
-                    this.list[newItemIndex],
-                    (id, success) => {
-                      if (success) {
-                        this.list[newItemIndex].id = id;
-                        console.log("uploaded");
-                        this.$nextTick(() => this.toBottom());
-                      }
+                  this.list.push(newItem);
+                  this.$socket.emit("pushItem", newItem, (id, success) => {
+                    if (success) {
+                      newItem.id = id;
+                      console.log("uploaded");
+                      this.$nextTick(() => this.toBottom());
                     }
-                  );
+                  });
                 }
               });
           }
         });
-    },
-    getProgressContent(percentage) {
-      if (percentage >= 0) {
-        if (percentage < 100) {
-          return percentage + "%";
-        } else {
-          return "已上传到服务器，正在处理中";
-        }
-      } else {
-        return "已上传";
-      }
     },
     remove() {
       //开关删除模式
@@ -575,6 +616,19 @@ export default {
           }
         });
       }
+    },
+    removeAllUploaded() {
+      let i = 0;
+      while (i < this.uploadsList.length) {
+        if (this.uploadsList[i].uploadingPercentage === -1) {
+          this.uploadsList.splice(i, 1);
+        } else {
+          i += 1;
+        }
+      }
+    },
+    removeUploadsItem(index) {
+      this.uploadsList.splice(index, 1);
     },
   },
 };
@@ -626,7 +680,8 @@ export default {
 }
 
 .index-remove-item:hover,
-.index-remove-all:hover {
+.index-remove-all:hover,
+.index-remove-uploads-item:hover {
   cursor: pointer;
   color: #f56c6c;
 }
@@ -678,5 +733,33 @@ export default {
   background: #f3f3f3;
   border: 0px;
   height: 100px;
+}
+
+.index-uploads-progress {
+  display: inline;
+}
+
+.index-uploads-area-name {
+  text-align: center;
+  line-height: 24px;
+  margin: 0;
+}
+
+.index-uploads-area-items {
+  padding-right: 14px;
+  overflow-x: hidden;
+  height: 200px;
+}
+
+.index-uploads-divider {
+  margin: 10px 0 8px 0;
+}
+
+.index-remove-uploaded-items {
+  padding: 4px 10px 4px 10px;
+}
+
+.index-uploads-pop {
+  padding-right: 0;
 }
 </style>
