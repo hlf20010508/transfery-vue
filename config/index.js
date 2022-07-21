@@ -11,7 +11,7 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      //代理，用于跨域
+      // 代理，用于跨域
       // '/api': {  //代理地址
       //   target: 'http://127.0.0.1:8080',  //需要代理的地址， 实际生产环境需要访问的地址
       //   changeOrigin: true,  //是否跨域
