@@ -73,8 +73,6 @@ Transfery的意义，就是传送小型的临时文件，共享剪贴板，而�
 ## 注意
 - 由于没有设置密码，因此请不要将Transfery的服务网址分享到网络上，以免被恶意上传。
 - 本项目仅为前端，如需自定义后端服务，请前往<a href="https://github.com/hlf20010508/transfery.git">transfery</a>。
-- 由于mockjs暂时无法拦截socket请求，所以在开发环境下无法即时通信，使用后端发送数据的时候可以。
-- 由于暂未实现大文件分片传输，请尽量将Minio服务器放在与Transfery相同的服务器上，否则由于需要中转导致等待时间较长。
 
 <span id="running"></span>
 
