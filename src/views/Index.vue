@@ -216,7 +216,7 @@ export default {
     getNewItem(item) {
       console.log("got new item");
       let size = this.list.length;
-      if (item.id > this.list[size-1].id) {
+      if (size == 0 || item.id > this.list[size-1].id) {
         this.list.push(item);
       } else {
         let i = 0;
