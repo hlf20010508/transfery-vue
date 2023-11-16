@@ -14,30 +14,25 @@
             {{ time(item.time) }}
           </div>
           <div class="index-text" v-if="item.type == 'text'">
-            <span>
-              <i
-                class="el-icon-error index-remove-item"
-                v-show="removing"
-                @click="removeItem(item, index)"
-              ></i>
-              <div class="index-text-div" @click="copy(item.content)">
-                <p class="index-text-p" v-for="(contentItem, contentIndex) in item.content.split('\n')" :key="'contentList' + contentIndex">
-                  {{ contentItem }}
-                </p>
-              </div>
-            </span>
+            <i
+              class="el-icon-error index-remove-item"
+              v-show="removing"
+              @click="removeItem(item, index)"
+            ></i>
+            <div class="index-text-div" @click="copy(item.content)">
+              <p class="index-text-p" v-for="(contentItem, contentIndex) in item.content.trim().split('\n')" :key="'contentList' + contentIndex">
+                {{ contentItem }}
+              </p>
+            </div>
           </div>
           <div class="index-file" v-if="item.type == 'file'">
-            <div>
-              <i
-                class="el-icon-error index-remove-item"
-                v-show="removing"
-                @click="removeItem(item, index)"
-              ></i>
-              <span class="index-file-span" @click="download(item)">
-                <i class="el-icon-document"></i>
-                {{ item.content }}
-              </span>
+            <i
+              class="el-icon-error index-remove-item"
+              v-show="removing"
+              @click="removeItem(item, index)"
+            ></i>
+            <div class="index-file-div" @click="download(item)">
+              <i class="el-icon-document index-file-i">{{ item.content }}</i>
             </div>
           </div>
         </div>
@@ -75,6 +70,7 @@
       </el-col>
       <el-col :span="3" :offset="12">
         <el-popover
+          v-show="uploadsList.length > 0"
           popper-class="index-uploads-pop"
           placement="top-end"
           width="250"
@@ -174,7 +170,7 @@
         placeholder="请输入消息内容"
         @focus="focus"
         @blur="blur"
-        @keyup.enter.native="submit"
+        @keydown.native="submitWrap"
       ></el-input>
     </el-row>
   </div>
@@ -446,6 +442,15 @@ export default {
           }
         });
       console.log("synced");
+    },
+    submitWrap(event) {
+      console.log(event.keyCode)
+      if(! event.shiftKey && event.keyCode == 13) {
+        event.cancelBubble = true; // ie阻止冒泡行为
+        event.stopPropagation(); // Firefox阻止冒泡行为
+        event.preventDefault(); // 取消事件的默认动作
+        this.submit();
+      }
     },
     submit() {
       if (this.input != "\n") {
@@ -799,24 +804,32 @@ export default {
   word-wrap: break-word;
   word-break: normal;
   font-size: 16px;
-  margin: 10px 0 10px 0;
   text-align: left;
+  display: flex;
 }
 
 .index-text-div:hover {
   cursor: pointer;
 }
 
+.index-text-div {
+  display: inline-block;
+}
+
 .index-text-p {
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .index-file {
   word-wrap: break-word;
   word-break: normal;
   font-size: 16px;
-  margin: 10px 0 10px 0;
   text-align: left;
+  display: flex;
+}
+
+.index-file-i {
+  margin: 12px 0;
 }
 
 .index-remove-item:hover,
@@ -824,6 +837,11 @@ export default {
 .index-uploads-switch-icon:hover {
   cursor: pointer;
   color: #f56c6c;
+}
+
+.index-remove-item {
+  vertical-align: top;
+  margin-top: 12px;
 }
 
 .index-divider {
@@ -851,7 +869,7 @@ export default {
   margin: 20px;
 }
 
-.index-file-span:hover,
+.index-file-div:hover,
 .index-upload:hover,
 .index-remove:hover,
 .index-remove-complete:hover,
@@ -859,6 +877,10 @@ export default {
 .index-uploads-status:hover {
   cursor: pointer;
   color: #409eff;
+}
+
+.index-file-div {
+  word-break: break-all;
 }
 
 .index-remove-all-div {
