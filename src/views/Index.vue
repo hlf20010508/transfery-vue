@@ -20,7 +20,11 @@
                 v-show="removing"
                 @click="removeItem(item, index)"
               ></i>
-              {{ item.content }}
+              <div class="index-text-div" @click="copy(item.content)">
+                <p class="index-text-p" v-for="(contentItem, contentIndex) in item.content.split('\n')" :key="'contentList' + contentIndex">
+                  {{ contentItem }}
+                </p>
+              </div>
             </span>
           </div>
           <div class="index-file" v-if="item.type == 'file'">
@@ -361,6 +365,9 @@ export default {
         return true;
       }
       return false;
+    },
+    copy(content) {
+      navigator.clipboard.writeText(content.trim());
     },
     toBottom() {
       this.$refs.myScrollbar.scrollTop = this.$refs.myScrollbar.scrollHeight;
@@ -794,6 +801,14 @@ export default {
   font-size: 16px;
   margin: 10px 0 10px 0;
   text-align: left;
+}
+
+.index-text-div:hover {
+  cursor: pointer;
+}
+
+.index-text-p {
+  margin: 10px 0;
 }
 
 .index-file {
