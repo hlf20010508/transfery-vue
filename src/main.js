@@ -14,7 +14,7 @@ Vue.use(VueAxios, axios);
 Vue.use(InfiniteLoading);
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO(location.protocol+'//'+document.domain+':'+location.port+'/')
+  connection: SocketIO(location.protocol + '//' + document.domain + ':' + location.port + '/')
   // connection: SocketIO('http://127.0.0.1:8080/')
 }))
 

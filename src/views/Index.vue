@@ -3,176 +3,36 @@
     <el-row class="index-row1">
       <div class="index-now">{{ now }}</div>
     </el-row>
-    <el-row class="index-mb index-row2">
-      <div class="index-scrw" ref="myScrollbar">
-        <infinite-loading direction="top" @infinite="getNewPage" :distance="0">
-          <template slot="no-results">没有更多了</template>
-          <template slot="no-more">没有更多了</template>
-        </infinite-loading>
-        <div v-for="(item, index) in list" :key="index">
-          <div class="index-time" v-if="item.showTime">
-            {{ time(item.time) }}
-          </div>
-          <div class="index-text" v-if="item.type == 'text'">
-            <i
-              class="el-icon-error index-remove-item"
-              v-show="removing"
-              @click="removeItem(item, index)"
-            ></i>
-            <div class="index-text-div" @click="copy(item.content)">
-              <p class="index-text-p" v-for="(contentItem, contentIndex) in item.content.trim().split('\n')" :key="'contentList' + contentIndex">
-                {{ contentItem }}
-              </p>
-            </div>
-          </div>
-          <div class="index-file" v-if="item.type == 'file'">
-            <i
-              class="el-icon-error index-remove-item"
-              v-show="removing"
-              @click="removeItem(item, index)"
-            ></i>
-            <div class="index-file-div" @click="download(item)">
-              <i class="el-icon-document index-file-i">{{ item.content }}</i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </el-row>
+    <MessageArea
+      ref="MessageArea"
+      :list="list"
+      :removing="removing"
+      @getNewPage="getNewPage"
+      @removeItem="removeItem"
+      @download="download"
+    />
     <el-row class="index-row3">
       <el-divider class="index-divider"></el-divider>
     </el-row>
-    <el-row class="index-row4">
-      <el-col :span="3">
-        <el-upload
-          action="/post/upload"
-          multiple
-          :http-request="uploadFile"
-          :show-file-list="false"
-        >
-          <div class="index-upload-div">
-            <i
-              slot="trigger"
-              class="el-icon-folder index-upload"
-              @click="selectFile"
-            ></i>
-          </div>
-        </el-upload>
-      </el-col>
-      <el-col :span="3">
-        <div class="index-remove-div" @click="remove">
-          <i class="el-icon-close index-remove"></i>
-        </div>
-      </el-col>
-      <el-col :span="3">
-        <div class="index-refresh-div" @click="refresh">
-          <i class="el-icon-refresh index-refresh"></i>
-        </div>
-      </el-col>
-      <el-col :span="3" :offset="12">
-        <el-popover
-          v-show="uploadsList.length > 0"
-          popper-class="index-uploads-pop"
-          placement="top-end"
-          width="250"
-          trigger="click"
-          v-model="showUploadsArea"
-        >
-          <div>
-            <div>
-              <el-row>
-                <el-col :span="18">
-                  <p class="index-uploads-area-name">上传项</p>
-                </el-col>
-                <el-col :span="6">
-                  <el-button
-                    class="index-remove-completed-items"
-                    @click="removeCompletedUploads"
-                  >
-                    清除
-                  </el-button>
-                </el-col>
-              </el-row>
-            </div>
-            <div class="index-uploads-area-items">
-              <div v-for="(item, index) in uploadsList" :key="index">
-                <i class="el-icon-document index-uploads-item-icon"></i>
-                <div class="index-uploads-item-div">
-                  <div class="index-uploads-item-content">
-                    {{ item.content }}
-                  </div>
-                  <div>
-                    <div
-                      class="index-uploads-progress-div"
-                      v-if="item.pause && item.uploadingPercentage != -1"
-                    >
-                      <el-progress
-                        class="index-uploads-progress"
-                        :percentage="item.uploadingPercentage"
-                        status="exception"
-                      />
-                    </div>
-                    <div
-                      class="index-uploads-progress-div"
-                      v-else-if="item.uploadingPercentage >= 0"
-                    >
-                      <el-progress
-                        class="index-uploads-progress"
-                        :percentage="item.uploadingPercentage"
-                      />
-                    </div>
-                    <div class="index-uploads-progress-div" v-else>
-                      <el-progress
-                        class="index-uploads-progress"
-                        :percentage="100"
-                        status="success"
-                      />
-                    </div>
-                    <i
-                      class="el-icon-video-play index-uploads-switch-icon"
-                      @click="resumeUploadsItem(index)"
-                      v-if="item.pause && item.uploadingPercentage != -1"
-                    ></i>
-                    <i
-                      class="el-icon-video-pause index-uploads-switch-icon"
-                      @click="pauseUploadsItem(index)"
-                      v-else-if="!item.pause && item.uploadingPercentage != -1"
-                    ></i>
-                  </div>
-                </div>
-                <el-divider
-                  class="index-uploads-divider"
-                  v-if="index != uploadsList.length - 1"
-                ></el-divider>
-              </div>
-            </div>
-          </div>
-          <i class="el-icon-upload2 index-uploads-status" slot="reference"></i>
-        </el-popover>
-      </el-col>
-    </el-row>
-    <el-row class="index-row5 index-input">
-      <div v-if="removing" class="index-remove-all-div">
-        <div>
-          <i
-            class="el-icon-circle-close index-remove-all"
-            @click="removeAll"
-          ></i>
-          <i
-            class="el-icon-circle-check index-remove-complete"
-            @click="unremove"
-          ></i>
-        </div>
-      </div>
-      <el-input
-        v-if="!removing"
-        type="textarea"
-        v-model="input"
-        placeholder="请输入消息内容"
-        @focus="focus"
-        @blur="blur"
-        @keydown.native="submitWrap"
-      ></el-input>
-    </el-row>
+    <ControlBar
+      ref="ControlBar"
+      :uploadsList="uploadsList"
+      @uploadFile="uploadFile"
+      @selectFile="selectFile"
+      @remove="remove"
+      @refresh="refresh"
+      @removeCompletedUploads="removeCompletedUploads"
+      @resumeUploadsItem="resumeUploadsItem"
+      @pauseUploadsItem="pauseUploadsItem"
+    />
+    <InputArea
+      :removing="removing"
+      @removeAll="removeAll"
+      @unremove="unremove"
+      @focus="focus"
+      @blur="blur"
+      @submit="submit"
+    />
   </div>
 </template>
 
@@ -181,16 +41,22 @@ import Moment from "moment";
 import jquery from "jquery";
 import device from "current-device";
 import keyboardObserver from "keyboard-height";
+import MessageArea from "@/components/MessageArea.vue";
+import ControlBar from "@/components/ControlBar.vue";
+import InputArea from "@/components/InputArea.vue";
 
 export default {
+  components: {
+    MessageArea,
+    ControlBar,
+    InputArea,
+  },
   data() {
     return {
       page: 0,
       list: [],
       // uploadsList中item.uploadingPercentage 0～100为上传进度，-1为上传完成，-2为取消上传
       uploadsList: [],
-      showUploadsArea: false,
-      input: null,
       removing: false,
       now: this.time(Date.parse(Date())),
       htmlHeight: null, //苹果
@@ -216,7 +82,7 @@ export default {
     getNewItem(item) {
       console.log("got new item");
       let size = this.list.length;
-      if (size == 0 || item.id > this.list[size-1].id) {
+      if (size == 0 || item.id > this.list[size - 1].id) {
         this.list.push(item);
       } else {
         let i = 0;
@@ -366,7 +232,9 @@ export default {
       navigator.clipboard.writeText(content.trim());
     },
     toBottom() {
-      this.$refs.myScrollbar.scrollTop = this.$refs.myScrollbar.scrollHeight;
+      let component = this.$refs.MessageArea;
+      component.$refs.myScrollbar.scrollTop =
+        component.$refs.myScrollbar.scrollHeight;
     },
     getNewPage($state) {
       this.axios
@@ -443,18 +311,9 @@ export default {
         });
       console.log("synced");
     },
-    submitWrap(event) {
-      console.log(event.keyCode)
-      if(! event.shiftKey && event.keyCode == 13) {
-        event.cancelBubble = true; // ie阻止冒泡行为
-        event.stopPropagation(); // Firefox阻止冒泡行为
-        event.preventDefault(); // 取消事件的默认动作
-        this.submit();
-      }
-    },
-    submit() {
-      if (this.input != "\n") {
-        console.log("submit: ", this.input);
+    submit(value) {
+      if (value != "\n") {
+        console.log("submit: ", value);
         let date = new Date();
         let time = Date.parse(date);
         let showTime = false;
@@ -466,12 +325,11 @@ export default {
         }
 
         let newItem = {
-          content: this.input,
+          content: value,
           type: "text",
           showTime: showTime,
           time: time,
         };
-        this.input = null;
         this.$socket.emit("pushItem", newItem, (id, success) => {
           if (success) {
             newItem.id = id;
@@ -480,8 +338,6 @@ export default {
             this.$nextTick(() => this.toBottom());
           }
         });
-      } else {
-        this.input = null;
       }
     },
     download(item) {
@@ -518,7 +374,7 @@ export default {
       };
       console.log("upload item: ", newItem);
       this.uploadsList.unshift(newItem);
-      this.showUploadsArea = true;
+      this.$refs.ControlBar.showUploadsArea = true;
 
       let partNumber = 0;
       const bytesPerPiece = 5 * 1024 * 1024;
@@ -682,7 +538,7 @@ export default {
         }
       }
       if (!this.uploadsList.length) {
-        this.showUploadsArea = false;
+        this.$ref.ControlBar.showUploadsArea = true;
       }
     },
     pauseUploadsItem(index) {
