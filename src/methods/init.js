@@ -1,7 +1,7 @@
 import jquery from "jquery";
 import device from "current-device";
-import {time} from "@/methods/utils.js"
-import {autoRefreshAfterResume} from "@/methods/refresh.js"
+import { time } from "@/methods/utils.js"
+import { autoRefreshAfterResume } from "@/methods/refresh.js"
 
 export function adjustCSS() {
     let height = 0;
