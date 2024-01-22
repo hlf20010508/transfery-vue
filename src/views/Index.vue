@@ -102,10 +102,10 @@ export default {
     };
   },
   mounted() {
-      adjustCSS();
-      setUpdateTime(this);
-      setHeight(this);
-      setAutoRefresh(this);
+    adjustCSS();
+    setUpdateTime(this);
+    setHeight(this);
+    setAutoRefresh(this);
   },
   sockets: {
     connect() {
