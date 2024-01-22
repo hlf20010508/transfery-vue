@@ -12,17 +12,21 @@ import VueSocketIO from 'vue-socket.io';
 Vue.use(ElementUI);
 Vue.use(VueAxios, axios);
 Vue.use(InfiniteLoading);
-Vue.use(new VueSocketIO({
-  debug: true,
-  connection: SocketIO(location.protocol + '//' + location.hostname + ':' + location.port + '/')
-  // connection: SocketIO('http://127.0.0.1:8080/')
-}))
-
-Vue.config.productionTip = false
 
 if (process.env.NODE_ENV == "development") {
+  Vue.use(new VueSocketIO({
+    debug: true,
+    connection: SocketIO(process.env.VUE_APP_PROXY_HOSTNAME)
+  }))
   axios.defaults.baseURL = '/api'
+} else {
+  Vue.use(new VueSocketIO({
+    debug: true,
+    connection: SocketIO(location.protocol + '//' + location.hostname + ':' + location.port + '/')
+  }))
 }
+
+Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({

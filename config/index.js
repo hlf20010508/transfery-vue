@@ -3,23 +3,23 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
+require('dotenv').config()
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       // 代理，用于跨域
-      // '/api': {  //代理地址
-      //   target: 'http://127.0.0.1:8080',  //需要代理的地址， 实际生产环境需要访问的地址
-      //   changeOrigin: true,  //是否跨域
-      //   secure: false,
-      //   pathRewrite: {
-      //     '^/api': ''   //本身的接口地址没有 '/api' 这种通用前缀，所以要rewrite，如果本身有则去掉
-      //   }
-      // }
+      '/api': {  //代理地址
+        target: process.env.VUE_APP_PROXY_HOSTNAME,  //需要代理的地址， 实际生产环境需要访问的地址
+        changeOrigin: true,  //是否跨域
+        secure: false,
+        pathRewrite: {
+          '^/api': ''   //本身的接口地址没有 '/api' 这种通用前缀，所以要rewrite，如果本身有则去掉
+        }
+      }
     },
 
     // Various Dev Server settings
