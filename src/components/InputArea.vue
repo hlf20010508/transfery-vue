@@ -1,10 +1,10 @@
 <template>
-  <el-row class="index-row5 index-input">
-    <div v-if="removing" class="index-remove-all-div">
+  <el-row class="input-area-input">
+    <div v-if="removing" class="input-area-remove-all-div">
       <div>
-        <i class="el-icon-circle-close index-remove-all" @click="removeAll"></i>
+        <i class="el-icon-circle-close input-area-remove-all" @click="removeAll"></i>
         <i
-          class="el-icon-circle-check index-remove-complete"
+          class="el-icon-circle-check input-area-remove-complete"
           @click="unremove"
         ></i>
       </div>
@@ -54,3 +54,35 @@ export default {
   },
 };
 </script>
+
+<style>
+.input-area-input textarea {
+  resize: none;
+  background: #f3f3f3;
+  border: 0px;
+  height: 100px;
+}
+
+.input-area-remove-all-div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-area-remove-all:hover {
+  cursor: pointer;
+  color: #f56c6c;
+}
+
+.input-area-remove-all,
+.input-area-remove-complete {
+  font-size: 34px;
+  margin: 20px;
+}
+
+.input-area-remove-complete:hover {
+  cursor: pointer;
+  color: #409eff;
+}
+</style>

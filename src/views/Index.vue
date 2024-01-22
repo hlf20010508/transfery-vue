@@ -11,7 +11,7 @@
       @removeItem="removeItem"
       @download="download"
     />
-    <el-row class="index-row3">
+    <el-row class="index-row2">
       <el-divider class="index-divider"></el-divider>
     </el-row>
     <ControlBar
@@ -69,7 +69,7 @@ export default {
     this.updateTime();
     this.adjustCSS();
     this.htmlHeight = jquery("html").outerHeight();
-    this.displayHeight = jquery(".index-mb").outerHeight();
+    this.displayHeight = jquery(".message-area").outerHeight();
     window.addEventListener("visibilitychange", this.autoRefreshAfterResume);
   },
   sockets: {
@@ -117,12 +117,12 @@ export default {
     adjustCSS() {
       let height = 0;
       height += jquery(".index-row1").outerHeight();
+      height += jquery(".message-area").outerHeight();
       height += jquery(".index-row2").outerHeight();
-      height += jquery(".index-row3").outerHeight();
-      height += jquery(".index-row4").outerHeight();
+      height += jquery(".control-bar").outerHeight();
       let heightHTML = jquery("body").outerHeight();
-      jquery(".index-input").css("height", heightHTML - height + "px");
-      jquery(".index-input textarea").css(
+      jquery(".input-area-input").css("height", heightHTML - height + "px");
+      jquery(".input-area-input textarea").css(
         "height",
         heightHTML - height - 10 + "px"
       );
@@ -159,10 +159,10 @@ export default {
       //安卓
       let newWindowHeight = document.documentElement.clientHeight;
       if (this.windowHeight == newWindowHeight) {
-        jquery(".index-mb").css("height", this.displayHeight + "px");
+        jquery(".message-area").css("height", this.displayHeight + "px");
       } else {
         let keyboardHeight = keyboardObserver.getKeyboardHeight();
-        jquery(".index-mb").css(
+        jquery(".message-area").css(
           "height",
           this.displayHeight - keyboardHeight + "px"
         );
@@ -180,7 +180,7 @@ export default {
           }
           document.documentElement.scrollTop = 0; //滚动到页面最上方
           jquery("html").css("height", this.htmlHeight - keyboardHeight + "px"); //减小页面高度, 若不减小，输入框高度会变大
-          jquery(".index-mb").css(
+          jquery(".message-area").css(
             "height",
             this.displayHeight - keyboardHeight + "px"
           ); //减小显示框高度
@@ -193,7 +193,7 @@ export default {
         //若页面高度恢复初始高度，说明键盘收起，则恢复显示框高度；若页面高度小于初始高度，说明键盘又被调起，则减小显示框高度
         setTimeout(() => {
           let keyboardHeight = keyboardObserver.getKeyboardHeight();
-          jquery(".index-mb").css(
+          jquery(".message-area").css(
             "height",
             this.displayHeight - keyboardHeight + "px"
           );
@@ -206,11 +206,11 @@ export default {
     blur() {
       if (device.iphone() || device.ipod()) {
         jquery("html").css("height", this.htmlHeight + "px");
-        jquery(".index-mb").css("height", this.displayHeight + "px");
+        jquery(".message-area").css("height", this.displayHeight + "px");
       }
       if (device.androidPhone()) {
         window.removeEventListener("resize", this.listenResize);
-        jquery(".index-mb").css("height", this.displayHeight + "px");
+        jquery(".message-area").css("height", this.displayHeight + "px");
       }
     },
     time(timeParse) {
@@ -639,181 +639,7 @@ export default {
   margin: 10px 0 10px 0;
 }
 
-.index-mb {
-  height: 70%;
-}
-
-.index-scrw {
-  height: 100%;
-  margin: 0 10px 0 20px;
-  padding-right: 10px;
-  overflow: auto;
-}
-
-.index-time {
-  font-size: 14px;
-  color: #aaaaaa;
-  text-align: left;
-}
-
-.index-text {
-  word-wrap: break-word;
-  word-break: normal;
-  font-size: 16px;
-  text-align: left;
-  display: flex;
-}
-
-.index-text-div:hover {
-  cursor: pointer;
-}
-
-.index-text-div {
-  display: inline-block;
-}
-
-.index-text-p {
-  margin: 8px 0;
-}
-
-.index-file {
-  word-wrap: break-word;
-  word-break: normal;
-  font-size: 16px;
-  text-align: left;
-  display: flex;
-}
-
-.index-file-i {
-  margin: 12px 0;
-}
-
-.index-remove-item:hover,
-.index-remove-all:hover,
-.index-uploads-switch-icon:hover {
-  cursor: pointer;
-  color: #f56c6c;
-}
-
-.index-remove-item {
-  vertical-align: top;
-  margin-top: 12px;
-}
-
 .index-divider {
   margin: 0 0 10px 0;
-}
-
-.index-upload-div,
-.index-remove-div,
-.index-refresh-div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.index-upload,
-.index-remove,
-.index-refresh,
-.index-uploads-status {
-  font-size: 34px;
-}
-
-.index-remove-all,
-.index-remove-complete {
-  font-size: 34px;
-  margin: 20px;
-}
-
-.index-file-div:hover,
-.index-upload:hover,
-.index-remove:hover,
-.index-remove-complete:hover,
-.index-refresh:hover,
-.index-uploads-status:hover {
-  cursor: pointer;
-  color: #409eff;
-}
-
-.index-file-div {
-  word-break: break-all;
-}
-
-.index-remove-all-div {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.index-input textarea {
-  resize: none;
-  background: #f3f3f3;
-  border: 0px;
-  height: 100px;
-}
-
-.index-uploads-area-name {
-  text-align: end;
-  line-height: 24px;
-  margin: 0 46px 0 0;
-  font-weight: bolder;
-}
-
-.index-uploads-area-items {
-  padding-right: 14px;
-  overflow-x: hidden;
-  height: 200px;
-}
-
-.index-uploads-divider {
-  margin: 10px 0 8px 0;
-}
-
-.index-remove-completed-items {
-  padding: 4px 10px 4px 10px;
-}
-
-.index-uploads-pop {
-  padding-right: 0;
-}
-
-.index-uploads-item-content {
-  margin: 0;
-  width: 190px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.index-uploads-item-div {
-  width: 200px;
-  display: inline-block;
-}
-
-.index-uploads-item-icon {
-  font-size: 30px;
-}
-
-.index-uploads-progress-div {
-  width: 180px;
-  display: inline-block;
-}
-
-.index-uploads-progress {
-  vertical-align: bottom;
-}
-
-.index-uploads-progress .el-progress-bar {
-  padding-right: 40px;
-}
-
-.index-uploads-progress .el-progress__text {
-  margin-left: 24px;
-}
-
-.index-uploads-switch-icon {
-  vertical-align: bottom;
-  padding-bottom: 1px;
 }
 </style>
