@@ -11,7 +11,7 @@
           <i
             slot="trigger"
             class="el-icon-folder control-bar-upload"
-            @click="selectFile"
+            @click="closeRemoveMode"
           ></i>
         </div>
       </el-upload>
@@ -104,13 +104,18 @@
             </div>
           </div>
         </div>
-        <i class="el-icon-upload2 control-bar-uploads-status" slot="reference"></i>
+        <i
+          class="el-icon-upload2 control-bar-uploads-status"
+          slot="reference"
+        ></i>
       </el-popover>
     </el-col>
   </el-row>
 </template>
 
 <script>
+import { refresh as refreshInner } from "@/methods/refresh.js";
+
 export default {
   props: ["uploadsList"],
   data() {
@@ -122,14 +127,14 @@ export default {
     uploadFile(res) {
       this.$emit("uploadFile", res);
     },
-    selectFile() {
-      this.$emit("selectFile");
+    closeRemoveMode() {
+      this.$emit("closeRemoveMode");
     },
     remove() {
       this.$emit("remove");
     },
     refresh() {
-      this.$emit("refresh");
+      refreshInner(this);
     },
     removeCompletedUploads() {
       this.$emit("removeCompletedUploads");

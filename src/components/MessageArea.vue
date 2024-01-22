@@ -34,7 +34,9 @@
             @click="removeItem(item, index)"
           ></i>
           <div class="message-area-file-div" @click="download(item)">
-            <i class="el-icon-document message-area-file-i">{{ item.content }}</i>
+            <i class="el-icon-document message-area-file-i">{{
+              item.content
+            }}</i>
           </div>
         </div>
       </div>
@@ -44,6 +46,7 @@
 
 <script>
 import { time, copy } from "@/methods/utils.js";
+import { download as downloadInner } from "@/methods/io.js";
 
 export default {
   props: ["list", "removing"],
@@ -57,7 +60,7 @@ export default {
       this.$emit("removeItem", item, index);
     },
     download(item) {
-      this.$emit("download", item);
+      downloadInner(item)
     },
   },
 };
