@@ -67,11 +67,15 @@ export function sync(context) {
                         newItems.push(i);
                     }
                 }
+                if (newItems.length > 0) {
                 console.log("final synced new items:", newItems);
                 context.list.push(...newItems);
 
                 context.$nextTick(() => context.toBottom());
                 console.log("unsynced items pushed");
+                } else {
+                    console.log("no unsynced item");
+                }
             } else {
                 console.log("no unsynced item");
             }
