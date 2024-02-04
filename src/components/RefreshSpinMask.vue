@@ -8,3 +8,17 @@ import { showRefreshSpin } from "@/stores/refresh.js"
         <slot></slot>
     </n-spin>
 </template>
+
+<style scoped>
+.n-spin-container {
+    height: 100%;
+    margin: 0;
+}
+
+:deep(.n-spin-content) {
+    height: 100%;
+    margin: 0;
+    /* 防止顶部无法占满 */
+    overflow: hidden;
+}
+</style>

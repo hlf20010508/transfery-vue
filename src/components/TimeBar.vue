@@ -8,19 +8,20 @@
 <script setup>
 import { ref } from "vue";
 import { NTime } from "naive-ui";
-import { timeFormat } from "@/stores/globalVar.js";
+import { getCurrentTimeStamp } from "@/utils"
 
-let currentTimeStamp = ref(new Date().getTime());
+
+let currentTimeStamp = ref(getCurrentTimeStamp());
 
 function updateTimeStamp() {
-    currentTimeStamp.value = new Date().getTime();
+    currentTimeStamp.value = getCurrentTimeStamp();
 }
 
 setInterval(updateTimeStamp, 1000);
 </script>
 
 <template>
-    <n-time :time="currentTimeStamp" :format="timeFormat" />
+    <n-time :time="currentTimeStamp" format="yyyy-MM-dd HH:mm:ss" />
 </template>
 
 <style scoped>
@@ -28,5 +29,6 @@ time {
     margin: 10px 0 10px 0;
     font-size: 16px;
     display: block;
+    text-align: center;
 }
 </style>

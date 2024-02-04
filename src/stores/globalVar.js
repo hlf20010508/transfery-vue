@@ -1,1 +1,0 @@
-export const timeFormat = 'yyyy-MM-dd HH:mm:ss';

@@ -1,0 +1,68 @@
+<script setup>
+import { ref } from "vue";
+import { NInput } from "naive-ui";
+import { messageList } from "@/stores/message.js";
+import { messageAreaScrollToBottom } from "@/hooks/message.js";
+import { getCurrentTimeStamp, shouldShowDate } from "@/utils"
+import { socket } from "@/socket"
+
+let textContent = ref("");
+
+function submitContent(content) {
+    if (content != "\n") {
+        content = content.trim();
+        console.log("submit: ", content);
+
+        let time = getCurrentTimeStamp();
+
+        let newItem = {
+            content: content,
+            type: "text",
+            time: time,
+        };
+        socket.emit("pushItem", newItem, (id, success) => {
+            if (success) {
+                newItem.id = id;
+                let size = messageList.value.length;
+                if (size > 0) {
+                    newItem.showDate = shouldShowDate(time, messageList.value[size - 1].time);
+                } else {
+                    newItem.showDate = true;
+                }
+                messageList.value.push(newItem);
+                console.log("pushed");
+                messageAreaScrollToBottom();
+            }
+        });
+    }
+}
+
+function submit(event) {
+    if (!event.shiftKey && event.keyCode == 13) {
+        event.cancelBubble = true; // ie阻止冒泡行为
+        event.stopPropagation(); // Firefox阻止冒泡行为
+        event.preventDefault(); // 取消事件的默认动作
+
+        submitContent(textContent.value);
+
+        textContent.value = "";
+    }
+}
+
+function handleInputAreaFocus() { }
+
+function handleInputAreaBlur() { }
+</script>
+
+<template>
+    <n-input v-model:value="textContent" type="textarea" :rows="5" placeholder="请输入消息内容"
+        style="--n-border: none;" @focus="handleInputAreaFocus" @blur="handleInputAreaBlur" @keydown="submit" />
+</template>
+
+<style scoped>
+:deep(.n-input-wrapper) {
+    resize: none !important;
+    background: #f3f3f3;
+    border: 0px;
+}
+</style>
