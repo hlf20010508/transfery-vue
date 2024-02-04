@@ -6,30 +6,25 @@
 -->
 
 <script setup>
+import { computed } from "vue";
 import { NTime, NIcon, NFlex } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { messageList, messageItemRemoving } from "@/stores/message.js";
+import { shouldShowDate } from "@/hooks/message.js";
 import { socket } from "@/socket"
 
-defineProps(["item", "index"]);
+let  props = defineProps(["item", "index"]);
+
+let showDate = computed(() => {
+    return shouldShowDate(props.index);
+});
 
 function messageRemoveItem(item, index) {
     //删除项目
     console.log("remove item:", item);
-    let showDate = false;
-    let deletedItem = item;
-    if (index != messageList.value.length - 1) {
-        if (messageList.value[index].showDate) {
-            //如果被删除的项目会显示时间，则将下一个项目改为会显示时间
-            showDate = true
-        }
-    }
 
-    socket.emit("remove", deletedItem, (success) => {
+    socket.emit("remove", item, (success) => {
         if (success) {
-            if (showDate) {
-                messageList.value[index + 1].showDate = true;
-            }
             messageList.value.splice(index, 1);
             console.log("removed");
         }
@@ -39,7 +34,7 @@ function messageRemoveItem(item, index) {
 
 <template>
     <div style="margin: 10px 0;">
-        <n-time v-if="item.showDate" :time="item.time" format="yyyy-MM-dd" />
+        <n-time v-if="showDate" :time="item.time" format="yyyy-MM-dd" />
         <n-flex :wrap="false" align="center">
             <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem(item, index)">
                 <CircleCloseFilled />

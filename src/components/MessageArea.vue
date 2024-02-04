@@ -11,7 +11,6 @@ import "v3-infinite-loading/lib/style.css";
 import axios from "axios";
 import MessageText from "./messageItem/MessageText.vue"
 import { messageList } from "@/stores/message.js"
-import { shouldShowDate } from "@/utils"
 
 function getNewPage($state) {
     axios.get(
@@ -23,16 +22,8 @@ function getNewPage($state) {
         }
     ).then((res) => {
         let data = res.data;
-        let size = data.messages.length;
-        if (size > 0) {
+        if (data.messages.length > 0) {
             let messages = data.messages.reverse();
-            messages[0].showDate = true;
-            for (let i = 1; i < size; i++) {
-                messages[i].showDate = shouldShowDate(messages[i].time, messages[i - 1].time);
-            }
-            if (messageList.value.length > 0) {
-                messageList.value[0].showDate = shouldShowDate(messageList.value[0].time, messages[size - 1].time);
-            }
             messageList.value.unshift(...messages);
             $state.loaded();
         } else {

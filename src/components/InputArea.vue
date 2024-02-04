@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { NInput } from "naive-ui";
 import { messageList } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
-import { getCurrentTimeStamp, shouldShowDate } from "@/utils"
+import { getCurrentTimeStamp } from "@/utils"
 import { socket } from "@/socket"
 
 let textContent = ref("");
@@ -23,12 +23,6 @@ function submitContent(content) {
         socket.emit("pushItem", newItem, (id, success) => {
             if (success) {
                 newItem.id = id;
-                let size = messageList.value.length;
-                if (size > 0) {
-                    newItem.showDate = shouldShowDate(time, messageList.value[size - 1].time);
-                } else {
-                    newItem.showDate = true;
-                }
                 messageList.value.push(newItem);
                 console.log("pushed");
                 messageAreaScrollToBottom();
