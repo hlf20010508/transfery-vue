@@ -7,16 +7,19 @@
 
 <script setup>
 import { NDivider } from "naive-ui";
+import RefreshSpinMask from "@/components/RefreshSpinMask.vue";
 import TimeBar from "@/components/TimeBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 </script>
 
 <template>
-    <TimeBar />
-    <MessageArea />
-    <n-divider style="--n-color: #dcdfe6"/>
-    <ControlBar />
+    <RefreshSpinMask>
+        <TimeBar />
+        <MessageArea />
+        <n-divider style="--n-color: #dcdfe6" />
+        <ControlBar />
+    </RefreshSpinMask>
 </template>
 
 <style scoped>

@@ -8,13 +8,10 @@
 <script setup>
 import { onMounted } from "vue";
 import InfiniteLoading from "v3-infinite-loading";
-import "v3-infinite-loading/lib/style.css";
 import axios from "axios";
-import MessageText from "@/components/messageItem/MessageText.vue"
-import useMessageStore from "@/stores/message.js"
+import MessageText from "./messageItem/MessageText.vue"
+import { messageList, messageItemRemoving } from "@/stores/message.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
-
-let { messageList, messageItemRemoving } = useMessageStore();
 
 function getNewPage($state) {
     axios

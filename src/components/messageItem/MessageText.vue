@@ -6,59 +6,36 @@
 -->
 
 <script setup>
-import { NTime, NIcon, NFlex } from 'naive-ui';
-import { CloseFilled } from '@vicons/carbon';
-import { timeFormat } from '@/stores/globalVar.js';
-import useMessageStore from "@/stores/message.js";
-import { socket } from "@/socket"
+import MessageItemBase from "./MessageItemBase.vue";
 
-defineProps(['item', 'messageItemRemoving', 'messageItemIndex']);
-
-let { messageList } = useMessageStore();
+defineProps(["item"]);
 
 function messageCopyText(content) {
     navigator.clipboard.writeText(content.trim());
 }
-
-function messageRemoveItem(item, index) {
-    //删除项目
-    console.log("remove item:", item);
-    let showTime = false;
-    let deletedItem = item;
-    deletedItem.change = {};
-    if (index != messageList.value.length - 1) {
-        if (messageList.value[index].showTime) {
-            //如果被删除的项目会显示时间，则将下一个项目改为会显示时间
-            showTime = true;
-            // BUG: 后端没有更改
-            deletedItem.change = {
-                id: messageList.value[index + 1].id,
-            };
-        }
-    }
-    console.log(deletedItem)
-    socket.emit("remove", deletedItem, (success) => {
-        if (success) {
-            if (showTime) {
-                messageList.value[index + 1].showTime = true;
-            }
-            messageList.value.splice(index, 1);
-            console.log("removed");
-        }
-    });
-}
 </script>
 
 <template>
-    <n-time v-if="item.showTime" :time="item.time" :format="timeFormat" />
-    <n-flex>
-        <n-icon size="16" v-show="messageItemRemoving" @click="messageRemoveItem(item, messageItemIndex)">
-            <close-filled />
-        </n-icon>
+    <MessageItemBase :item="item" v-bind="$attrs">
         <div @click="messageCopyText(item.content)">
             <p v-for="(contentItem, contentIndex) in item.content.trim().split('\n')" :key="'contentList' + contentIndex">
                 {{ contentItem }}
             </p>
         </div>
-    </n-flex>
+    </MessageItemBase>
 </template>
+
+<style scoped>
+p {
+    font-size: 16px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-height: 22px;
+    margin: 8px 0;
+    text-align: left;
+}
+
+p:hover {
+    cursor: pointer;
+}
+</style>
