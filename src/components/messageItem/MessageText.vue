@@ -58,6 +58,8 @@ p {
 
 .n-card {
     border-radius: 10px;
+    width: max-content;
+    min-width: 200px;
 }
 
 .n-icon:hover {
