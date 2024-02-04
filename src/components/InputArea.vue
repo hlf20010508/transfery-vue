@@ -9,8 +9,8 @@ import { socket } from "@/socket"
 let textContent = ref("");
 
 function submitContent(content) {
-    if (content != "\n") {
-        content = content.trim();
+    content = content.trim();
+    if (content != "") {
         console.log("submit: ", content);
 
         let time = getCurrentTimeStamp();
