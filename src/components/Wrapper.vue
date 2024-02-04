@@ -1,3 +1,10 @@
+<!--
+:project: transfery-vue
+:author: L-ING
+:copyright: (C) 2024 L-ING <hlf01@icloud.com>
+:license: MIT, see LICENSE for more details.
+-->
+
 <script setup>
 import { NSpin, NMessageProvider } from "naive-ui";
 import { showRefreshSpin } from "@/stores/refresh.js"
