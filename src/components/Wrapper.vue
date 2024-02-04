@@ -1,11 +1,13 @@
 <script setup>
-import { NSpin } from "naive-ui";
+import { NSpin, NMessageProvider } from "naive-ui";
 import { showRefreshSpin } from "@/stores/refresh.js"
 </script>
 
 <template>
     <n-spin :show="showRefreshSpin">
-        <slot></slot>
+        <n-message-provider>
+            <slot></slot>
+        </n-message-provider>
     </n-spin>
 </template>
 

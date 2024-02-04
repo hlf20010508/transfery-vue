@@ -41,7 +41,7 @@ function messageRemoveItem(item, index) {
     <div style="margin: 10px 0;">
         <n-time v-if="item.showDate" :time="item.time" format="yyyy-MM-dd" />
         <n-flex :wrap="false" align="center">
-            <n-icon size="17" v-show="messageItemRemoving" @click="messageRemoveItem(item, index)">
+            <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem(item, index)">
                 <CircleCloseFilled />
             </n-icon>
             <slot></slot>
@@ -59,6 +59,6 @@ time {
 
 .n-icon:hover {
     cursor: pointer;
-    color: #f56c6c;
+    color: var(--error-color-hover);
 }
 </style>

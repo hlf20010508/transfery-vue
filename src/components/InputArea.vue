@@ -62,7 +62,7 @@ function handleInputAreaBlur() { }
 <style scoped>
 :deep(.n-input-wrapper) {
     resize: none !important;
-    background: #f3f3f3;
+    background: var(--background-color);
     border: 0px;
 }
 </style>

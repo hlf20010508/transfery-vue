@@ -5,11 +5,33 @@
 :license: MIT, see LICENSE for more details.
 -->
 
+<script setup>
+import { NConfigProvider } from "naive-ui";
+
+/** @type import('naive-ui').GlobalThemeOverrides */
+const customTheme = {
+  common: {
+    primaryColor: '#409eff',
+    primaryColorHover: '#409eff',
+  },
+}
+</script>
+
 <template>
-    <router-view/>
+  <n-config-provider :theme-overrides="customTheme">
+    <router-view />
+  </n-config-provider>
 </template>
 
 <style>
+:root {
+  --primary-color: #409eff;
+  --primary-color-hover: #409eff;
+  --error-color: #f56c6c;
+  --error-color-hover: #f56c6c;
+  --background-color: #f3f3f3;
+}
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -18,7 +40,7 @@
   height: 100%;
   max-width: 600px;
   margin: 0 auto 0 auto;
-  background: #f3f3f3;
+  background: var(--background-color);
 }
 
 html,

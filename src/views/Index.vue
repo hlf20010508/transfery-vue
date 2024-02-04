@@ -7,20 +7,12 @@
 
 <script setup>
 import { onMounted } from "vue";
-import jquery from "jquery";
-import RefreshSpinMask from "@/components/RefreshSpinMask.vue";
+import Wrapper from "@/components/Wrapper.vue";
 import TimeBar from "@/components/TimeBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
-
-function updateMessageAreaHeight() {
-    let htmlHeight = jquery("html").outerHeight();
-    let timeBarHeight = jquery("#time-bar").outerHeight();
-    let controlBarHeight = jquery("#control-bar").outerHeight();
-    let inputAreaHeight = jquery("#input-area").outerHeight();
-    jquery("#message-area").outerHeight(htmlHeight - timeBarHeight - controlBarHeight - inputAreaHeight - 21);
-}
+import { updateMessageAreaHeight } from "@/hooks/message.js";
 
 onMounted(() => {
     updateMessageAreaHeight();
@@ -29,10 +21,10 @@ onMounted(() => {
 </script>
 
 <template>
-    <RefreshSpinMask>
+    <Wrapper>
         <TimeBar id="time-bar" />
         <MessageArea id="message-area" />
         <ControlBar id="control-bar" />
         <InputArea id="input-area" />
-    </RefreshSpinMask>
+    </Wrapper>
 </template>
