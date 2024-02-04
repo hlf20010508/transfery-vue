@@ -17,6 +17,11 @@ watch(messageItemRemoving, () => {
     }
 });
 
+const messageConfig = {
+    closable: true,
+    duration: 1500,
+}
+
 function removeAllItems() {
     if (confirm("确定要删除全部吗")) {
         socket.emit("removeAll", (success) => {
@@ -24,23 +29,11 @@ function removeAllItems() {
                 messageList.value = [];
                 messageItemRemoving.value = false;
                 console.log("removed all items");
-                message.success(
-                    "删除成功",
-                    {
-                        closable: true,
-                        duration: 1500,
-                    }
-                );
+                message.success("删除成功", messageConfig);
             }
         });
     } else {
-        message.info(
-            "已取消删除",
-            {
-                closable: true,
-                duration: 1500,
-            }
-        );
+        message.info("已取消删除", messageConfig);
     }
 }
 </script>
