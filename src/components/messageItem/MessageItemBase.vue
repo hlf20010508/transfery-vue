@@ -7,13 +7,13 @@
 
 <script setup>
 import { computed } from "vue";
-import { NTime, NIcon, NFlex } from "naive-ui";
+import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { messageList, messageItemRemoving } from "@/stores/message.js";
 import { shouldShowDate } from "@/hooks/message.js";
 import { socket } from "@/socket"
 
-let  props = defineProps(["item", "index"]);
+let props = defineProps(["item", "index"]);
 
 let showDate = computed(() => {
     return shouldShowDate(props.index);
@@ -39,7 +39,19 @@ function messageRemoveItem(item, index) {
             <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem(item, index)">
                 <CircleCloseFilled />
             </n-icon>
-            <slot></slot>
+            <n-card embedded :bordered="false" content-style="padding: 0 16px;"
+                footer-style="text-align: right; padding: 0 16px 8px 0;" :hoverable="true">
+                <n-flex :wrap="false" align="center">
+                    <slot name="left"></slot>
+                    <div>
+                        <slot name="container"></slot>
+                        <n-flex :wrap="false" align="center" justify="end">
+                            <slot name="footer"></slot>
+                            <n-time :time="item.time" format="HH:mm:ss" />
+                        </n-flex>
+                    </div>
+                </n-flex>
+            </n-card>
         </n-flex>
     </div>
 </template>
@@ -50,6 +62,12 @@ time {
     font-size: 14px;
     color: #aaa;
     text-align: center;
+}
+
+.n-card {
+    border-radius: 10px;
+    width: max-content;
+    min-width: 200px;
 }
 
 .n-icon:hover {

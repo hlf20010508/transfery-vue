@@ -8,6 +8,7 @@
 <script setup>
 import { NFlex } from "naive-ui";
 import { NDivider } from "naive-ui";
+import UploadFile from "./controlItem/UploadFile.vue";
 import DeleteItem from "./controlItem/DeleteItem.vue";
 import RefreshPage from "./controlItem/RefreshPage.vue";
 import DeleteAll from "./controlItem/DeleteAll.vue";
@@ -18,6 +19,7 @@ import DeleteAll from "./controlItem/DeleteAll.vue";
         <DeleteAll />
         <n-divider style="--n-color: #dcdfe6" />
         <n-flex>
+            <UploadFile />
             <DeleteItem />
             <RefreshPage />
         </n-flex>

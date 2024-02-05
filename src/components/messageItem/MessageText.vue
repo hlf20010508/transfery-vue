@@ -7,7 +7,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { NCard, NTime, NIcon, NFlex } from "naive-ui";
+import { NIcon } from "naive-ui";
 import { CopyDocument, Check } from "@element-plus/icons-vue";
 import MessageItemBase from "./MessageItemBase.vue";
 
@@ -29,21 +29,17 @@ function messageCopyText(content) {
 
 <template>
     <MessageItemBase :item="item" :index="index">
-        <n-card embedded :bordered="false" content-style="padding: 0 16px;"
-            footer-style="text-align: right; padding: 0 16px 8px 0;" :hoverable="true">
+        <template #container>
             <p v-for="(paragraph, paragraphIndex) in item.content.split('\n')" :key="'paragraph' + paragraphIndex">
                 {{ paragraph }}
             </p>
-            <template #footer>
-                <n-flex align="center" justify="end" :wrap="false">
-                    <n-icon @click="messageCopyText(item.content)">
-                        <CopyDocument v-if="!textCopied" />
-                        <Check v-if="textCopied" />
-                    </n-icon>
-                    <n-time :time="item.time" format="HH:mm:ss" />
-                </n-flex>
-            </template>
-        </n-card>
+        </template>
+        <template #footer>
+            <n-icon @click="messageCopyText(item.content)">
+                <CopyDocument v-if="!textCopied" />
+                <Check v-if="textCopied" />
+            </n-icon>
+        </template>
     </MessageItemBase>
 </template>
 
@@ -54,12 +50,6 @@ p {
     word-break: break-word;
     min-height: 22px;
     margin: 8px 0;
-}
-
-.n-card {
-    border-radius: 10px;
-    width: max-content;
-    min-width: 200px;
 }
 
 .n-icon:hover {
