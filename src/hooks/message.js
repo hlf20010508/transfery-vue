@@ -8,7 +8,6 @@
 import { nextTick } from "vue";
 import jquery from "jquery";
 import { isSameDate } from "@/utils";
-import { messageList } from "@/stores/message.js"
 
 export function messageAreaScrollToBottom() {
     let messageArea = jquery("#message-area");
@@ -33,10 +32,10 @@ export function updateMessageAreaHeight() {
     })
 }
 
-export function shouldShowDate(index) {
+export function shouldShowDate(messageList, index) {
     if (index > 0) {
-        let timestamp1 = messageList.value[index].time;
-        let timestamp2 = messageList.value[index - 1].time;
+        let timestamp1 = messageList[index].time;
+        let timestamp2 = messageList[index - 1].time;
         if (isSameDate(timestamp1, timestamp2)) {
             return false;
         } else {

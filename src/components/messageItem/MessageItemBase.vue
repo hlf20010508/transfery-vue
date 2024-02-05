@@ -9,23 +9,23 @@
 import { computed } from "vue";
 import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
-import { messageList, messageItemRemoving } from "@/stores/message.js";
+import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
 import { shouldShowDate } from "@/hooks/message.js";
 import { socket } from "@/socket"
 
-let props = defineProps(["item", "index"]);
+let props = defineProps(["messageList", "index"]);
 
-let showDate = computed(() => {
-    return shouldShowDate(props.index);
-});
+let item = props.messageList[props.index];
 
-function messageRemoveItem(item, index) {
+let showDate = computed(() => shouldShowDate(props.messageList, props.index));
+
+function messageRemoveItem() {
     //删除项目
     console.log("remove item:", item);
 
     socket.emit("remove", item, (success) => {
         if (success) {
-            messageList.value.splice(index, 1);
+            delete messageBuffer.value[item.id];
             console.log("removed");
         }
     });
@@ -36,7 +36,7 @@ function messageRemoveItem(item, index) {
     <div style="margin: 10px 0;">
         <n-time v-if="showDate" :time="item.time" format="yyyy-MM-dd" />
         <n-flex :wrap="false" align="center">
-            <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem(item, index)">
+            <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem()">
                 <CircleCloseFilled />
             </n-icon>
             <n-card embedded :bordered="false" content-style="padding: 0 16px;"

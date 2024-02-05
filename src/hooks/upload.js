@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 import axios from "axios";
-import { messageList } from "@/stores/message.js"
+import { messageBuffer } from "@/stores/message.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
 import { socket } from "@/socket";
 import { getCurrentTimeStamp } from "@/utils";
@@ -58,28 +58,13 @@ async function completeUpload(newItem, onFinish) {
         })
         .then((res) => {
             if (res.data.success) {
-                let item = {
-                    content: newItem.content,
-                    fileName: newItem.fileName,
-                    type: newItem.type,
-                    time: newItem.time,
-                };
-
-                socket.emit("pushItem", item, (id, success) => {
-                    if (success) {
-                        newItem.id = id;
-                        newItem.isComplete = true;
-                        onFinish();
-                        console.log("uploaded");
-                    }
-                });
+                newItem.isComplete = true;
+                onFinish();
             }
         });
 }
 
 export function uploadFile(params) {
-    console.log("enter uploadFile", getCurrentTimeStamp())
-
     // 传入参数提取出file，file.file为File对象
     let file = params.file.file;
 
@@ -94,8 +79,6 @@ export function uploadFile(params) {
         time: getCurrentTimeStamp(),
     });
     console.log("upload item: ", newItem);
-    messageList.value.push(newItem);
-    messageAreaScrollToBottom();
 
     let partNumber = 0;
     axios
@@ -107,6 +90,23 @@ export function uploadFile(params) {
                 newItem.fileName = data.fileName;
                 console.log("get uploadId:", newItem.uploadId);
                 console.log("get fileName:", newItem.fileName);
+
+                let item = {
+                    content: newItem.content,
+                    fileName: newItem.fileName,
+                    type: newItem.type,
+                    time: newItem.time,
+                };
+
+                socket.emit("pushItem", item, (id, success) => {
+                    if (success) {
+                        console.log("get id:", id);
+                        newItem.id = id;
+                    }
+                });
+
+                messageBuffer.value[newItem.id] = newItem;
+                messageAreaScrollToBottom();
 
                 await uploadPart(newItem, partNumber);
 

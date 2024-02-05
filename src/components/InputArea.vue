@@ -8,7 +8,7 @@
 <script setup>
 import { ref } from "vue";
 import { NInput } from "naive-ui";
-import { messageList } from "@/stores/message.js";
+import { messageBuffer } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
 import { getCurrentTimeStamp } from "@/utils"
 import { socket } from "@/socket"
@@ -30,7 +30,7 @@ function submitContent(content) {
         socket.emit("pushItem", newItem, (id, success) => {
             if (success) {
                 newItem.id = id;
-                messageList.value.push(newItem);
+                messageBuffer.value[id] = newItem;
                 console.log("pushed");
                 messageAreaScrollToBottom();
             }

@@ -14,3 +14,7 @@ export function isSameDate(timestamp1, timestamp2) {
     let date2 = new Date(timestamp2).toLocaleDateString();
     return date1 === date2;
 }
+
+export function obj_length(obj) {
+    return Object.keys(obj).length;
+}

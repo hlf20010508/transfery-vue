@@ -7,5 +7,5 @@
 
 import { ref } from "vue";
 
-export let messageList = ref([]);
+export let messageBuffer = ref({});
 export let messageItemRemoving = ref(false);

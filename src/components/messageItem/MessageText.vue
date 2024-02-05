@@ -11,7 +11,9 @@ import { NIcon } from "naive-ui";
 import { CopyDocument, Check } from "@element-plus/icons-vue";
 import MessageItemBase from "./MessageItemBase.vue";
 
-defineProps(["item", "index"]);
+const props = defineProps(["messageList", "index"]);
+
+let item = props.messageList[props.index];
 
 let textCopied = ref(false);
 let timer = -1; // 未定义计时器时的默认ID
@@ -28,7 +30,7 @@ function messageCopyText(content) {
 </script>
 
 <template>
-    <MessageItemBase :item="item" :index="index">
+    <MessageItemBase :messageList="messageList" :index="index">
         <template #container>
             <p v-for="(paragraph, paragraphIndex) in item.content.split('\n')" :key="'paragraph' + paragraphIndex">
                 {{ paragraph }}

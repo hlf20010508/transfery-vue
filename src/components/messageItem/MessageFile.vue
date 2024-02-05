@@ -10,12 +10,13 @@ import { NProgress } from "naive-ui";
 import { getIcon } from 'material-file-icons';
 import MessageItemBase from "./MessageItemBase.vue";
 
-const props = defineProps(["item", "index"])
+const props = defineProps(["messageList", "index"])
 
-const svg = getIcon(props.item.content).svg;
+const item = props.messageList[props.index];
+
+const svg = getIcon(item.content).svg;
 
 function isComplete() {
-    const item = props.item;
     if ("isComplete" in item && !item.isComplete) {
         return true;
     } else {
@@ -25,7 +26,7 @@ function isComplete() {
 </script>
 
 <template>
-    <MessageItemBase :item="item" :index="index">
+    <MessageItemBase :messageList="messageList" :index="index">
         <template #left>
             <div class="icon-container">
                 <div v-html="svg"></div>
