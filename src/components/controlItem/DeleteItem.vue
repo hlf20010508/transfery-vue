@@ -8,10 +8,13 @@
 <script setup>
 import { Close } from "@element-plus/icons-vue";
 import ControlItemBase from "./ControlItemBase.vue";
-import { messageItemRemoving } from "@/stores/message.js";
+import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
+import { obj_length } from "@/utils";
 
 function toggleItemRemoving() {
-    messageItemRemoving.value = !messageItemRemoving.value;
+    if (obj_length(messageBuffer.value) > 0) {
+        messageItemRemoving.value = !messageItemRemoving.value;
+    }
 }
 </script>
 

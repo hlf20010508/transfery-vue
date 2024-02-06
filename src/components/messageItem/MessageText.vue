@@ -18,7 +18,7 @@ let item = props.messageList[props.index];
 let textCopied = ref(false);
 let timer = -1; // 未定义计时器时的默认ID
 
-function messageCopyText(content) {
+function copyText(content) {
     navigator.clipboard.writeText(content.trim());
     textCopied.value = true;
     // 防止大量重复点击产生多个计时器
@@ -37,7 +37,7 @@ function messageCopyText(content) {
             </p>
         </template>
         <template #footer>
-            <n-icon @click="messageCopyText(item.content)">
+            <n-icon @click="copyText(item.content)">
                 <CopyDocument v-if="!textCopied" />
                 <Check v-if="textCopied" />
             </n-icon>

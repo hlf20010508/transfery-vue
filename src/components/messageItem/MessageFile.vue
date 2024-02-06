@@ -13,7 +13,7 @@ import { Play, Pause } from "@vicons/ionicons5";
 import jquery from "jquery";
 import MessageItemBase from "./MessageItemBase.vue";
 import { pauseUpload, resumeUpload } from "@/hooks/upload.js"
-import http from "@/http";
+import { download } from "@/hooks/download.js"
 
 const props = defineProps(["messageList", "index"])
 
@@ -43,25 +43,13 @@ watch(() => item.isComplete, (newValue) => {
         jquery("#progress-div-" + props.index).off("mouseleave");
     }
 });
-
-function download() {
-    console.log("download: ", item.fileName);
-    http
-        .get("/downloadUrl", { params: { fileName: item.fileName } })
-        .then(res => {
-            let data = res.data;
-            if (data.success) {
-                window.open(data.url, '_blank');
-            }
-        });
-}
 </script>
 
 <template>
     <MessageItemBase :messageList="messageList" :index="index">
         <template #left>
             <div class="icon-container">
-                <div v-html="svg" @click="download"></div>
+                <div v-html="svg" @click="download(item)"></div>
                 <div v-if="!item.isComplete" :id="'progress-div-' + index" class="progress-div">
                     <n-progress type="circle" :percentage="item.percentage">
                         <span v-show="!item.pause && !isIconHovered" class="percentage-span">{{ item.percentage }}%</span>

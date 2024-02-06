@@ -11,12 +11,12 @@ import { NDivider } from "naive-ui";
 import UploadFile from "./controlItem/UploadFile.vue";
 import DeleteItem from "./controlItem/DeleteItem.vue";
 import RefreshPage from "./controlItem/RefreshPage.vue";
-import DeleteAll from "./controlItem/DeleteAll.vue";
+import RemoveAll from "./controlItem/RemoveAll.vue";
 </script>
 
 <template>
     <div class="control-bar">
-        <DeleteAll />
+        <RemoveAll />
         <n-divider style="--n-color: #dcdfe6" />
         <n-flex>
             <UploadFile />

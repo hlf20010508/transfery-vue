@@ -9,8 +9,9 @@
 import { computed } from "vue";
 import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
-import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
-import { shouldShowDate } from "@/hooks/message.js";
+import { messageItemRemoving } from "@/stores/message.js";
+import { isSameDate } from "@/utils";
+import { messageBuffer } from "@/stores/message.js";
 import { socket } from "@/socket";
 import http from "@/http";
 
@@ -18,9 +19,25 @@ let props = defineProps(["messageList", "index"]);
 
 let item = props.messageList[props.index];
 
-let showDate = computed(() => shouldShowDate(props.messageList, props.index));
+function shouldShowDate() {
+    let messageList = props.messageList;
+    let index = props.index;
 
-function messageRemoveItem() {
+    if (index > 0) {
+        let timestamp1 = messageList[index].timestamp;
+        let timestamp2 = messageList[index - 1].timestamp;
+
+        if (isSameDate(timestamp1, timestamp2)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return true;
+    }
+}
+
+function removeItem() {
     console.log("remove item:", item);
 
     item.sid = socket.id;
@@ -33,20 +50,22 @@ function messageRemoveItem() {
         }
     });
 }
+
+let showDate = computed(shouldShowDate);
 </script>
 
 <template>
     <div style="margin: 10px 0;">
         <n-time v-if="showDate" :time="item.timestamp" format="yyyy-MM-dd" />
         <n-flex :wrap="false" align="center">
-            <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem()">
+            <n-icon size="17" v-if="messageItemRemoving" @click="removeItem">
                 <CircleCloseFilled />
             </n-icon>
             <n-card embedded :bordered="false" content-style="padding: 0 16px;"
                 footer-style="text-align: right; padding: 0 16px 8px 0;" :hoverable="true">
                 <n-flex :wrap="false" align="center">
                     <slot name="left"></slot>
-                    <div>
+                    <div class="content-div">
                         <slot name="container"></slot>
                         <n-flex :wrap="false" align="center" justify="end">
                             <slot name="footer"></slot>
@@ -76,5 +95,10 @@ time {
 .n-icon:hover {
     cursor: pointer;
     color: var(--error-color-hover);
+}
+
+.content-div {
+    /* 当内容宽度比200px小时，向右占满n-card */
+    flex: 1;
 }
 </style>
