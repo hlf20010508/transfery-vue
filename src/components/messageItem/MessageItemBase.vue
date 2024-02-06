@@ -11,7 +11,8 @@ import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
 import { shouldShowDate } from "@/hooks/message.js";
-import { socket } from "@/socket"
+import { socket } from "@/socket";
+import http from "@/http";
 
 let props = defineProps(["messageList", "index"]);
 
@@ -20,11 +21,13 @@ let item = props.messageList[props.index];
 let showDate = computed(() => shouldShowDate(props.messageList, props.index));
 
 function messageRemoveItem() {
-    //删除项目
     console.log("remove item:", item);
 
-    socket.emit("remove", item, (success) => {
-        if (success) {
+    item.sid = socket.id;
+
+    http.post("/removeItem", item).then(res => {
+        let data = res.data;
+        if (data.success) {
             delete messageBuffer.value[item.id];
             console.log("removed");
         }

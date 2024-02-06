@@ -97,12 +97,14 @@ export function uploadFile(params) {
                     fileName: item.fileName,
                     type: item.type,
                     time: item.time,
+                    sid: socket.id,
                 };
 
-                socket.emit("pushItem", itemInfo, async (id, success) => {
-                    if (success) {
-                        console.log("get id:", id);
-                        item.id = id;
+                http.post("/newItem", itemInfo).then(async res => {
+                    let data = res.data;
+                    if (data.success) {
+                        console.log("get id:", data.id);
+                        item.id = data.id;
 
                         console.log(item)
                         messageBuffer.value[item.id] = item;

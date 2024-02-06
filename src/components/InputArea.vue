@@ -11,7 +11,8 @@ import { NInput } from "naive-ui";
 import { messageBuffer } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
 import { getCurrentTimeStamp } from "@/utils"
-import { socket } from "@/socket"
+import http from "@/http";
+import { socket } from "@/socket";
 
 let textContent = ref("");
 
@@ -26,11 +27,14 @@ function submitContent(content) {
             content: content,
             type: "text",
             time: time,
+            sid: socket.id,
         };
-        socket.emit("pushItem", newItem, (id, success) => {
-            if (success) {
-                newItem.id = id;
-                messageBuffer.value[id] = newItem;
+
+        http.post("/newItem", newItem).then(res => {
+            let data = res.data;
+            if (data.success) {
+                newItem.id = data.id;
+                messageBuffer.value[newItem.id] = newItem;
                 console.log("pushed");
                 messageAreaScrollToBottom();
             }
