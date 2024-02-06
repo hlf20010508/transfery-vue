@@ -17,7 +17,7 @@ import { obj_length } from "@/utils";
 
 function getNewPage($state) {
     http.get(
-        "/get/page",
+        "/page",
         {
             params: {
                 size: obj_length(messageBuffer.value),

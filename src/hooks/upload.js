@@ -34,7 +34,7 @@ async function uploadParts(item, startPartNumber) {
 
         await http({
             method: "post",
-            url: "/post/uploadPart",
+            url: "/uploadPart",
             data: form,
             headers: { "Content-Type": "multipart/form-data" },
         }).then((res) => {
@@ -52,7 +52,7 @@ async function uploadParts(item, startPartNumber) {
 
 async function completeUpload(item) {
     await http
-        .post("/post/completeUpload", {
+        .post("/completeUpload", {
             content: item.fileName,
             uploadId: item.uploadId,
             parts: item.parts,
@@ -83,7 +83,7 @@ export function uploadFile(params) {
     console.log("upload item: ", item);
 
     http
-        .post("/post/getUploadId", { content: item.content, time: item.time })
+        .post("/fetchUploadId", { content: item.content, time: item.time })
         .then(async (res) => {
             let data = res.data;
             if (data.success) {

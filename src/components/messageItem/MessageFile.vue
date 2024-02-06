@@ -6,8 +6,12 @@
 -->
 
 <script setup>
-import { NProgress } from "naive-ui";
+import { ref, onMounted } from "vue";
+import { NProgress, NIcon } from "naive-ui";
 import { getIcon } from 'material-file-icons';
+import { VideoPause, VideoPlay } from "@element-plus/icons-vue";
+import { Play, Pause } from "@vicons/ionicons5";
+import jquery from "jquery";
 import MessageItemBase from "./MessageItemBase.vue";
 
 const props = defineProps(["messageList", "index"])
@@ -23,6 +27,23 @@ function isComplete() {
         return false;
     }
 }
+
+let isIconHovered = ref(false);
+
+onMounted(() => {
+    jquery("#progress-div-" + props.index).on("mouseenter", () => {
+        console.log("mouseenter", "pause:", item.pause)
+        if (!item.pause) {
+            isIconHovered.value = true;
+        }
+    });
+    jquery("#progress-div-" + props.index).on("mouseleave", () => {
+        console.log("mouseleave", "pause:", item.pause)
+        if (!item.pause) {
+            isIconHovered.value = false;
+        }
+    });
+})
 </script>
 
 <template>
@@ -30,12 +51,20 @@ function isComplete() {
         <template #left>
             <div class="icon-container">
                 <div v-html="svg"></div>
-                <n-progress v-if="isComplete()" type="circle" :percentage="item.percentage">
-                    <span class="percentage-span">{{ item.percentage }}%</span>
-                </n-progress>
-                <!-- <n-progress type="circle" :percentage="40">
-                    <span class="percentage-span">%</span>
-                </n-progress> -->
+                <div :id="'progress-div-' + index" class="progress-div">
+                    <!-- <n-progress v-if="isComplete()" type="circle" :percentage="item.percentage">
+                        <span class="percentage-span">{{ item.percentage }}%</span>
+                    </n-progress> -->
+                    <n-progress type="circle" :percentage="40">
+                        <span v-show="!item.pause && !isIconHovered" class="percentage-span">%</span>
+                        <n-icon v-show="!item.pause && isIconHovered" size="34" color="white">
+                            <Pause />
+                        </n-icon>
+                        <n-icon v-show="item.pause" size="34" color="white">
+                            <Play />
+                        </n-icon>
+                    </n-progress>
+                </div>
             </div>
         </template>
         <template #container>
@@ -49,6 +78,14 @@ function isComplete() {
     position: relative;
     width: 60px;
     height: 60px;
+}
+
+.progress-div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .n-progress {
@@ -65,4 +102,5 @@ function isComplete() {
     text-align: center;
     font-size: 1px;
     color: white;
-}</style>
+}
+</style>
