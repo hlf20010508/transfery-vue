@@ -1,10 +1,11 @@
 import { reactive } from "vue";
 import http from "@/http";
-import { messageBuffer } from "@/stores/message.js"
+import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
 import { socket } from "@/socket";
 import { getCurrentTimeStamp } from "@/utils";
 
+// must larger than 5 * 1024 * 1024
 const BYTES_PER_PIECE = 5 * 1024 * 1024;
 
 async function uploadParts(item, startPartNumber) {
@@ -14,6 +15,9 @@ async function uploadParts(item, startPartNumber) {
         if (item.pause) {
             return;
         }
+        // 此时禁止resume
+        item.resumeAllowed = false
+
         let startBytes = partNumber * BYTES_PER_PIECE;
         let endBytes = startBytes + BYTES_PER_PIECE;
 
@@ -28,7 +32,7 @@ async function uploadParts(item, startPartNumber) {
 
         let form = new FormData();
         form.append("filePart", filePart);
-        form.append("content", item.fileName);
+        form.append("fileName", item.fileName);
         form.append("uploadId", item.uploadId);
         form.append("partNumber", partNumber);
 
@@ -37,29 +41,36 @@ async function uploadParts(item, startPartNumber) {
             url: "/uploadPart",
             data: form,
             headers: { "Content-Type": "multipart/form-data" },
-        }).then((res) => {
+        }).then(res => {
             let data = res.data
             if (data.success) {
-                item.percentage = ((endBytes / fileSize) * 100) | 0;
+                item.percentage = parseInt(endBytes / fileSize * 100);
                 item.parts.push({
                     partNumber: partNumber,
                     etag: data.etag,
                 });
+                // 此后可以resume
+                item.resumeAllowed = true;
             }
         });
     }
+    await completeUpload(item);
 }
 
 async function completeUpload(item) {
+    // 此时禁止resume，否则虽然能够成功上传，但是后台可能会多收到分片
+    item.resumeAllowed = false
     await http
         .post("/completeUpload", {
-            content: item.fileName,
+            id: item.id,
+            fileName: item.fileName,
             uploadId: item.uploadId,
             parts: item.parts,
         })
-        .then((res) => {
+        .then(res => {
             if (res.data.success) {
                 item.isComplete = true;
+                console.log("upload complete:", item.fileName);
             }
         });
 }
@@ -67,51 +78,50 @@ async function completeUpload(item) {
 export function uploadFile(params) {
     // 立即终止上传按钮对上传项目的监控，防止重复上传
     params.onFinish();
+    // 关闭删除模式
+    messageItemRemoving.value = false;
     // 传入参数提取出file，file.file为File对象
     let file = params.file.file;
 
     let item = reactive({
         content: file.name,
+        timestamp: getCurrentTimeStamp(),
         type: "file",
-        percentage: 0,
         isComplete: false,
+        percentage: 0,
         pause: false,
+        resumeAllowed: false,
         parts: [],
         file: file,
-        time: getCurrentTimeStamp(),
     });
-    console.log("upload item: ", item);
 
     http
-        .post("/fetchUploadId", { content: item.content, time: item.time })
-        .then(async (res) => {
+        .post("/fetchUploadId", { content: item.content, timestamp: item.timestamp })
+        .then(async res => {
             let data = res.data;
             if (data.success) {
                 item.uploadId = data.uploadId;
                 item.fileName = data.fileName;
-                console.log("get uploadId:", item.uploadId);
-                console.log("get fileName:", item.fileName);
 
-                let itemInfo = {
+                http.post("/newItem", {
                     content: item.content,
-                    fileName: item.fileName,
+                    timestamp: item.timestamp,
                     type: item.type,
-                    time: item.time,
+                    fileName: item.fileName,
+                    isComplete: item.isComplete,
                     sid: socket.id,
-                };
-
-                http.post("/newItem", itemInfo).then(async res => {
+                }).then(async res => {
                     let data = res.data;
                     if (data.success) {
-                        console.log("get id:", data.id);
                         item.id = data.id;
 
-                        console.log(item)
                         messageBuffer.value[item.id] = item;
+
+                        console.log("upload item:", item)
+
                         messageAreaScrollToBottom();
 
                         await uploadParts(item, 0);
-                        await completeUpload(item);
                     }
                 });
             }
@@ -123,12 +133,14 @@ export function pauseUpload(id) {
 }
 
 export async function resumeUpload(id) {
-    let item = messageBuffer.value[id];
-    item.pause = false;
-    let partNumber = item.parts.length;
-    console.log("resume uploadId:", item.uploadId);
-    console.log("resume fileName:", item.fileName);
+    // 在上传分片的过程中禁止resume，否则若短时间内多次切换pause和resume会调用多个uploadParts
+    if (messageBuffer.value[id].resumeAllowed) {
+        let item = messageBuffer.value[id];
+        item.pause = false;
+        let partNumber = item.parts.length;
+        console.log("resume uploadId:", item.uploadId);
+        console.log("resume fileName:", item.fileName);
 
-    await uploadParts(item, partNumber);
-    await completeUpload(item);
+        await uploadParts(item, partNumber);
+    }
 }

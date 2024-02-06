@@ -37,7 +37,7 @@ function messageRemoveItem() {
 
 <template>
     <div style="margin: 10px 0;">
-        <n-time v-if="showDate" :time="item.time" format="yyyy-MM-dd" />
+        <n-time v-if="showDate" :time="item.timestamp" format="yyyy-MM-dd" />
         <n-flex :wrap="false" align="center">
             <n-icon size="17" v-if="messageItemRemoving" @click="messageRemoveItem()">
                 <CircleCloseFilled />
@@ -50,7 +50,7 @@ function messageRemoveItem() {
                         <slot name="container"></slot>
                         <n-flex :wrap="false" align="center" justify="end">
                             <slot name="footer"></slot>
-                            <n-time :time="item.time" format="HH:mm:ss" />
+                            <n-time :time="item.timestamp" format="HH:mm:ss" />
                         </n-flex>
                     </div>
                 </n-flex>

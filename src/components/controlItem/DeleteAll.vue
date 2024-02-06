@@ -13,6 +13,7 @@ import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
 import { updateMessageAreaHeight, messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { socket } from "@/socket";
 import http from "@/http";
+import { obj_length } from "@/utils";
 
 const message = useMessage();
 
@@ -22,6 +23,12 @@ watch(messageItemRemoving, () => {
     // 如果已在底部，则显示全部删除按钮的时候也要在底部
     if (flag) {
         messageAreaScrollToBottom();
+    }
+});
+
+watch(() => obj_length(messageBuffer.value), (newValue) => {
+    if (newValue == 0) {
+        messageItemRemoving.value = false;
     }
 });
 

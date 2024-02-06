@@ -8,7 +8,7 @@
 <script setup>
 import { ref } from "vue";
 import { NInput } from "naive-ui";
-import { messageBuffer } from "@/stores/message.js";
+import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
 import { getCurrentTimeStamp } from "@/utils"
 import http from "@/http";
@@ -21,12 +21,12 @@ function submitContent(content) {
     if (content != "") {
         console.log("submit: ", content);
 
-        let time = getCurrentTimeStamp();
+        let timestamp = getCurrentTimeStamp();
 
         let newItem = {
             content: content,
             type: "text",
-            time: time,
+            timestamp: timestamp,
             sid: socket.id,
         };
 
@@ -54,7 +54,9 @@ function submit(event) {
     }
 }
 
-function handleInputAreaFocus() { }
+function handleInputAreaFocus() {
+    messageItemRemoving.value = false;
+}
 
 function handleInputAreaBlur() { }
 </script>

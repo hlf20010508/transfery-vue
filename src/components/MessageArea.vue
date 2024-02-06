@@ -23,12 +23,16 @@ function getNewPage($state) {
                 size: obj_length(messageBuffer.value),
             },
         }
-    ).then((res) => {
+    ).then(res => {
         let data = res.data;
         if (data.messages.length > 0) {
-            let messages = data.messages.reverse();
+            let messages = data.messages;
             for (let i = 0; i < messages.length; i++) {
                 let message = messages[i];
+                if (message.type === "file") {
+                    message.percentage = 0;
+                    message.pause = false;
+                }
                 messageBuffer.value[message.id] = message;
             }
             $state.loaded();
@@ -42,7 +46,7 @@ function getMessageList() {
     let messageList = Object.values(messageBuffer.value);
     messageList.sort((a, b) => {
         // 按timestamp升序
-        const timestampDiff = a.time - b.time;
+        const timestampDiff = a.timestamp - b.timestamp;
         if (timestampDiff === 0) {
             // 如果timestamp相同，则按id升序
             return a.id - b.id;

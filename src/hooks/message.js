@@ -34,8 +34,8 @@ export function updateMessageAreaHeight() {
 
 export function shouldShowDate(messageList, index) {
     if (index > 0) {
-        let timestamp1 = messageList[index].time;
-        let timestamp2 = messageList[index - 1].time;
+        let timestamp1 = messageList[index].timestamp;
+        let timestamp2 = messageList[index - 1].timestamp;
         if (isSameDate(timestamp1, timestamp2)) {
             return false;
         } else {
