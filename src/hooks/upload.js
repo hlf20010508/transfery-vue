@@ -1,3 +1,10 @@
+/*
+:project: transfery-vue
+:author: L-ING
+:copyright: (C) 2024 L-ING <hlf01@icloud.com>
+:license: MIT, see LICENSE for more details.
+*/
+
 import { reactive } from "vue";
 import http from "@/http";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
