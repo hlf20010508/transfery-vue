@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import axios from "axios";
+import http from "@/http";
 import { messageBuffer } from "@/stores/message.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
 import { socket } from "@/socket";
@@ -7,31 +7,32 @@ import { getCurrentTimeStamp } from "@/utils";
 
 const BYTES_PER_PIECE = 5 * 1024 * 1024;
 
-async function uploadPart(newItem, partNumber) {
+async function uploadParts(item, startPartNumber) {
+    let partNumber = startPartNumber;
     let isComplete = false;
     while (!isComplete) {
-        if (newItem.pause) {
+        if (item.pause) {
             return;
         }
         let startBytes = partNumber * BYTES_PER_PIECE;
         let endBytes = startBytes + BYTES_PER_PIECE;
 
-        let fileSize = newItem.file.size;
+        let fileSize = item.file.size;
         if (endBytes > fileSize) {
             endBytes = fileSize;
             isComplete = true;
         }
         partNumber += 1;
 
-        let filePart = newItem.file.slice(startBytes, endBytes);
+        let filePart = item.file.slice(startBytes, endBytes);
 
         let form = new FormData();
         form.append("filePart", filePart);
-        form.append("content", newItem.fileName);
-        form.append("uploadId", newItem.uploadId);
+        form.append("content", item.fileName);
+        form.append("uploadId", item.uploadId);
         form.append("partNumber", partNumber);
 
-        await axios({
+        await http({
             method: "post",
             url: "/post/uploadPart",
             data: form,
@@ -39,8 +40,8 @@ async function uploadPart(newItem, partNumber) {
         }).then((res) => {
             let data = res.data
             if (data.success) {
-                newItem.percentage = ((endBytes / fileSize) * 100) | 0;
-                newItem.parts.push({
+                item.percentage = ((endBytes / fileSize) * 100) | 0;
+                item.parts.push({
                     partNumber: partNumber,
                     etag: data.etag,
                 });
@@ -49,26 +50,27 @@ async function uploadPart(newItem, partNumber) {
     }
 }
 
-async function completeUpload(newItem, onFinish) {
-    await axios
+async function completeUpload(item) {
+    await http
         .post("/post/completeUpload", {
-            content: newItem.fileName,
-            uploadId: newItem.uploadId,
-            parts: newItem.parts,
+            content: item.fileName,
+            uploadId: item.uploadId,
+            parts: item.parts,
         })
         .then((res) => {
             if (res.data.success) {
-                newItem.isComplete = true;
-                onFinish();
+                item.isComplete = true;
             }
         });
 }
 
 export function uploadFile(params) {
+    // 立即终止上传按钮对上传项目的监控，防止重复上传
+    params.onFinish();
     // 传入参数提取出file，file.file为File对象
     let file = params.file.file;
 
-    let newItem = reactive({
+    let item = reactive({
         content: file.name,
         type: "file",
         percentage: 0,
@@ -78,39 +80,53 @@ export function uploadFile(params) {
         file: file,
         time: getCurrentTimeStamp(),
     });
-    console.log("upload item: ", newItem);
+    console.log("upload item: ", item);
 
-    let partNumber = 0;
-    axios
-        .post("/post/getUploadId", { content: newItem.content, time: newItem.time })
+    http
+        .post("/post/getUploadId", { content: item.content, time: item.time })
         .then(async (res) => {
             let data = res.data;
             if (data.success) {
-                newItem.uploadId = data.uploadId;
-                newItem.fileName = data.fileName;
-                console.log("get uploadId:", newItem.uploadId);
-                console.log("get fileName:", newItem.fileName);
+                item.uploadId = data.uploadId;
+                item.fileName = data.fileName;
+                console.log("get uploadId:", item.uploadId);
+                console.log("get fileName:", item.fileName);
 
-                let item = {
-                    content: newItem.content,
-                    fileName: newItem.fileName,
-                    type: newItem.type,
-                    time: newItem.time,
+                let itemInfo = {
+                    content: item.content,
+                    fileName: item.fileName,
+                    type: item.type,
+                    time: item.time,
                 };
 
-                socket.emit("pushItem", item, (id, success) => {
+                socket.emit("pushItem", itemInfo, async (id, success) => {
                     if (success) {
                         console.log("get id:", id);
-                        newItem.id = id;
+                        item.id = id;
+
+                        console.log(item)
+                        messageBuffer.value[item.id] = item;
+                        messageAreaScrollToBottom();
+
+                        await uploadParts(item, 0);
+                        await completeUpload(item);
                     }
                 });
-
-                messageBuffer.value[newItem.id] = newItem;
-                messageAreaScrollToBottom();
-
-                await uploadPart(newItem, partNumber);
-
-                await completeUpload(newItem, params.onFinish);
             }
         });
+}
+
+export function pauseUpload(id) {
+    messageBuffer.value[id].pause = true;
+}
+
+export async function resumeUpload(id) {
+    let item = messageBuffer.value[id];
+    item.pause = false;
+    let partNumber = item.parts.length;
+    console.log("resume uploadId:", item.uploadId);
+    console.log("resume fileName:", item.fileName);
+
+    await uploadParts(item, partNumber);
+    await completeUpload(item);
 }

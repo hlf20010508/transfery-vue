@@ -9,14 +9,14 @@
 import { computed } from "vue";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
-import axios from "axios";
+import http from "@/http";
 import MessageText from "./messageItem/MessageText.vue"
 import MessageFile from "./messageItem/MessageFile.vue"
 import { messageBuffer } from "@/stores/message.js"
 import { obj_length } from "@/utils";
 
 function getNewPage($state) {
-    axios.get(
+    http.get(
         "/get/page",
         {
             params: {

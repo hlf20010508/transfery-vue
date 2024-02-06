@@ -1,0 +1,28 @@
+import axios from "axios"
+import axiosRetry from "axios-retry";
+
+if (import.meta.env.DEV) {
+    axios.defaults.baseURL = '/api'
+}
+
+axiosRetry(axios, {
+    retryCondition: error => {
+        // if retry condition is not specified, by default idempotent requests are retried
+        switch (error.response.status) {
+            case 500:
+            case 502:
+            case 503:
+            case 504:
+                return true;
+            default:
+                return false; // Do not retry the others
+        };
+    },
+    retryDelay: () => 5000,
+    onRetry: (retryCount, error) => {
+        console.error("axios error:", error);
+        console.log("axios retry count:", retryCount);
+    }
+});
+
+export default axios;
