@@ -17,7 +17,6 @@ let item = props.messageList[props.index];
 
 let textCopied = ref(false);
 let timer = -1; // 未定义计时器时的默认ID
-
 function copyText(content) {
     navigator.clipboard.writeText(content.trim());
     textCopied.value = true;

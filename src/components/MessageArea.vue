@@ -6,13 +6,15 @@
 -->
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import http from "@/http";
 import MessageText from "./messageItem/MessageText.vue"
 import MessageFile from "./messageItem/MessageFile.vue"
 import { messageBuffer } from "@/stores/message.js"
+import { messageAreaScrollToBottom } from "@/hooks/message.js"
+import { refreshPage } from "@/hooks/refresh.js"
 import { obj_length } from "@/utils";
 
 function getNewPage($state) {
@@ -41,6 +43,68 @@ function getNewPage($state) {
         }
     });
 }
+
+function sync() {
+    console.log("syncing...");
+    // 获取消息id的最大值，即key的最大值
+    let latestId = Math.max(...Object.keys(messageBuffer.value).map(key => Number(key)));
+
+    // 如果没有消息，则将latestId设为0
+    if (latestId === -Infinity) {
+        latestId = 0;
+    }
+
+    http
+        .get("/sync", {
+            params: {
+                latestId: latestId,
+            },
+        })
+        .then((res) => {
+            let itemsToBeSynced = res.data.newItems;
+            console.log("received synced new items:", itemsToBeSynced);
+
+            // 如果有真正的新消息，就在同步完毕后滚动到底部
+            let hasNewItem = false;
+            for (let newItem of itemsToBeSynced) {
+                if (!(newItem.id in messageBuffer.value)) {
+                    messageBuffer.value[newItem.id] = newItem;
+                    hasNewItem = true;
+                }
+            }
+
+            if (hasNewItem) {
+                messageAreaScrollToBottom();
+                console.log("new items synced");
+            } else {
+                console.log("no unsynced item");
+            }
+        });
+}
+
+let timer = -1; // 未定义计时器时的默认ID
+const refreshInterval = 30 * 60 * 1000 // 30min
+function autoSync() {
+    // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
+    if (document.visibilityState === "hidden") {
+        //如果切出去太久，则会刷新页面
+        console.log("app hidden");
+        timer = setInterval(() => {
+            refreshPage();
+        }, refreshInterval); //超过时间没有切回，在切回后刷新
+    }
+    // 切回后同步数据
+    if (document.visibilityState === "visible") {
+        clearInterval(timer); //清除计时器
+        console.log("app visible");
+        //只刷新数据，不刷新页面
+        sync();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener("visibilitychange", autoSync);
+});
 
 function getMessageList() {
     let messageList = Object.values(messageBuffer.value);

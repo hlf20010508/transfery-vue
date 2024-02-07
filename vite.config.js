@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig(({mode}) => {
+export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [
@@ -22,9 +22,17 @@ export default defineConfig(({mode}) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
+        '/socket.io': {
+          target: env.VITE_PROXY_HOSTNAME,
+          ws: true,
+          changeOrigin: true
+        }
       },
       host: '0.0.0.0',
       port: 8080,
+    },
+    build: {
+      assetsDir: 'static',
     },
   }
 })

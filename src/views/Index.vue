@@ -13,10 +13,26 @@ import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
 import { updateMessageAreaHeight } from "@/hooks/message.js";
+import {
+    socketConnect,
+    socketDisconnect,
+    socketNewItem,
+    socketRemoveItem,
+    socketRemoveAll,
+} from "@/hooks/socket.js";
+import { useSocketIO } from "@hlf01/vue3-socket.io";
+
+const socketIO = useSocketIO();
 
 onMounted(() => {
     updateMessageAreaHeight();
     window.addEventListener("resize", updateMessageAreaHeight);
+
+    socketIO.subscribe("connect", socketConnect);
+    socketIO.subscribe("disconnect", socketDisconnect);
+    socketIO.subscribe("newItem", item => socketNewItem(item));
+    socketIO.subscribe("removeItem", id => socketRemoveItem(id));
+    socketIO.subscribe("removeAll", socketRemoveAll);
 });
 </script>
 
