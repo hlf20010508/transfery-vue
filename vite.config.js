@@ -32,7 +32,13 @@ export default defineConfig(({ mode }) => {
       port: 8080,
     },
     build: {
-      assetsDir: 'static',
+      rollupOptions: {
+        output: {
+          entryFileNames: 'static/index.js',
+          assetFileNames: 'static/[name][extname]',
+          chunkFileNames: 'static/[name].js'
+        },
+      },
     },
   }
 })
