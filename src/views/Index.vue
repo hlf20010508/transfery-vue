@@ -8,7 +8,7 @@
 <script setup>
 import { onMounted } from "vue";
 import Wrapper from "@/components/Wrapper.vue";
-import TimeBar from "@/components/TimeBar.vue";
+import TitleBar from "@/components/TitleBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
@@ -38,7 +38,7 @@ onMounted(() => {
 
 <template>
     <Wrapper>
-        <TimeBar id="time-bar" />
+        <TitleBar id="title-bar" />
         <MessageArea id="message-area" />
         <ControlBar id="control-bar" />
         <InputArea id="input-area" />
