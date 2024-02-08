@@ -15,14 +15,16 @@ export function messageAreaScrollToBottom() {
     );
 }
 
+// 改变html的大小不会触发
 export function updateMessageAreaHeight() {
     nextTick(() => {
         // 更新message-area高度
-        let htmlHeight = jquery("html").outerHeight(true);
+        // 获取可视区域高度
+        let visualHeight = window.visualViewport.height;
         let titleBarHeight = jquery("#title-bar").outerHeight(true);
         let controlBarHeight = jquery("#control-bar").outerHeight(true);
         let inputAreaHeight = jquery("#input-area").outerHeight(true);
-        let messageAreaHeight = htmlHeight - titleBarHeight - controlBarHeight - inputAreaHeight;
+        let messageAreaHeight = visualHeight - titleBarHeight - controlBarHeight - inputAreaHeight;
         jquery("#message-area").outerHeight(messageAreaHeight);
 
         // 更新empty图标大小

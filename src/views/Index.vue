@@ -26,7 +26,8 @@ const socketIO = useSocketIO();
 
 onMounted(() => {
     updateMessageAreaHeight();
-    window.addEventListener("resize", updateMessageAreaHeight);
+    // 监控可视区域大小
+    window.visualViewport.addEventListener("resize", updateMessageAreaHeight);
 
     socketIO.subscribe("connect", socketConnect);
     socketIO.subscribe("newItem", item => socketNewItem(item));
