@@ -17,10 +17,18 @@ export function messageAreaScrollToBottom() {
 
 export function updateMessageAreaHeight() {
     nextTick(() => {
+        // 更新message-area高度
         let htmlHeight = jquery("html").outerHeight(true);
         let timeBarHeight = jquery("#time-bar").outerHeight(true);
         let controlBarHeight = jquery("#control-bar").outerHeight(true);
         let inputAreaHeight = jquery("#input-area").outerHeight(true);
-        jquery("#message-area").outerHeight(htmlHeight - timeBarHeight - controlBarHeight - inputAreaHeight);
+        let messageAreaHeight = htmlHeight - timeBarHeight - controlBarHeight - inputAreaHeight;
+        jquery("#message-area").outerHeight(messageAreaHeight);
+
+        // 更新empty图标大小
+        let appWidth = jquery("#app").width();
+        // 使用较小长度的一半
+        let emptyIconSize = appWidth < messageAreaHeight ? parseInt(appWidth / 2) : parseInt(messageAreaHeight / 2);
+        jquery(".n-empty__icon").css("--n-icon-size", emptyIconSize + "px");
     })
 }

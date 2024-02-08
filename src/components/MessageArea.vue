@@ -7,6 +7,7 @@
 
 <script setup>
 import { computed, onMounted } from "vue";
+import { NEmpty } from "naive-ui";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import http from "@/http";
@@ -44,6 +45,22 @@ function getNewPage($state) {
         }
     });
 }
+
+function getMessageList() {
+    let messageList = Object.values(messageBuffer.value);
+    messageList.sort((a, b) => {
+        // 按timestamp升序
+        const timestampDiff = a.timestamp - b.timestamp;
+        if (timestampDiff === 0) {
+            // 如果timestamp相同，则按id升序
+            return a.id - b.id;
+        }
+        return timestampDiff;
+    });
+    return messageList;
+}
+
+let messageList = computed(getMessageList);
 
 function sync() {
     console.log("syncing...");
@@ -106,29 +123,18 @@ function autoSync() {
 onMounted(() => {
     window.addEventListener("visibilitychange", autoSync);
 });
-
-function getMessageList() {
-    let messageList = Object.values(messageBuffer.value);
-    messageList.sort((a, b) => {
-        // 按timestamp升序
-        const timestampDiff = a.timestamp - b.timestamp;
-        if (timestampDiff === 0) {
-            // 如果timestamp相同，则按id升序
-            return a.id - b.id;
-        }
-        return timestampDiff;
-    });
-    return messageList;
-}
-
-let messageList = computed(getMessageList);
 </script>
 
 <template>
     <div>
         <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;">
-            <template #complete>没有更多了</template>
+            <template #complete>
+                <span v-if="messageList.length > 0">没有更多了</span>
+                <span v-else>{{ "" }}</span>
+            </template>
         </InfiniteLoading>
+        <n-empty v-show="messageList.length === 0" description="无消息">
+        </n-empty>
         <div v-for="(item, index) in messageList" :key="'message-item-' + item.id">
             <MessageText v-if="item.type === 'text'" :messageList="messageList" :index="index" />
             <MessageFile v-if="item.type === 'file'" :messageList="messageList" :index="index" />
@@ -142,5 +148,10 @@ let messageList = computed(getMessageList);
     margin: 0 10px 0 20px;
     padding-right: 10px;
     overflow: auto;
+}
+
+.n-empty {
+    top: 50%;
+    transform: translate(0, 50%);
 }
 </style>
