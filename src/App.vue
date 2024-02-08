@@ -30,6 +30,7 @@ const customTheme = {
   --error-color: #f56c6c;
   --error-color-hover: #f56c6c;
   --background-color: #f3f3f3;
+  --min-font-size: 12px;
 }
 
 #app {

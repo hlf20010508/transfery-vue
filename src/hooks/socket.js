@@ -13,17 +13,21 @@ export function socketConnect() {
     console.log("socket connected:", socket.id);
 }
 
-export function socketDisconnect() {
-    console.log("socket disconnected:", socket.id);
-}
-
 export function socketNewItem(item) {
     console.log("got new item");
 
+    if (item.type === "file") {
+        item.percentage = 0;
+        item.pause = false;
+    }
     messageBuffer.value[item.id] = item;
     console.log("new item pushed");
 
     messageAreaScrollToBottom();
+}
+
+export function socketProgress(data) {
+    Object.assign(messageBuffer.value[data.id], data);
 }
 
 export function socketRemoveItem(id) {
@@ -36,4 +40,13 @@ export function socketRemoveItem(id) {
 export function socketRemoveAll() {
     messageBuffer.value = {};
     console.log("all items removed");
+}
+
+export function socketEmitProgress(item) {
+    socket.emit("progress", {
+        id: item.id,
+        percentage: item.percentage,
+        pause: item.pause,
+        isComplete: item.isComplete
+    });
 }

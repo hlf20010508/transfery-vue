@@ -33,7 +33,8 @@ function getNewPage($state) {
                 let message = messages[i];
                 if (message.type === "file") {
                     message.percentage = 0;
-                    message.pause = false;
+                    message.pause = true;
+                    message.isHost = false;
                 }
                 messageBuffer.value[message.id] = message;
             }

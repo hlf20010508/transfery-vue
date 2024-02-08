@@ -9,6 +9,7 @@ import { reactive } from "vue";
 import http from "@/http";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
+import { socketEmitProgress } from "@/hooks/socket.js"
 import { socket } from "@/socket";
 import { getCurrentTimeStamp } from "@/utils";
 
@@ -56,6 +57,7 @@ async function uploadParts(item, startPartNumber) {
                     partNumber: partNumber,
                     etag: data.etag,
                 });
+                socketEmitProgress(item);
                 // 此后可以resume
                 item.resumeAllowed = true;
             }
@@ -77,6 +79,7 @@ async function completeUpload(item) {
         .then(res => {
             if (res.data.success) {
                 item.isComplete = true;
+                socketEmitProgress(item);
                 console.log("upload complete:", item.fileName);
             }
         });
@@ -100,6 +103,7 @@ export function uploadFile(params) {
         resumeAllowed: false,
         parts: [],
         file: file,
+        isHost: true, // 标记为本机上传
     });
 
     http
@@ -136,7 +140,8 @@ export function uploadFile(params) {
 }
 
 export function pauseUpload(id) {
-    messageBuffer.value[id].pause = true;
+    let item = messageBuffer.value[id];
+    if (item.isHost) item.pause = true;
 }
 
 export async function resumeUpload(id) {

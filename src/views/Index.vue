@@ -15,8 +15,8 @@ import InputArea from "@/components/InputArea.vue";
 import { updateMessageAreaHeight } from "@/hooks/message.js";
 import {
     socketConnect,
-    socketDisconnect,
     socketNewItem,
+    socketProgress,
     socketRemoveItem,
     socketRemoveAll,
 } from "@/hooks/socket.js";
@@ -29,8 +29,8 @@ onMounted(() => {
     window.addEventListener("resize", updateMessageAreaHeight);
 
     socketIO.subscribe("connect", socketConnect);
-    socketIO.subscribe("disconnect", socketDisconnect);
     socketIO.subscribe("newItem", item => socketNewItem(item));
+    socketIO.subscribe("progress", data => socketProgress(data));
     socketIO.subscribe("removeItem", id => socketRemoveItem(id));
     socketIO.subscribe("removeAll", socketRemoveAll);
 });
