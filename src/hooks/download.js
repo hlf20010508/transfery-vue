@@ -6,9 +6,19 @@
 */
 
 import http from "@/http";
+import { isDemo } from "@/utils";
 
 export function download(item) {
     console.log("download: ", item.fileName);
+
+    if (isDemo()) {
+        import("@/demo").then(module => {
+            const useDemo = module.default();
+            useDemo.download();
+        })
+        return;
+    }
+
     http
         .get("/downloadUrl", { params: { fileName: item.fileName } })
         .then(res => {

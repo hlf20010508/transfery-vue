@@ -37,11 +37,16 @@ function removeItem(item) {
     console.log("removed");
 }
 
+function download() {
+    alert("Demo 模式下无法下载");
+}
+
 export default function () {
     return {
         getNewPage,
         submitContent,
         removeItem,
         removeAll,
+        download
     }
 }
