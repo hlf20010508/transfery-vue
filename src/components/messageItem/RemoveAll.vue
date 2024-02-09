@@ -10,7 +10,7 @@ import { watch } from "vue";
 import { NIcon, useMessage } from "naive-ui";
 import { CircleClose } from "@element-plus/icons-vue";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
-import { updateMessageAreaHeight, messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
+import { updateMessageAreaHeight, messageAreaScrollToBottom, isMessageAreaAtBottom, updateRemoveButtonWidth } from "@/hooks/message.js"
 import { socket } from "@/socket";
 import http from "@/http";
 import { obj_length } from "@/utils";
@@ -22,6 +22,8 @@ watch(messageItemRemoving, () => {
     if (flag) {
         messageAreaScrollToBottom();
     }
+
+    updateRemoveButtonWidth();
 });
 
 watch(() => obj_length(messageBuffer.value), (newValue) => {
@@ -35,7 +37,7 @@ const message = useMessage();
 const messageConfig = {
     closable: true,
     duration: 1500,
-}
+};
 
 function removeAll() {
     if (confirm("确定要删除全部吗")) {
@@ -58,15 +60,23 @@ function removeAll() {
 </script>
 
 <template>
-    <n-icon v-if="messageItemRemoving" size="34" @click="removeAll">
-        <CircleClose />
-    </n-icon>
+    <div id="remove-button-wrap" v-if="messageItemRemoving" style="height: 54px;">
+        <div id="remove-button">
+            <n-icon @click="removeAll" size="34">
+                <CircleClose />
+            </n-icon>
+        </div>
+    </div>
 </template>
 
 <style scoped>
-.n-icon {
-    display: block;
-    margin: 10px auto;
+#remove-button {
+    text-align: center;
+    position: absolute;
+    height: 34px;
+    bottom: 0;
+    background-color: var(--background-color);
+    padding: 10px 0;
 }
 
 .n-icon:hover {

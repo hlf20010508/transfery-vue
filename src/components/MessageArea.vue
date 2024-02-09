@@ -15,6 +15,7 @@ import MessageText from "./messageItem/MessageText.vue"
 import MessageFile from "./messageItem/MessageFile.vue"
 import ToBottomButton from "./messageItem/ToBottomButton.vue"
 import { messageBuffer, showToBottomButton } from "@/stores/message.js"
+import RemoveAll from "./messageItem/RemoveAll.vue";
 import { messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { refreshPage } from "@/hooks/refresh.js"
 import { obj_length } from "@/utils";
@@ -147,6 +148,7 @@ onMounted(() => {
                 <MessageText v-if="item.type === 'text'" :messageList="messageList" :index="index" />
                 <MessageFile v-if="item.type === 'file'" :messageList="messageList" :index="index" />
             </div>
+            <RemoveAll />
             <ToBottomButton />
         </div>
     </div>
