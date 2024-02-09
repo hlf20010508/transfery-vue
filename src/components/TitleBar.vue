@@ -13,7 +13,7 @@ import { connectionNumber } from "@/stores/connection.js";
     <div id="title-bar">
         Transfery
         <div class="connection-number">
-            <span v-if="connectionNumber > 0">在线人数：{{ connectionNumber }}</span>
+            <span v-if="connectionNumber > 0">在线设备：{{ connectionNumber }}</span>
             <span v-else>连接中</span>
         </div>
     </div>
