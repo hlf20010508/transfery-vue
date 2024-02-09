@@ -5,6 +5,12 @@
 :license: MIT, see LICENSE for more details.
 */
 
+const mode = import.meta.env.MODE
+
+export function isDemo() {
+    return mode === 'demo';
+}
+
 export function getCurrentTimeStamp() {
     return new Date().getTime()
 }

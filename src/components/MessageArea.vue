@@ -18,9 +18,17 @@ import { messageBuffer, showToBottomButton } from "@/stores/message.js"
 import RemoveAll from "./messageItem/RemoveAll.vue";
 import { messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { refreshPage } from "@/hooks/refresh.js"
-import { obj_length } from "@/utils";
+import { isDemo ,obj_length } from "@/utils";
 
 function getNewPage($state) {
+    if (isDemo()) {
+        import("@/demo").then(module => {
+            const useDemo = module.default();
+            useDemo.getNewPage($state);
+        })
+        return;
+    }
+
     http.get(
         "/page",
         {

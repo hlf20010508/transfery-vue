@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "dev-demo": "vite --mode demo",
+    "build-demo": "vite build --mode demo",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -13,6 +15,7 @@
     "@hlf01/vue3-socket.io": "^1.0.0",
     "axios": "^1.6.7",
     "axios-retry": "^4.0.0",
+    "cnlorem": "^1.5.4",
     "current-device": "^0.10.2",
     "jquery": "^3.7.1",
     "material-file-icons": "^2.4.0",
