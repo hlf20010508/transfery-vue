@@ -32,10 +32,16 @@ function removeAll(message, messageConfig) {
     message.success("删除成功", messageConfig);
 }
 
+function removeItem(item) {
+    delete messageBuffer.value[item.id];
+    console.log("removed");
+}
+
 export default function () {
     return {
         getNewPage,
         submitContent,
+        removeItem,
         removeAll,
     }
 }

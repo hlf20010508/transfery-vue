@@ -10,7 +10,7 @@ import { computed, onMounted } from "vue";
 import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { messageItemRemoving, messageBuffer, newMessageNumber } from "@/stores/message.js";
-import { isSameDate } from "@/utils";
+import { isSameDate, isDemo } from "@/utils";
 import { socket } from "@/socket";
 import http from "@/http";
 
@@ -38,6 +38,14 @@ function shouldShowDate() {
 
 function removeItem() {
     console.log("remove item:", item);
+
+    if (isDemo()) {
+        import("@/demo").then(module => {
+            const useDemo = module.default();
+            useDemo.removeItem(item);
+        })
+        return;
+    }
 
     item.sid = socket.id;
 
