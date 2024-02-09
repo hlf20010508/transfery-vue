@@ -11,7 +11,7 @@ import { randomInt } from "./utils.js";
 
 const exts = [".txt", ".docx", ".pptx", ".xlsx", ".pdf", ".zip", ".mp3" ,".mp4"];
 
-function mockId() {
+export function mockId() {
     return randomInt(0, 100);
 }
 

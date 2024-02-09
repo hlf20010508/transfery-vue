@@ -10,7 +10,7 @@ import { ref } from "vue";
 import { NInput } from "naive-ui";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
-import { getCurrentTimeStamp } from "@/utils"
+import { getCurrentTimeStamp, isDemo } from "@/utils"
 import http from "@/http";
 import { socket } from "@/socket";
 
@@ -27,8 +27,17 @@ function submitContent(content) {
             content: content,
             type: "text",
             timestamp: timestamp,
-            sid: socket.id,
         };
+
+        if(isDemo()) {
+            import("@/demo").then(module => {
+                let useDemo = module.default();
+                useDemo.submitContent(newItem);
+            })
+            return;
+        }
+
+        newItem.sid = socket.id;
 
         http.post("/newItem", newItem).then(res => {
             let data = res.data;
