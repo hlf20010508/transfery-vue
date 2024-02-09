@@ -127,10 +127,9 @@ onMounted(() => {
 
 <template>
     <div id="message-area">
-        <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;">
+        <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;" class="infinite-loading">
             <template #complete>
-                <span v-if="messageList.length > 0">没有更多了</span>
-                <span v-else>{{ "" }}</span>
+                <span>{{ "" }}</span>
             </template>
         </InfiniteLoading>
         <n-empty v-show="messageList.length === 0" description="无消息">
@@ -148,6 +147,10 @@ onMounted(() => {
     margin: 0 10px 0 20px;
     padding-right: 10px;
     overflow: auto;
+}
+
+.infinite-loading :deep(.container) {
+    margin-top: 10px;
 }
 
 .n-empty {

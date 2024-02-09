@@ -18,7 +18,7 @@ import { connectionNumber } from "@/stores/connection.js";
 
 <style scoped>
 #title-bar {
-    margin: 10px 0 10px 0;
+    margin-top: 10px;
     font-size: 20px;
     font-weight: 400;
     text-align: center;
