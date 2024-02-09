@@ -9,7 +9,7 @@
 import { watch } from "vue";
 import { NIcon, useMessage } from "naive-ui";
 import { CircleClose } from "@element-plus/icons-vue";
-import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
+import { messageBuffer, messageItemRemoving, showToBottomButton } from "@/stores/message.js"
 import { socket } from "@/socket";
 import http from "@/http";
 import { obj_length } from "@/utils";
@@ -37,6 +37,7 @@ function removeAll() {
             if (res.data.success) {
                 messageBuffer.value = {};
                 messageItemRemoving.value = false;
+                showToBottomButton.value = false;
                 console.log("removed all items");
                 message.success("删除成功", messageConfig);
             }
