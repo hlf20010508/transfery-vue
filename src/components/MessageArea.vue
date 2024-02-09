@@ -126,7 +126,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
+    <div id="message-area">
         <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;">
             <template #complete>
                 <span v-if="messageList.length > 0">没有更多了</span>

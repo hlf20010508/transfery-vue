@@ -77,7 +77,7 @@ function handleInputAreaFocus() {
 </script>
 
 <template>
-    <n-input v-model:value="textContent" type="textarea" :rows="5" placeholder="请输入消息内容" style="--n-border: none;"
+    <n-input  id="input-area" v-model:value="textContent" type="textarea" :rows="5" placeholder="请输入消息内容" style="--n-border: none;"
         @focus="handleInputAreaFocus" @keydown="submit" />
 </template>
 

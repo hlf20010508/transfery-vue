@@ -6,7 +6,7 @@
 -->
 
 <template>
-    <div>Transfery</div>
+    <div id="title-bar">Transfery</div>
 </template>
 
 <style scoped>

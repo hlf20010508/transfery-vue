@@ -15,7 +15,7 @@ import RemoveAll from "./controlItem/RemoveAll.vue";
 </script>
 
 <template>
-    <div class="control-bar">
+    <div  id="control-bar" class="control-bar">
         <RemoveAll />
         <n-divider style="--n-color: #dcdfe6" />
         <n-flex>

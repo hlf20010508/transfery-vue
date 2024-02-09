@@ -39,9 +39,9 @@ onMounted(() => {
 
 <template>
     <Wrapper>
-        <TitleBar id="title-bar" />
-        <MessageArea id="message-area" />
-        <ControlBar id="control-bar" />
-        <InputArea id="input-area" />
+        <TitleBar />
+        <MessageArea />
+        <ControlBar />
+        <InputArea />
     </Wrapper>
 </template>
