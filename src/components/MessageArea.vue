@@ -147,6 +147,7 @@ onMounted(() => {
     margin: 0 10px 0 20px;
     padding-right: 10px;
     overflow: auto;
+    position: relative;
 }
 
 .infinite-loading :deep(.container) {
@@ -154,7 +155,9 @@ onMounted(() => {
 }
 
 .n-empty {
+    position: absolute;
+    left: 50%;
     top: 50%;
-    transform: translate(0, 50%);
+    transform: translate(-50%, -50%);
 }
 </style>
