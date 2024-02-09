@@ -137,6 +137,7 @@ function handleScroll() {
 }
 
 onMounted(() => {
+    if (isDemo()) return;
     window.addEventListener("visibilitychange", autoSync);
 });
 </script>
