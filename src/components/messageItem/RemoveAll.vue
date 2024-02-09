@@ -10,21 +10,9 @@ import { watch } from "vue";
 import { NIcon, useMessage } from "naive-ui";
 import { CircleClose } from "@element-plus/icons-vue";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
-import { updateMessageAreaHeight, messageAreaScrollToBottom, isMessageAreaAtBottom, updateRemoveButtonWidth } from "@/hooks/message.js"
 import { socket } from "@/socket";
 import http from "@/http";
 import { obj_length } from "@/utils";
-
-watch(messageItemRemoving, () => {
-    let flag = isMessageAreaAtBottom();
-    updateMessageAreaHeight();
-    // 如果已在底部，则显示全部删除按钮的时候也要在底部
-    if (flag) {
-        messageAreaScrollToBottom();
-    }
-
-    updateRemoveButtonWidth();
-});
 
 watch(() => obj_length(messageBuffer.value), (newValue) => {
     if (newValue == 0) {
@@ -60,23 +48,19 @@ function removeAll() {
 </script>
 
 <template>
-    <div id="remove-button-wrap" v-if="messageItemRemoving" style="height: 54px;">
-        <div id="remove-button">
-            <n-icon @click="removeAll" size="34">
-                <CircleClose />
-            </n-icon>
-        </div>
-    </div>
+    <n-icon v-if="messageItemRemoving" @click="removeAll" size="34">
+        <CircleClose />
+    </n-icon>
 </template>
 
 <style scoped>
-#remove-button {
-    text-align: center;
+.n-icon {
     position: absolute;
-    height: 34px;
-    bottom: 0;
+    bottom: 10px;
+    left: 50%;
+    transform: translate(-50%, 0);
     background-color: var(--background-color);
-    padding: 10px 0;
+    border-radius: 50%;
 }
 
 .n-icon:hover {

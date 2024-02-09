@@ -46,6 +46,11 @@ watch(newMessageNumber, () => showToBottomButton.value = true);
     right: 40px;
 }
 
+.to-bottom {
+    border-radius: 50%;
+    background: var(--background-color);
+}
+
 .to-bottom:hover {
     color: var(--primary-color);
     cursor: pointer;
