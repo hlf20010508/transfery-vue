@@ -7,6 +7,7 @@
 
 import { nextTick } from "vue";
 import jquery from "jquery";
+import device from "current-device";
 
 export function messageAreaScrollToBottom() {
     nextTick(() => {
@@ -32,5 +33,10 @@ export function updateMessageAreaHeight() {
         // 使用较小长度的一半
         let emptyIconSize = appWidth < messageAreaHeight ? parseInt(appWidth / 2) : parseInt(messageAreaHeight / 2);
         jquery(".n-empty__icon").css("--n-icon-size", emptyIconSize + "px");
+
+        // 苹果：输入法获取焦点时window高度不变，整体向上移动
+        // 安卓：呼出键盘时改变window高度
+        if (device.ios()) window.scrollTo(0, 0); // 滚动到页面最上方
+        if (device.mobile() || device.tablet()) messageAreaScrollToBottom();
     })
 }

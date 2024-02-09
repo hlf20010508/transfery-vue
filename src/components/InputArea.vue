@@ -8,7 +8,6 @@
 <script setup>
 import { ref } from "vue";
 import { NInput } from "naive-ui";
-import device from "current-device";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
 import { getCurrentTimeStamp } from "@/utils"
@@ -57,22 +56,6 @@ function submit(event) {
 
 function handleInputAreaFocus() {
     messageItemRemoving.value = false;
-
-    // 苹果
-    // 输入法获取焦点时window高度不变，整体向上移动
-    if (device.ios()) {
-        //需要延迟，不然检测时键盘还没呼出，得到的高度为0
-        setTimeout(() => {
-            window.scrollTo(0, 0); // 滚动到页面最上方
-            messageAreaScrollToBottom();
-        }, 400);
-    }
-
-    // 安卓
-    // 呼出键盘时改变window高度，所以直接能够被检测到
-    if (device.androidPhone()) {
-        messageAreaScrollToBottom();
-    }
 }
 </script>
 
