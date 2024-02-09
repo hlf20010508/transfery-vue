@@ -6,7 +6,7 @@
 */
 
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
-import { messageBuffer } from "@/stores/message.js";
+import { messageBuffer, messageItemRemoving, showToBottomButton } from "@/stores/message.js";
 import { mockData } from "./store.js";
 import { mockId } from "./mock.js"
 
@@ -24,9 +24,18 @@ function submitContent(item) {
     messageAreaScrollToBottom();
 }
 
+function removeAll(message, messageConfig) {
+    messageBuffer.value = {};
+    messageItemRemoving.value = false;
+    showToBottomButton.value = false;
+    console.log("removed all items");
+    message.success("删除成功", messageConfig);
+}
+
 export default function () {
     return {
         getNewPage,
         submitContent,
+        removeAll,
     }
 }
