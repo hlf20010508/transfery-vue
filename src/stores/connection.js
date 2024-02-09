@@ -1,3 +1,3 @@
 import { ref } from "vue";
 
-export let connectionNumber = ref(1);
+export let connectionNumber = ref(0);
