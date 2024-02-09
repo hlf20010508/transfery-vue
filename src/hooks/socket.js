@@ -6,7 +6,7 @@
 */
 
 import { messageBuffer } from "@/stores/message.js";
-import { messageAreaScrollToBottom } from "@/hooks/message.js";
+import { newMessageNumber } from "@/stores/message.js";
 import { connectionNumber } from "@/stores/connection.js";
 import { socket } from "@/socket";
 
@@ -17,6 +17,9 @@ export function socketConnect() {
 export function socketNewItem(item) {
     console.log("got new item");
 
+    // 是否已被看到
+    item.hasChecked = false;
+
     if (item.type === "file") {
         item.percentage = 0;
         item.pause = false;
@@ -24,7 +27,7 @@ export function socketNewItem(item) {
     messageBuffer.value[item.id] = item;
     console.log("new item pushed");
 
-    messageAreaScrollToBottom();
+    newMessageNumber.value += 1;
 }
 
 export function socketProgress(data) {

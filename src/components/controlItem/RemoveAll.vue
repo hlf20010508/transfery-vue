@@ -9,18 +9,11 @@
 import { watch } from "vue";
 import { NIcon, useMessage } from "naive-ui";
 import { CircleClose } from "@element-plus/icons-vue";
-import jquery from "jquery";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
-import { updateMessageAreaHeight, messageAreaScrollToBottom } from "@/hooks/message.js"
+import { updateMessageAreaHeight, messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { socket } from "@/socket";
 import http from "@/http";
 import { obj_length } from "@/utils";
-
-function isMessageAreaAtBottom() {
-    let messageArea = jquery("#message-area");
-    // 调用infinite loading后，scrollHeight比scrollTop少增加了1px，可能是小数点舍入了
-    return messageArea.prop('scrollHeight') - messageArea.scrollTop() - 1 <= messageArea.prop('clientHeight');
-}
 
 watch(messageItemRemoving, () => {
     let flag = isMessageAreaAtBottom();

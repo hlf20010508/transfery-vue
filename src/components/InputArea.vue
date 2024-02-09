@@ -34,6 +34,7 @@ function submitContent(content) {
             let data = res.data;
             if (data.success) {
                 newItem.id = data.id;
+                newItem.hasChecked = true;
                 messageBuffer.value[newItem.id] = newItem;
                 console.log("pushed");
                 messageAreaScrollToBottom();

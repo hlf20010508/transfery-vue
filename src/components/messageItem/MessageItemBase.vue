@@ -6,12 +6,11 @@
 -->
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
-import { messageItemRemoving } from "@/stores/message.js";
+import { messageItemRemoving, messageBuffer, newMessageNumber } from "@/stores/message.js";
 import { isSameDate } from "@/utils";
-import { messageBuffer } from "@/stores/message.js";
 import { socket } from "@/socket";
 import http from "@/http";
 
@@ -52,10 +51,30 @@ function removeItem() {
 }
 
 let showDate = computed(shouldShowDate);
+
+if (!item.hasChecked) {
+    onMounted(() => {
+        // 监视新消息是否能够被看见
+        let ElementVisibleObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    messageBuffer.value[item.id].hasChecked = true;
+                    newMessageNumber.value -= 1;
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 1.0 // 1.0表示元素100%进入视口时触发
+        });
+
+        const targetElement = document.querySelector('#message-item-' + item.id);
+        ElementVisibleObserver.observe(targetElement);
+    })
+}
 </script>
 
 <template>
-    <div style="margin: 10px 0;">
+    <div :id="'message-item-' + item.id" style="margin: 10px 0;">
         <n-time v-if="showDate" :time="item.timestamp" format="yyyy-MM-dd" />
         <n-flex :wrap="false" align="center">
             <n-icon size="17" v-if="messageItemRemoving" @click="removeItem">

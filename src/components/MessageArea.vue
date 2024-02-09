@@ -13,8 +13,9 @@ import "v3-infinite-loading/lib/style.css";
 import http from "@/http";
 import MessageText from "./messageItem/MessageText.vue"
 import MessageFile from "./messageItem/MessageFile.vue"
-import { messageBuffer } from "@/stores/message.js"
-import { messageAreaScrollToBottom } from "@/hooks/message.js"
+import ToBottomButton from "./messageItem/ToBottomButton.vue"
+import { messageBuffer, showToBottomButton } from "@/stores/message.js"
+import { messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { refreshPage } from "@/hooks/refresh.js"
 import { obj_length } from "@/utils";
 
@@ -32,6 +33,7 @@ function getNewPage($state) {
             let messages = data.messages;
             for (let i = 0; i < messages.length; i++) {
                 let message = messages[i];
+                message.hasChecked = true;
                 if (message.type === "file") {
                     message.percentage = 0;
                     message.pause = true;
@@ -120,23 +122,32 @@ function autoSync() {
     }
 }
 
+function handleScroll() {
+    if (!isMessageAreaAtBottom()) showToBottomButton.value = true;
+    else showToBottomButton.value = false;
+}
+
 onMounted(() => {
     window.addEventListener("visibilitychange", autoSync);
 });
 </script>
 
 <template>
-    <div id="message-area">
-        <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;" class="infinite-loading">
-            <template #complete>
-                <span>{{ "" }}</span>
-            </template>
-        </InfiniteLoading>
-        <n-empty v-show="messageList.length === 0" description="无消息">
-        </n-empty>
-        <div v-for="(item, index) in messageList" :key="'message-item-' + item.id">
-            <MessageText v-if="item.type === 'text'" :messageList="messageList" :index="index" />
-            <MessageFile v-if="item.type === 'file'" :messageList="messageList" :index="index" />
+    <div style="position: relative;">
+        <div id="message-area" @scroll="handleScroll">
+            <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;"
+                class="infinite-loading">
+                <template #complete>
+                    <span>{{ "" }}</span>
+                </template>
+            </InfiniteLoading>
+            <n-empty v-show="messageList.length === 0" description="无消息">
+            </n-empty>
+            <div v-for="(item, index) in messageList" :key="'message-item-' + item.id">
+                <MessageText v-if="item.type === 'text'" :messageList="messageList" :index="index" />
+                <MessageFile v-if="item.type === 'file'" :messageList="messageList" :index="index" />
+            </div>
+            <ToBottomButton />
         </div>
     </div>
 </template>
@@ -147,7 +158,6 @@ onMounted(() => {
     margin: 0 10px 0 20px;
     padding-right: 10px;
     overflow: auto;
-    position: relative;
 }
 
 .infinite-loading :deep(.container) {

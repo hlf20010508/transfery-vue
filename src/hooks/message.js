@@ -8,11 +8,19 @@
 import { nextTick } from "vue";
 import jquery from "jquery";
 import device from "current-device";
+import { newMessageNumber } from "@/stores/message.js"
+
+export function isMessageAreaAtBottom() {
+    let messageArea = jquery("#message-area");
+    // 调用infinite loading后，scrollHeight比scrollTop少增加了1px，可能是小数点舍入了
+    return messageArea.prop('scrollHeight') - messageArea.scrollTop() - 1 <= messageArea.prop('clientHeight');
+}
 
 export function messageAreaScrollToBottom() {
     nextTick(() => {
         let messageArea = jquery("#message-area");
         messageArea.scrollTop(messageArea.prop('scrollHeight'));
+        newMessageNumber.value = 0;
     });
 }
 
