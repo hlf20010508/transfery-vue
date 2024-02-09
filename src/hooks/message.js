@@ -9,10 +9,10 @@ import { nextTick } from "vue";
 import jquery from "jquery";
 
 export function messageAreaScrollToBottom() {
-    let messageArea = jquery("#message-area");
-    nextTick(
-        () => messageArea.scrollTop(messageArea.prop('scrollHeight'))
-    );
+    nextTick(() => {
+        let messageArea = jquery("#message-area");
+        messageArea.scrollTop(messageArea.prop('scrollHeight'));
+    });
 }
 
 // 改变html的大小不会触发

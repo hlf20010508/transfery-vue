@@ -65,7 +65,7 @@ function handleInputAreaFocus() {
         setTimeout(() => {
             window.scrollTo(0, 0); // 滚动到页面最上方
             messageAreaScrollToBottom();
-        }, 100);
+        }, 400);
     }
 
     // 安卓
