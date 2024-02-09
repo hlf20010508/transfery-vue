@@ -16,7 +16,6 @@ export function messageAreaScrollToBottom() {
     });
 }
 
-// 改变html的大小不会触发
 export function updateMessageAreaHeight() {
     nextTick(() => {
         // 更新message-area高度
