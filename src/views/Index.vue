@@ -19,6 +19,7 @@ import {
     socketProgress,
     socketRemoveItem,
     socketRemoveAll,
+    socketConnectionNumber,
 } from "@/hooks/socket.js";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
 
@@ -34,6 +35,7 @@ onMounted(() => {
     socketIO.subscribe("progress", data => socketProgress(data));
     socketIO.subscribe("removeItem", id => socketRemoveItem(id));
     socketIO.subscribe("removeAll", socketRemoveAll);
+    socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
 });
 </script>
 

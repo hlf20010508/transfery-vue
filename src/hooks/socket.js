@@ -7,6 +7,7 @@
 
 import { messageBuffer } from "@/stores/message.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
+import { connectionNumber } from "@/stores/connection.js";
 import { socket } from "@/socket";
 
 export function socketConnect() {
@@ -49,4 +50,8 @@ export function socketEmitProgress(item) {
         pause: item.pause,
         isComplete: item.isComplete
     });
+}
+
+export function socketConnectionNumber(number) {
+    connectionNumber.value = number;
 }
