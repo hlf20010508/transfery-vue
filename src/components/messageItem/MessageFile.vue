@@ -14,6 +14,7 @@ import jquery from "jquery";
 import MessageItemBase from "./MessageItemBase.vue";
 import { pauseUpload, resumeUpload } from "@/hooks/upload.js"
 import { download } from "@/hooks/download.js"
+import { isDemo } from "@/utils";
 
 const props = defineProps(["messageList", "index"])
 
@@ -82,6 +83,9 @@ if (item.isHost) {
         </template>
         <template #container>
             <p>{{ item.content }}</p>
+        </template>
+        <template #footer v-if="isDemo()">
+            <span style="color: var(--hint-color);">模拟</span>
         </template>
         <template #footer v-if="!item.isHost && !item.isComplete">
             <i :id="'progress-dot-' + index"></i>

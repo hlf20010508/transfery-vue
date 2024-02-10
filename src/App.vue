@@ -31,7 +31,7 @@ const customTheme = {
   --error-color-hover: #f56c6c;
   --background-color: #f3f3f3;
   --min-font-size: 12px;
-  --tip-color: #a2a2a2;
+  --hint-color: #aaa;
 }
 
 #app {

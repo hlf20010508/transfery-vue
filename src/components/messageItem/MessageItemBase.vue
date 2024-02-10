@@ -109,7 +109,7 @@ if (!item.hasChecked) {
 time {
     display: block;
     font-size: 14px;
-    color: #aaa;
+    color: var(--hint-color);
     text-align: center;
 }
 

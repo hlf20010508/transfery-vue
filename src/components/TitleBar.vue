@@ -7,6 +7,9 @@
 
 <script setup>
 import { connectionNumber } from "@/stores/connection.js";
+import { isDemo } from "@/utils";
+
+let hint = isDemo() ? "Demo模式" : "连接中";
 </script>
 
 <template>
@@ -14,7 +17,7 @@ import { connectionNumber } from "@/stores/connection.js";
         Transfery
         <div class="connection-number">
             <span v-if="connectionNumber > 0">在线设备：{{ connectionNumber }}</span>
-            <span v-else>连接中</span>
+            <span v-else>{{ hint }}</span>
         </div>
     </div>
 </template>
@@ -29,6 +32,6 @@ import { connectionNumber } from "@/stores/connection.js";
 
 .connection-number {
     font-size: var(--min-font-size);
-    color: var(--tip-color);
+    color: var(--hint-color);
 }
 </style>
