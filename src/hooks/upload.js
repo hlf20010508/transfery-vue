@@ -11,7 +11,7 @@ import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
 import { socketEmitProgress } from "@/hooks/socket.js"
 import { socket } from "@/socket";
-import { getCurrentTimeStamp } from "@/utils";
+import { getCurrentTimeStamp, isDemo } from "@/utils";
 
 // must larger than 5 * 1024 * 1024
 const BYTES_PER_PIECE = 5 * 1024 * 1024;
@@ -106,6 +106,14 @@ export function uploadFile(params) {
         isHost: true, // 标记为本机上传
     });
 
+    if (isDemo()) {
+        import("@/demo").then(module => {
+            const useDemo = module.default();
+            useDemo.uploadFile(item);
+        })
+        return;
+    }
+
     http
         .post("/fetchUploadId", { content: item.content, timestamp: item.timestamp })
         .then(async res => {
@@ -145,6 +153,14 @@ export function pauseUpload(id) {
 }
 
 export async function resumeUpload(id) {
+    if (isDemo()) {
+        import("@/demo").then(module => {
+            const useDemo = module.default();
+            useDemo.resumeUpload(id);
+        })
+        return;
+    }
+
     // 在上传分片的过程中禁止resume，否则若短时间内多次切换pause和resume会调用多个uploadParts
     if (messageBuffer.value[id].resumeAllowed) {
         let item = messageBuffer.value[id];

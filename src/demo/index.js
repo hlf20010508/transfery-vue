@@ -41,12 +41,48 @@ function download() {
     alert("Demo 模式下无法下载");
 }
 
+function uploadFile(item) {
+    item.fileName = item.content;
+    const id = mockId();
+    item.id = id;
+    item.uploadId = id;
+    messageBuffer.value[id] = item;
+    console.log("upload item:", item)
+
+    messageAreaScrollToBottom();
+
+    uploadParts(item);
+}
+
+function uploadParts(item) {
+    let interval = setInterval(() => {
+        item.percentage += 10;
+        if (item.percentage >= 100) {
+            item.isComplete = true;
+            clearInterval(interval);
+        } else if (item.pause) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
+function resumeUpload(id) {
+    let item = messageBuffer.value[id];
+    item.pause = false;
+    console.log("resume uploadId:", item.uploadId);
+    console.log("resume fileName:", item.fileName);
+
+    uploadParts(item);
+}
+
 export default function () {
     return {
         getNewPage,
         submitContent,
         removeItem,
         removeAll,
-        download
+        download,
+        uploadFile,
+        resumeUpload
     }
 }
