@@ -22,21 +22,26 @@ import {
     socketConnectionNumber,
 } from "@/hooks/socket.js";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
-
-const socketIO = useSocketIO();
+import { isDemo } from "@/utils";
 
 onMounted(() => {
     updateMessageAreaHeight();
     // 监控可视区域大小
     window.visualViewport.addEventListener("resize", updateMessageAreaHeight);
-
-    socketIO.subscribe("connect", socketConnect);
-    socketIO.subscribe("newItem", item => socketNewItem(item));
-    socketIO.subscribe("progress", data => socketProgress(data));
-    socketIO.subscribe("removeItem", id => socketRemoveItem(id));
-    socketIO.subscribe("removeAll", socketRemoveAll);
-    socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
 });
+
+if (!isDemo()) {
+    onMounted(() => {
+        const socketIO = useSocketIO();
+        
+        socketIO.subscribe("connect", socketConnect);
+        socketIO.subscribe("newItem", item => socketNewItem(item));
+        socketIO.subscribe("progress", data => socketProgress(data));
+        socketIO.subscribe("removeItem", id => socketRemoveItem(id));
+        socketIO.subscribe("removeAll", socketRemoveAll);
+        socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
+    });
+}
 </script>
 
 <template>
