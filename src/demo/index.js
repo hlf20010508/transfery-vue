@@ -81,6 +81,7 @@ function genNewItem(){
         const item = mockMessage(true);
         messageBuffer.value[item.id] = item;
         newMessageNumber.value += 1;
+        showToBottomButton.value = true;
     }, 5000);
 }
 

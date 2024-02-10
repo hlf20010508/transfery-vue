@@ -6,13 +6,10 @@
 -->
 
 <script setup>
-import { watch } from "vue";
 import { NIcon, NFlex } from "naive-ui";
 import { ArrowDownCircleOutline } from "@vicons/ionicons5";
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
 import { newMessageNumber, showToBottomButton } from "@/stores/message.js"
-
-watch(newMessageNumber, () => showToBottomButton.value = true);
 </script>
 
 <template>

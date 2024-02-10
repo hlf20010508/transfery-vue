@@ -6,7 +6,7 @@
 */
 
 import { messageBuffer } from "@/stores/message.js";
-import { newMessageNumber } from "@/stores/message.js";
+import { newMessageNumber, showToBottomButton } from "@/stores/message.js";
 import { connectionNumber } from "@/stores/connection.js";
 import { socket } from "@/socket";
 
@@ -28,6 +28,7 @@ export function socketNewItem(item) {
     console.log("new item pushed");
 
     newMessageNumber.value += 1;
+    showToBottomButton.value = true;
 }
 
 export function socketProgress(data) {

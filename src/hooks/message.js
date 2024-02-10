@@ -8,7 +8,7 @@
 import { nextTick } from "vue";
 import jquery from "jquery";
 import device from "current-device";
-import { newMessageNumber, messageItemRemoving } from "@/stores/message.js"
+import { showToBottomButton } from "@/stores/message.js"
 
 export function isMessageAreaAtBottom() {
     let messageArea = jquery("#message-area");
@@ -20,7 +20,7 @@ export function messageAreaScrollToBottom() {
     nextTick(() => {
         let messageArea = jquery("#message-area");
         messageArea.scrollTop(messageArea.prop('scrollHeight'));
-        newMessageNumber.value = 0;
+        showToBottomButton.value = false;
     });
 }
 
