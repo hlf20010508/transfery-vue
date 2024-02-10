@@ -28,35 +28,40 @@ function mockFileName(id) {
     return "mock-file-" + id + exts[randomInt(0, exts.length - 1)];
 }
 
-function mockMessageText() {
+function mockMessageBase(isNew=false) {
     return {
         id: mockId(),
-        content: mockContent(),
-        timestamp: mockTimestamp(),
-        type: "text",
-        hasChecked: true,
+        timestamp: isNew ? getCurrentTimeStamp() : mockTimestamp(),
+        hasChecked: !isNew,
     }
 }
 
-function mockMessageFile() {
-    const id = mockId();
-    const fileName = mockFileName(id);
-    return {
-        id: id,
-        content: fileName,
-        timestamp: mockTimestamp(),
-        type: "file",
-        fileName: fileName,
-        isComplete: true,
-        hasChecked: true,
-    }
+function mockMessageText(isNew=false) {
+    let item = mockMessageBase(isNew);
+    item.type = "text";
+    item.content = mockContent();
+    return item;
 }
 
-export default function mockMessage(number) {
-    let mockData = {};
+function mockMessageFile(isNew=false) {
+    let item = mockMessageBase(isNew);
+    item.type = "file";
+    item.fileName = mockFileName(item.id);
+    item.content = item.fileName;
+    item.isComplete = true;
+    return item;
+}
+
+export function mockMessage(isNew=false) {
     const mockFunctions = [mockMessageText, mockMessageFile];
+    const item = mockFunctions[randomInt(0, mockFunctions.length - 1)](isNew);
+    return item;
+}
+
+export default function mockMessages(number) {
+    let mockData = {};
     for (let i = 0; i < number; i++) {
-        let item = mockFunctions[randomInt(0, mockFunctions.length - 1)]();
+        let item = mockMessage();
         mockData[item.id] = item;
     }
     return mockData;

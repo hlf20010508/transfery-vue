@@ -5,8 +5,8 @@
 :license: MIT, see LICENSE for more details.
 */
 
-import mockMessage from "./mock.js";
+import mockMessages from "./mock.js";
 
 const messageNumber = 10;
 
-export let mockData = mockMessage(messageNumber);
+export let mockData = mockMessages(messageNumber);

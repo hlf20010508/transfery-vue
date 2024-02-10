@@ -137,7 +137,14 @@ function handleScroll() {
 }
 
 onMounted(() => {
-    if (isDemo()) return;
+    if (isDemo()) {
+        import("@/demo").then(module => {
+            const useDemo = module.default();
+            useDemo.genNewItem();
+        })
+        return;
+    }
+
     window.addEventListener("visibilitychange", autoSync);
 });
 </script>

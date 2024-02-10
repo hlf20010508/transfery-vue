@@ -6,12 +6,13 @@
 */
 
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
-import { messageBuffer, messageItemRemoving, showToBottomButton } from "@/stores/message.js";
+import { messageBuffer, messageItemRemoving, showToBottomButton, newMessageNumber } from "@/stores/message.js";
 import { mockData } from "./store.js";
-import { mockId } from "./mock.js"
+import { mockId, mockMessage } from "./mock.js"
 
 function getNewPage($state) {
     messageBuffer.value = mockData;
+    $state.loaded();
     $state.complete();
 }
 
@@ -75,6 +76,14 @@ function resumeUpload(id) {
     uploadParts(item);
 }
 
+function genNewItem(){
+    setInterval(() => {
+        const item = mockMessage(true);
+        messageBuffer.value[item.id] = item;
+        newMessageNumber.value += 1;
+    }, 5000);
+}
+
 export default function () {
     return {
         getNewPage,
@@ -83,6 +92,7 @@ export default function () {
         removeAll,
         download,
         uploadFile,
-        resumeUpload
+        resumeUpload,
+        genNewItem
     }
 }
