@@ -95,6 +95,7 @@ if (!item.hasChecked) {
                     <div class="content-div">
                         <slot name="container"></slot>
                         <n-flex :wrap="false" align="center" justify="end">
+                            <span v-if="isDemo()" style="color: var(--hint-color);">模拟</span>
                             <slot name="footer"></slot>
                             <n-time :time="item.timestamp" format="HH:mm:ss" />
                         </n-flex>
