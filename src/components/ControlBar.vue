@@ -11,6 +11,7 @@ import { NDivider } from "naive-ui";
 import UploadFile from "./controlItem/UploadFile.vue";
 import DeleteItem from "./controlItem/DeleteItem.vue";
 import RefreshPage from "./controlItem/RefreshPage.vue";
+import Admin from "./controlItem/Admin.vue";
 </script>
 
 <template>
@@ -20,6 +21,7 @@ import RefreshPage from "./controlItem/RefreshPage.vue";
             <UploadFile />
             <DeleteItem />
             <RefreshPage />
+            <Admin />
         </n-flex>
     </div>
 </template>

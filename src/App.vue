@@ -6,7 +6,19 @@
 -->
 
 <script setup>
-import { NConfigProvider } from "naive-ui";
+import { onMounted } from "vue";
+import { NConfigProvider, NSpin, NMessageProvider } from "naive-ui";
+import { useSocketIO } from "@hlf01/vue3-socket.io";
+import { showRefreshSpin } from "@/stores/refresh.js"
+import {
+    socketConnect,
+    socketNewItem,
+    socketProgress,
+    socketRemoveItem,
+    socketRemoveAll,
+    socketConnectionNumber,
+} from "@/hooks/socket.js";
+import { isDemo } from "@/utils";
 
 /** @type import('naive-ui').GlobalThemeOverrides */
 const customTheme = {
@@ -15,11 +27,28 @@ const customTheme = {
     primaryColorHover: '#409eff',
   },
 }
+
+if (!isDemo()) {
+    onMounted(() => {
+        const socketIO = useSocketIO();
+
+        socketIO.subscribe("connect", socketConnect);
+        socketIO.subscribe("newItem", item => socketNewItem(item));
+        socketIO.subscribe("progress", data => socketProgress(data));
+        socketIO.subscribe("removeItem", id => socketRemoveItem(id));
+        socketIO.subscribe("removeAll", socketRemoveAll);
+        socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
+    });
+}
 </script>
 
 <template>
   <n-config-provider :theme-overrides="customTheme">
-    <router-view />
+    <n-spin :show="showRefreshSpin">
+        <n-message-provider>
+          <router-view />
+        </n-message-provider>
+    </n-spin>
   </n-config-provider>
 </template>
 
@@ -42,7 +71,6 @@ const customTheme = {
   height: 100%;
   max-width: 600px;
   margin: 0 auto 0 auto;
-  background: var(--background-color);
 }
 
 html,
@@ -50,5 +78,19 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+}
+
+.n-config-provider {
+  height: 100%;
+}
+
+.n-spin-container {
+    height: 100%;
+    /* 防止顶部无法占满 */
+    overflow: hidden;
+}
+
+.n-spin-content {
+  height: 100%;
 }
 </style>

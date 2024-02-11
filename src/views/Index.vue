@@ -7,48 +7,30 @@
 
 <script setup>
 import { onMounted } from "vue";
-import Wrapper from "@/components/Wrapper.vue";
 import TitleBar from "@/components/TitleBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
 import { updateMessageAreaHeight } from "@/hooks/message.js";
-import {
-    socketConnect,
-    socketNewItem,
-    socketProgress,
-    socketRemoveItem,
-    socketRemoveAll,
-    socketConnectionNumber,
-} from "@/hooks/socket.js";
-import { useSocketIO } from "@hlf01/vue3-socket.io";
-import { isDemo } from "@/utils";
 
 onMounted(() => {
     updateMessageAreaHeight();
     // 监控可视区域大小
     window.visualViewport.addEventListener("resize", updateMessageAreaHeight);
 });
-
-if (!isDemo()) {
-    onMounted(() => {
-        const socketIO = useSocketIO();
-        
-        socketIO.subscribe("connect", socketConnect);
-        socketIO.subscribe("newItem", item => socketNewItem(item));
-        socketIO.subscribe("progress", data => socketProgress(data));
-        socketIO.subscribe("removeItem", id => socketRemoveItem(id));
-        socketIO.subscribe("removeAll", socketRemoveAll);
-        socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
-    });
-}
 </script>
 
 <template>
-    <Wrapper>
+    <div>
         <TitleBar />
         <MessageArea />
         <ControlBar />
         <InputArea />
-    </Wrapper>
+    </div>
 </template>
+
+<style scoped>
+div {
+    background: var(--background-color);
+}
+</style>

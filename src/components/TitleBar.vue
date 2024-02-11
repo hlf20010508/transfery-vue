@@ -24,7 +24,7 @@ let hint = isDemo() ? "Demo模式" : "连接中";
 
 <style scoped>
 #title-bar {
-    margin-top: 10px;
+    padding-top: 10px;
     font-size: 20px;
     font-weight: 400;
     text-align: center;
