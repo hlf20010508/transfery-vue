@@ -2,9 +2,9 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { NForm, NFormItem, NCheckbox, NInput, NButton, NFlex, useMessage } from "naive-ui";
-import fingerprintjs from "@fingerprintjs/fingerprintjs";
 import http from "@/http";
-import { isAuthorized } from "@/stores/admin.js";
+import { isAuthorized, fingerprint } from "@/stores/admin.js";
+import { messageBuffer } from "@/stores/message.js";
 
 let authData = reactive({
     username: "",
@@ -37,14 +37,6 @@ async function validateForm() {
     }
 }
 
-// 获取浏览器指纹
-async function getFingerPrint() {
-    const fingerprint = await fingerprintjs.load();
-    const result = await fingerprint.get();
-
-    return result.visitorId;
-}
-
 const message = useMessage();
 const router = useRouter();
 async function auth(e) {
@@ -54,15 +46,9 @@ async function auth(e) {
 
     if (!isValid) return;
 
-    const fingerprint = await getFingerPrint();
     authData.fingerprint = fingerprint;
 
-    const messageReactive = message.loading(
-        "登录中...",
-        {
-            duration: 0
-        }
-    );
+    const messageReactive = message.loading("登录中...", { duration: 0 });
 
     http.post("/auth", authData).then((res) => {
         if (res.data.success) {
@@ -70,6 +56,7 @@ async function auth(e) {
             console.log("登录成功");
             message.success("登录成功");
             messageReactive.destroy();
+            messageBuffer.value = {};
             router.push({name: 'index'});
         } else {
             console.error("登录失败");

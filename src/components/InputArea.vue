@@ -9,6 +9,7 @@
 import { ref } from "vue";
 import { NInput } from "naive-ui";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
+import { isPrivate } from "@/stores/admin.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
 import { getCurrentTimeStamp, isDemo } from "@/utils"
 import http from "@/http";
@@ -37,6 +38,7 @@ function submitContent(content) {
             return;
         }
 
+        newItem.isPrivate = isPrivate.value;
         newItem.sid = socket.id;
 
         http.post("/newItem", newItem).then(res => {

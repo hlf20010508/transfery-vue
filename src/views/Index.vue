@@ -6,12 +6,17 @@
 -->
 
 <script setup>
-import { onMounted } from "vue";
+import { onBeforeMount, onMounted } from "vue";
 import TitleBar from "@/components/TitleBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
 import { updateMessageAreaHeight } from "@/hooks/message.js";
+import { auto_login } from "@/hooks/admin.js"
+
+onBeforeMount(async () => {
+    await auto_login()
+})
 
 onMounted(() => {
     updateMessageAreaHeight();

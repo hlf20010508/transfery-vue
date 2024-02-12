@@ -15,6 +15,7 @@ import MessageText from "./messageItem/MessageText.vue"
 import MessageFile from "./messageItem/MessageFile.vue"
 import ToBottomButton from "./messageItem/ToBottomButton.vue"
 import { messageBuffer, showToBottomButton } from "@/stores/message.js"
+import { baseHeaders } from "@/stores/admin.js"
 import RemoveAll from "./messageItem/RemoveAll.vue";
 import { messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { refreshPage } from "@/hooks/refresh.js"
@@ -35,6 +36,7 @@ function getNewPage($state) {
             params: {
                 size: obj_length(messageBuffer.value),
             },
+            headers: baseHeaders
         }
     ).then(res => {
         let data = res.data;
