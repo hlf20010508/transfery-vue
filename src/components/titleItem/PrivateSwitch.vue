@@ -6,7 +6,7 @@ import { isAuthorized, isPrivate } from "@/stores/admin.js";
 <template>
     <n-switch v-if="isAuthorized" v-model:value="isPrivate" size="small">
         <template #checked>
-            隐私
+            私密
         </template>
         <template #unchecked>
             公开

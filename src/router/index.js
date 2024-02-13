@@ -10,20 +10,20 @@ import Index from '@/views/Index.vue';
 import Login from '@/views/Login.vue';
 
 const routes = [
-  {
-    name: "index",
-    path: "/",
-    component: Index,
-  },
-  {
-    name: "login",
-    path: "/login",
-    component: Login,
-  },
+    {
+        name: "index",
+        path: "/",
+        component: Index,
+    },
+    {
+        name: "login",
+        path: "/login",
+        component: Login,
+    },
 ];
 
 export default createRouter({
-  history: createWebHashHistory(),
-  routes: routes,
+    history: createWebHashHistory(),
+    routes: routes,
 });
 

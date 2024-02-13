@@ -7,12 +7,20 @@
 
 <script setup>
 import { onBeforeMount, onMounted } from "vue";
+import { useSocketIO } from "@hlf01/vue3-socket.io";
 import TitleBar from "@/components/TitleBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
 import { updateMessageAreaHeight } from "@/hooks/message.js";
 import { auto_login } from "@/hooks/admin.js"
+import {
+    socketNewItem,
+    socketProgress,
+    socketRemoveItem,
+    socketRemoveAll,
+} from "@/hooks/socket.js";
+import { isDemo } from "@/utils";
 
 onBeforeMount(async () => {
     await auto_login()
@@ -23,6 +31,17 @@ onMounted(() => {
     // 监控可视区域大小
     window.visualViewport.addEventListener("resize", updateMessageAreaHeight);
 });
+
+if (!isDemo()) {
+    const socketIO = useSocketIO();
+
+    onMounted(() => {
+        socketIO.subscribe("newItem", item => socketNewItem(item));
+        socketIO.subscribe("progress", data => socketProgress(data));
+        socketIO.subscribe("removeItem", id => socketRemoveItem(id));
+        socketIO.subscribe("removeAll", socketRemoveAll);
+    });
+}
 </script>
 
 <template>
