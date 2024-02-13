@@ -11,3 +11,4 @@ export let messageBuffer = ref({});
 export let messageItemRemoving = ref(false);
 export let newMessageNumber = ref(0);
 export let showToBottomButton = ref(false);
+export let infiniteLoadingReset = ref(false);

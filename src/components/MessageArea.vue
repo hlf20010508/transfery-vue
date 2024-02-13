@@ -14,12 +14,12 @@ import http from "@/http";
 import MessageText from "./messageItem/MessageText.vue"
 import MessageFile from "./messageItem/MessageFile.vue"
 import ToBottomButton from "./messageItem/ToBottomButton.vue"
-import { messageBuffer, showToBottomButton } from "@/stores/message.js"
+import { messageBuffer, showToBottomButton, infiniteLoadingReset } from "@/stores/message.js"
 import { baseHeaders } from "@/stores/admin.js"
 import RemoveAll from "./messageItem/RemoveAll.vue";
 import { messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { refreshPage } from "@/hooks/refresh.js"
-import { isDemo ,obj_length } from "@/utils";
+import { isDemo, obj_length } from "@/utils";
 
 function getNewPage($state) {
     if (isDemo()) {
@@ -154,8 +154,8 @@ onMounted(() => {
 <template>
     <div style="position: relative;">
         <div id="message-area" @scroll="handleScroll">
-            <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" style="text-align: center;"
-                class="infinite-loading">
+            <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" :identifier="infiniteLoadingReset"
+                style="text-align: center;" class="infinite-loading">
                 <template #complete>
                     <span>{{ "" }}</span>
                 </template>
