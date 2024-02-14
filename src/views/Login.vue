@@ -52,7 +52,9 @@ async function auth(e) {
     const messageReactive = message.loading("登录中...", { duration: 0 });
 
     http.post("/auth", authData).then((res) => {
-        if (res.data.success) {
+        const data = res.data;
+        if (data.success) {
+            localStorage.setItem('certification', data.certification);
             isAuthorized.value = true;
             console.log("登录成功");
             message.success("登录成功");

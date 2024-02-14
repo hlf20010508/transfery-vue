@@ -15,21 +15,11 @@ const options = [{
     key: "quit"
 }];
 
-function clearAllCookies() {
-    const cookies = document.cookie.split(";");
-
-    for (let cookie of cookies) {
-        const eqPos = cookie.indexOf("=");
-        const name = eqPos > -1 ? cookie.slice(0, eqPos).trim() : cookie.trim();
-        document.cookie = name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    }
-}
-
 function handleSelect(key) {
     if (key === "quit") {
         isAuthorized.value = false;
         isPrivate.value = false;
-        clearAllCookies();
+        localStorage.clear();
         messageBuffer.value = {};
         infiniteLoadingReset.value = !infiniteLoadingReset.value;
         socket.emit("leaveRoom", "private");

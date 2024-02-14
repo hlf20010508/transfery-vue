@@ -7,7 +7,7 @@
 
 import fingerprintjs from "@fingerprintjs/fingerprintjs";
 import http from "@/http";
-import { isAuthorized, baseHeaders } from "@/stores/admin.js"
+import { isAuthorized, getBaseHeaders } from "@/stores/admin.js"
 import { socket } from "@/socket";
 
 // 获取浏览器指纹
@@ -20,7 +20,7 @@ export async function getFingerPrint() {
 
 export async function auto_login() {
     if (!isAuthorized.value) {
-        await http.get('/login', { headers: baseHeaders }).then(res => {
+        await http.get('/login', { headers: getBaseHeaders() }).then(res => {
             if (res.data.success) isAuthorized.value = true;
         });
     }
