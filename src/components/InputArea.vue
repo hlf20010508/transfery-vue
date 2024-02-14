@@ -26,8 +26,8 @@ function submitContent(content) {
 
         let newItem = {
             content: content,
-            type: "text",
             timestamp: timestamp,
+            type: "text",
         };
 
         if(isDemo()) {

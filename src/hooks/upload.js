@@ -8,6 +8,7 @@
 import { reactive } from "vue";
 import http from "@/http";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js"
+import { isPrivate } from "@/stores/admin.js"
 import { messageAreaScrollToBottom } from "@/hooks/message.js"
 import { socketEmitProgress } from "@/hooks/socket.js"
 import { socket } from "@/socket";
@@ -114,6 +115,8 @@ export function uploadFile(params) {
         return;
     }
 
+    item.isPrivate = isPrivate.value;
+
     http
         .post("/fetchUploadId", { content: item.content, timestamp: item.timestamp })
         .then(async res => {
@@ -125,6 +128,7 @@ export function uploadFile(params) {
                 http.post("/newItem", {
                     content: item.content,
                     timestamp: item.timestamp,
+                    isPrivate: item.isPrivate,
                     type: item.type,
                     fileName: item.fileName,
                     isComplete: item.isComplete,
