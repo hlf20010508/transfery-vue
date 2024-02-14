@@ -6,7 +6,7 @@
 -->
 
 <script setup>
-import { onBeforeMount, onMounted } from "vue";
+import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
 import TitleBar from "@/components/TitleBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
@@ -22,15 +22,15 @@ import {
 } from "@/hooks/socket.js";
 import { isDemo } from "@/utils";
 
-onBeforeMount(async () => {
-    await auto_login()
-})
+onBeforeMount(async () => await auto_login());
 
 onMounted(() => {
     updateMessageAreaHeight();
     // 监控可视区域大小
     window.visualViewport.addEventListener("resize", updateMessageAreaHeight);
 });
+
+onBeforeUnmount(() => window.visualViewport.removeEventListener("resize", updateMessageAreaHeight));
 
 if (!isDemo()) {
     const socketIO = useSocketIO();

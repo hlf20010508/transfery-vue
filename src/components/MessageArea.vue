@@ -6,7 +6,7 @@
 -->
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onBeforeUnmount } from "vue";
 import { NEmpty } from "naive-ui";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
@@ -148,6 +148,10 @@ onMounted(() => {
     }
 
     window.addEventListener("visibilitychange", autoSync);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener("visibilitychange", autoSync);
 });
 </script>
 

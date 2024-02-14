@@ -6,7 +6,7 @@
 -->
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { messageItemRemoving, messageBuffer, newMessageNumber } from "@/stores/message.js";
@@ -59,11 +59,12 @@ function removeItem() {
 }
 
 let showDate = computed(shouldShowDate);
-
+let ElementVisibleObserver;
+const targetElement = document.querySelector('#message-item-' + item.id);
 if (!item.hasChecked) {
     onMounted(() => {
         // 监视新消息是否能够被看见
-        let ElementVisibleObserver = new IntersectionObserver((entries, observer) => {
+        ElementVisibleObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     messageBuffer.value[item.id].hasChecked = true;
@@ -75,9 +76,10 @@ if (!item.hasChecked) {
             threshold: 1.0 // 1.0表示元素100%进入视口时触发
         });
 
-        const targetElement = document.querySelector('#message-item-' + item.id);
         ElementVisibleObserver.observe(targetElement);
     })
+
+    onUnmounted(() => ElementVisibleObserver.unobserve(targetElement));
 }
 </script>
 

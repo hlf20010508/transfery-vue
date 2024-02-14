@@ -6,7 +6,7 @@
 -->
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { NProgress, NIcon } from "naive-ui";
 import { getIcon } from 'material-file-icons';
 import { Play, Pause } from "@vicons/ionicons5";
@@ -23,32 +23,39 @@ const svg = getIcon(item.content).svg;
 
 let isIconHovered = ref(false);
 
+function addHoverListener() {
+    jquery("#progress-div-" + props.index).on("mouseenter", () => {
+        if (!item.pause) {
+            isIconHovered.value = true;
+        }
+    });
+    jquery("#progress-div-" + props.index).on("mouseleave", () => {
+        if (!item.pause) {
+            isIconHovered.value = false;
+        }
+    });
+}
+
+function removeHoverListener() {
+    jquery("#progress-div-" + props.index).off("mouseenter");
+    jquery("#progress-div-" + props.index).off("mouseleave");
+}
+
 if (item.isHost) {
     onMounted(() => {
         jquery(".progress-div").css("cursor", "pointer");
-
-        jquery("#progress-div-" + props.index).on("mouseenter", () => {
-            if (!item.pause) {
-                isIconHovered.value = true;
-            }
-        });
-        jquery("#progress-div-" + props.index).on("mouseleave", () => {
-            if (!item.pause) {
-                isIconHovered.value = false;
-            }
-        });
+        addHoverListener();
 
         // 上传完成后关闭监听
-        watch(() => item.isComplete, (isComplete) => {
-            if (isComplete) {
-                jquery("#progress-div-" + props.index).off("mouseenter");
-                jquery("#progress-div-" + props.index).off("mouseleave");
-            }
+        watch(() => item.isComplete, isComplete => {
+            if (isComplete) removeHoverListener();
         });
     })
+
+    onUnmounted(removeHoverListener);
 } else {
     onMounted(() => {
-        watch(() => item.pause, (pause) => {
+        watch(() => item.pause, pause => {
             if (pause) {
                 jquery("#progress-dot-" + props.index).addClass("dotRed");
                 jquery("#progress-dot-" + props.index).removeClass("dotGreen");
