@@ -9,6 +9,7 @@
 import { Close } from "@element-plus/icons-vue";
 import ControlItemBase from "./ControlItemBase.vue";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
+import { isAuthorized } from "@/stores/admin.js";
 import { obj_length } from "@/utils";
 
 function toggleItemRemoving() {
@@ -19,7 +20,7 @@ function toggleItemRemoving() {
 </script>
 
 <template>
-    <ControlItemBase>
+    <ControlItemBase v-if="isAuthorized">
         <Close @click="toggleItemRemoving" />
     </ControlItemBase>
 </template>
