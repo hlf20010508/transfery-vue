@@ -5,8 +5,8 @@
 :license: MIT, see LICENSE for more details.
 */
 
-import { messageBuffer } from "@/stores/message.js";
-import { newMessageNumber, showToBottomButton } from "@/stores/message.js";
+import { isMessageAreaAtBottom, messageAreaScrollToBottom } from "@/hooks/message.js";
+import { messageBuffer, newMessageNumber, showToBottomButton } from "@/stores/message.js";
 import { connectionNumber } from "@/stores/connection.js";
 import { socket } from "@/socket";
 
@@ -28,7 +28,10 @@ export function socketNewItem(item) {
     console.log("new item pushed");
 
     newMessageNumber.value += 1;
-    showToBottomButton.value = true;
+
+    if (!isMessageAreaAtBottom())
+        showToBottomButton.value = true;
+    else messageAreaScrollToBottom();
 }
 
 export function socketProgress(data) {
