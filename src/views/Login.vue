@@ -5,6 +5,7 @@ import { NForm, NFormItem, NCheckbox, NInput, NButton, NFlex, useMessage } from 
 import http from "@/http";
 import { isAuthorized, fingerprint } from "@/stores/admin.js";
 import { messageBuffer } from "@/stores/message.js";
+import { socket } from "@/socket";
 
 let authData = reactive({
     username: "",
@@ -57,6 +58,7 @@ async function auth(e) {
             message.success("登录成功");
             messageReactive.destroy();
             messageBuffer.value = {};
+            socket.emit("joinRoom", "private");
             router.push({name: 'index'});
         } else {
             console.error("登录失败");

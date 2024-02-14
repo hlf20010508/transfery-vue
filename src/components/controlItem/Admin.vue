@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import ControlItemBase from "./ControlItemBase.vue";
 import { isAuthorized, isPrivate } from "@/stores/admin.js"
 import { messageBuffer, infiniteLoadingReset } from "@/stores/message.js"
+import { socket } from "@/socket";
 
 const router = useRouter();
 const message = useMessage();
@@ -31,6 +32,8 @@ function handleSelect(key) {
         clearAllCookies();
         messageBuffer.value = {};
         infiniteLoadingReset.value = !infiniteLoadingReset.value;
+        socket.emit("leaveRoom", "private");
+        socket.emit("joinRoom", "public");
         console.log("退出成功");
         message.success("退出成功");
     }

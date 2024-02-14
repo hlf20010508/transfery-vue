@@ -20,7 +20,9 @@ import {
     socketRemoveItem,
     socketRemoveAll,
 } from "@/hooks/socket.js";
+import { isAuthorized } from "@/stores/admin.js";
 import { isDemo } from "@/utils";
+import { socket } from "@/socket";
 
 onBeforeMount(async () => await auto_login());
 
@@ -41,6 +43,8 @@ if (!isDemo()) {
         socketIO.subscribe("removeItem", id => socketRemoveItem(id));
         socketIO.subscribe("removeAll", socketRemoveAll);
     });
+
+    onBeforeUnmount(() => socket.emit("leaveRoom", isAuthorized.value ? "private" : "public"));
 }
 </script>
 

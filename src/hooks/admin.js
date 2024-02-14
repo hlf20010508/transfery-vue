@@ -8,6 +8,7 @@
 import fingerprintjs from "@fingerprintjs/fingerprintjs";
 import http from "@/http";
 import { isAuthorized, baseHeaders } from "@/stores/admin.js"
+import { socket } from "@/socket";
 
 // 获取浏览器指纹
 export async function getFingerPrint() {
@@ -23,4 +24,5 @@ export async function auto_login() {
             if (res.data.success) isAuthorized.value = true;
         });
     }
+    socket.emit("joinRoom", isAuthorized.value ? "private" : "public");
 }
