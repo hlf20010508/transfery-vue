@@ -6,11 +6,11 @@
 */
 
 export function randomInt(min, max) {
-    let floatRandom = Math.random()
+    const floatRandom = Math.random()
 
-    let difference = max - min
-    let random = Math.round(difference * floatRandom)
-    let randomWithinRange = random + min
+    const difference = max - min
+    const random = Math.round(difference * floatRandom)
+    const randomWithinRange = random + min
 
     return randomWithinRange
 }

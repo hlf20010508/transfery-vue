@@ -24,20 +24,22 @@ async function uploadParts(item, startPartNumber) {
         if (item.pause) {
             return;
         }
+
         // 此时禁止resume
         item.resumeAllowed = false
 
-        let startBytes = partNumber * BYTES_PER_PIECE;
+        const startBytes = partNumber * BYTES_PER_PIECE;
         let endBytes = startBytes + BYTES_PER_PIECE;
 
-        let fileSize = item.file.size;
+        const fileSize = item.file.size;
         if (endBytes > fileSize) {
             endBytes = fileSize;
             isComplete = true;
         }
+
         partNumber += 1;
 
-        let filePart = item.file.slice(startBytes, endBytes);
+        const filePart = item.file.slice(startBytes, endBytes);
 
         let form = new FormData();
         form.append("filePart", filePart);
@@ -51,25 +53,29 @@ async function uploadParts(item, startPartNumber) {
             data: form,
             headers: { "Content-Type": "multipart/form-data" },
         }).then(res => {
-            let data = res.data
+            const data = res.data
             if (data.success) {
                 item.percentage = parseInt(endBytes / fileSize * 100);
                 item.parts.push({
                     partNumber: partNumber,
                     etag: data.etag,
                 });
+
                 socketEmitProgress(item);
+
                 // 此后可以resume
                 item.resumeAllowed = true;
             }
         });
     }
+
     await completeUpload(item);
 }
 
 async function completeUpload(item) {
     // 此时禁止resume，否则虽然能够成功上传，但是后台可能会多收到分片
     item.resumeAllowed = false
+
     await http
         .post("/completeUpload", {
             id: item.id,
@@ -80,7 +86,9 @@ async function completeUpload(item) {
         .then(res => {
             if (res.data.success) {
                 item.isComplete = true;
+
                 socketEmitProgress(item);
+
                 console.log("upload complete:", item.fileName);
             }
         });
@@ -89,8 +97,10 @@ async function completeUpload(item) {
 export function uploadFile(params) {
     // 立即终止上传按钮对上传项目的监控，防止重复上传
     params.onFinish();
+
     // 关闭删除模式
     messageItemRemoving.value = false;
+
     // 传入参数提取出file，file.file为File对象
     let file = params.file.file;
 
@@ -120,7 +130,7 @@ export function uploadFile(params) {
     http
         .post("/fetchUploadId", { content: item.content, timestamp: item.timestamp })
         .then(async res => {
-            let data = res.data;
+            const data = res.data;
             if (data.success) {
                 item.uploadId = data.uploadId;
                 item.fileName = data.fileName;
@@ -134,7 +144,7 @@ export function uploadFile(params) {
                     isComplete: item.isComplete,
                     sid: socket.id,
                 }).then(async res => {
-                    let data = res.data;
+                    const data = res.data;
                     if (data.success) {
                         item.id = data.id;
 
@@ -153,7 +163,9 @@ export function uploadFile(params) {
 
 export function pauseUpload(id) {
     let item = messageBuffer.value[id];
-    if (item.isHost) item.pause = true;
+
+    if (item.isHost)
+        item.pause = true;
 }
 
 export async function resumeUpload(id) {
@@ -168,8 +180,11 @@ export async function resumeUpload(id) {
     // 在上传分片的过程中禁止resume，否则若短时间内多次切换pause和resume会调用多个uploadParts
     if (messageBuffer.value[id].resumeAllowed) {
         let item = messageBuffer.value[id];
+
         item.pause = false;
-        let partNumber = item.parts.length;
+
+        const partNumber = item.parts.length;
+
         console.log("resume uploadId:", item.uploadId);
         console.log("resume fileName:", item.fileName);
 

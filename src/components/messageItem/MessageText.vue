@@ -12,8 +12,7 @@ import { CopyDocument, Check } from "@element-plus/icons-vue";
 import MessageItemBase from "./MessageItemBase.vue";
 
 const props = defineProps(["messageList", "index"]);
-
-let item = props.messageList[props.index];
+const item = props.messageList[props.index];
 
 let textCopied = ref(false);
 let timer = -1; // 未定义计时器时的默认ID
@@ -22,20 +21,23 @@ function copyText(content) {
     content = content.trim();
 
     // 当上下文非安全时，即非https或localhost时，无法使用navigator.clipboard
-    if (window.isSecureContext) navigator.clipboard.writeText(content);
-    else copyTextFallback(content);
+    if (window.isSecureContext)
+        navigator.clipboard.writeText(content);
+    else
+        copyTextFallback(content);
 
     textCopied.value = true;
 
     // 防止大量重复点击产生多个计时器
     clearTimeout(timer);
-    timer = setTimeout(() => {
-        textCopied.value = false;
-    }, 1000);
+    timer = setTimeout(
+        () => textCopied.value = false,
+        1000
+    );
 }
 
 function copyTextFallback(content) {
-    var textArea = document.createElement("textarea");
+    let textArea = document.createElement("textarea");
     textArea.value = content;
 
     // 不能使用
@@ -54,6 +56,7 @@ function copyTextFallback(content) {
     textArea.style.background = "transparent";
 
     document.body.appendChild(textArea);
+
     textArea.focus();
     textArea.select();
 

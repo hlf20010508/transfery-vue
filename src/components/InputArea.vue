@@ -22,7 +22,7 @@ function submitContent(content) {
     if (content != "") {
         console.log("submit: ", content);
 
-        let timestamp = getCurrentTimeStamp();
+        const timestamp = getCurrentTimeStamp();
 
         let newItem = {
             content: content,
@@ -30,7 +30,7 @@ function submitContent(content) {
             type: "text",
         };
 
-        if(isDemo()) {
+        if (isDemo()) {
             import("@/demo").then(module => {
                 let useDemo = module.default();
                 useDemo.submitContent(newItem);
@@ -42,13 +42,16 @@ function submitContent(content) {
         newItem.sid = socket.id;
 
         http.post("/newItem", newItem).then(res => {
-            let data = res.data;
+            const data = res.data;
             if (data.success) {
                 newItem.id = data.id;
                 newItem.hasChecked = true;
+
                 messageBuffer.value[newItem.id] = newItem;
-                console.log("pushed");
+
                 messageAreaScrollToBottom();
+
+                console.log("pushed");
             }
         });
     }
@@ -72,8 +75,8 @@ function handleInputAreaFocus() {
 </script>
 
 <template>
-    <n-input  id="input-area" v-model:value="textContent" type="textarea" :rows="5" placeholder="请输入消息内容" style="--n-border: none;"
-        @focus="handleInputAreaFocus" @keydown="submit" />
+    <n-input id="input-area" v-model:value="textContent" type="textarea" :rows="5" placeholder="请输入消息内容"
+        style="--n-border: none;" @focus="handleInputAreaFocus" @keydown="submit" />
 </template>
 
 <style scoped>

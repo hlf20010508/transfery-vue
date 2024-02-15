@@ -39,37 +39,40 @@ function getNewPage($state) {
             headers: getBaseHeaders()
         }
     ).then(res => {
-        let data = res.data;
+        const data = res.data;
         if (data.messages.length > 0) {
-            let messages = data.messages;
+            const messages = data.messages;
             for (let i = 0; i < messages.length; i++) {
                 let message = messages[i];
+
                 message.hasChecked = true;
                 if (message.type === "file") {
                     message.percentage = 0;
                     message.pause = true;
                     message.isHost = false;
                 }
+
                 messageBuffer.value[message.id] = message;
             }
             $state.loaded();
-        } else {
+        } else
             $state.complete();
-        }
     });
 }
 
 function getMessageList() {
     let messageList = Object.values(messageBuffer.value);
+
     messageList.sort((a, b) => {
         // 按timestamp升序
         const timestampDiff = a.timestamp - b.timestamp;
-        if (timestampDiff === 0) {
+        if (timestampDiff === 0)
             // 如果timestamp相同，则按id升序
             return a.id - b.id;
-        }
+
         return timestampDiff;
     });
+
     return messageList;
 }
 
@@ -92,7 +95,7 @@ function sync() {
             },
         })
         .then((res) => {
-            let itemsToBeSynced = res.data.newItems;
+            const itemsToBeSynced = res.data.newItems;
             console.log("received synced new items:", itemsToBeSynced);
 
             // 如果有真正的新消息，就在同步完毕后滚动到底部
@@ -107,35 +110,41 @@ function sync() {
             if (hasNewItem) {
                 messageAreaScrollToBottom();
                 console.log("new items synced");
-            } else {
+            } else
                 console.log("no unsynced item");
-            }
         });
 }
 
 let timer = -1; // 未定义计时器时的默认ID
 const refreshInterval = 30 * 60 * 1000 // 30min
+
 function autoSync() {
     // 手机浏览器切出去后再回来就无法收到期间的消息，需要刷新
     if (document.visibilityState === "hidden") {
         //如果切出去太久，则会刷新页面
         console.log("app hidden");
-        timer = setInterval(() => {
-            refreshPage();
-        }, refreshInterval); //超过时间没有切回，在切回后刷新
+
+        timer = setInterval(
+            refreshPage,
+            refreshInterval
+        ); //超过时间没有切回，在切回后刷新
     }
+
     // 切回后同步数据
     if (document.visibilityState === "visible") {
-        clearInterval(timer); //清除计时器
         console.log("app visible");
-        //只刷新数据，不刷新页面
-        sync();
+
+        clearInterval(timer); //清除计时器
+
+        sync(); //刷新数据
     }
 }
 
 function handleScroll() {
-    if (!isMessageAreaAtBottom()) showToBottomButton.value = true;
-    else showToBottomButton.value = false;
+    if (!isMessageAreaAtBottom())
+        showToBottomButton.value = true;
+    else
+        showToBottomButton.value = false;
 }
 
 onMounted(() => {
@@ -150,9 +159,7 @@ onMounted(() => {
     window.addEventListener("visibilitychange", autoSync);
 });
 
-onBeforeUnmount(() => {
-    window.removeEventListener("visibilitychange", autoSync);
-});
+onBeforeUnmount(() => window.removeEventListener("visibilitychange", autoSync));
 </script>
 
 <template>

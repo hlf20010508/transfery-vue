@@ -8,9 +8,8 @@
 import axios from "axios"
 import axiosRetry from "axios-retry";
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV)
     axios.defaults.baseURL = '/api'
-}
 
 axiosRetry(axios, {
     retryCondition: error => {

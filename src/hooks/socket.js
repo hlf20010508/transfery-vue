@@ -19,11 +19,11 @@ export function socketNewItem(item) {
 
     // 是否已被看到
     item.hasChecked = false;
-
     if (item.type === "file") {
         item.percentage = 0;
         item.pause = false;
     }
+
     messageBuffer.value[item.id] = item;
     console.log("new item pushed");
 
@@ -31,7 +31,8 @@ export function socketNewItem(item) {
 
     if (!isMessageAreaAtBottom())
         showToBottomButton.value = true;
-    else messageAreaScrollToBottom();
+    else
+        messageAreaScrollToBottom();
 }
 
 export function socketProgress(data) {

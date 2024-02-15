@@ -24,8 +24,6 @@ import { isAuthorized } from "@/stores/admin.js";
 import { isDemo } from "@/utils";
 import { socket } from "@/socket";
 
-onBeforeMount(async () => await auto_login());
-
 onMounted(() => {
     updateMessageAreaHeight();
     // 监控可视区域大小
@@ -36,6 +34,8 @@ onBeforeUnmount(() => window.visualViewport.removeEventListener("resize", update
 
 if (!isDemo()) {
     const socketIO = useSocketIO();
+
+    onBeforeMount(async () => await auto_login());
 
     onMounted(() => {
         socketIO.subscribe("newItem", item => socketNewItem(item));

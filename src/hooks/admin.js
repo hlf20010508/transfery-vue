@@ -19,10 +19,11 @@ export async function getFingerPrint() {
 }
 
 export async function auto_login() {
-    if (!isAuthorized.value) {
+    if (!isAuthorized.value)
         await http.get('/login', { headers: getBaseHeaders() }).then(res => {
-            if (res.data.success) isAuthorized.value = true;
+            if (res.data.success)
+                isAuthorized.value = true;
         });
-    }
+
     socket.emit("joinRoom", isAuthorized.value ? "private" : "public");
 }

@@ -16,23 +16,19 @@ import { pauseUpload, resumeUpload } from "@/hooks/upload.js"
 import { download } from "@/hooks/download.js"
 
 const props = defineProps(["messageList", "index"])
-
 const item = props.messageList[props.index];
 
 const svg = getIcon(item.content).svg;
-
 let isIconHovered = ref(false);
 
 function addHoverListener() {
     jquery("#progress-div-" + props.index).on("mouseenter", () => {
-        if (!item.pause) {
+        if (!item.pause)
             isIconHovered.value = true;
-        }
     });
     jquery("#progress-div-" + props.index).on("mouseleave", () => {
-        if (!item.pause) {
+        if (!item.pause)
             isIconHovered.value = false;
-        }
     });
 }
 

@@ -19,13 +19,17 @@ function handleSelect(key) {
     if (key === "quit") {
         isAuthorized.value = false;
         isPrivate.value = false;
+
         localStorage.clear();
         messageBuffer.value = {};
+
         infiniteLoadingReset.value = !infiniteLoadingReset.value;
+
         socket.emit("leaveRoom", "private");
         socket.emit("joinRoom", "public");
-        console.log("退出成功");
+
         message.success("退出成功");
+        console.log("退出成功");
     }
 }
 </script>
@@ -35,6 +39,6 @@ function handleSelect(key) {
         <n-dropdown v-if="isAuthorized" trigger="click" :options="options" @select="handleSelect">
             <User />
         </n-dropdown>
-        <User v-else @click="router.push({name: 'login'})"/>
+        <User v-else @click="router.push({ name: 'login' })" />
     </ControlItemBase>
 </template>

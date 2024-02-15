@@ -14,14 +14,12 @@ import { socket } from "@/socket";
 import http from "@/http";
 import { obj_length, isDemo } from "@/utils";
 
-watch(() => obj_length(messageBuffer.value), (newValue) => {
-    if (newValue == 0) {
+watch(() => obj_length(messageBuffer.value), newValue => {
+    if (newValue == 0)
         messageItemRemoving.value = false;
-    }
 });
 
 const message = useMessage();
-
 const messageConfig = {
     closable: true,
     duration: 1500,
@@ -36,6 +34,7 @@ function removeAll() {
             })
             return;
         }
+
         http.get("/removeAll", {
             params: {
                 sid: socket.id,
@@ -43,15 +42,16 @@ function removeAll() {
         }).then(res => {
             if (res.data.success) {
                 messageBuffer.value = {};
+
                 messageItemRemoving.value = false;
                 showToBottomButton.value = false;
-                console.log("removed all items");
+
                 message.success("删除成功", messageConfig);
+                console.log("removed all items");
             }
         })
-    } else {
+    } else
         message.info("已取消删除", messageConfig);
-    }
 }
 </script>
 

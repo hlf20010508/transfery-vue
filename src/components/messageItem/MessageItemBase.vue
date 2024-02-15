@@ -14,26 +14,23 @@ import { isSameDate, isDemo } from "@/utils";
 import { socket } from "@/socket";
 import http from "@/http";
 
-let props = defineProps(["messageList", "index"]);
-
+const props = defineProps(["messageList", "index"]);
 let item = props.messageList[props.index];
 
 function shouldShowDate() {
-    let messageList = props.messageList;
-    let index = props.index;
+    const messageList = props.messageList;
+    const index = props.index;
 
     if (index > 0) {
-        let timestamp1 = messageList[index].timestamp;
-        let timestamp2 = messageList[index - 1].timestamp;
+        const timestamp1 = messageList[index].timestamp;
+        const timestamp2 = messageList[index - 1].timestamp;
 
-        if (isSameDate(timestamp1, timestamp2)) {
+        if (isSameDate(timestamp1, timestamp2))
             return false;
-        } else {
+        else
             return true;
-        }
-    } else {
+    } else
         return true;
-    }
 }
 
 function removeItem() {
@@ -50,7 +47,7 @@ function removeItem() {
     item.sid = socket.id;
 
     http.post("/removeItem", item).then(res => {
-        let data = res.data;
+        const data = res.data;
         if (data.success) {
             delete messageBuffer.value[item.id];
             console.log("removed");
@@ -59,9 +56,11 @@ function removeItem() {
 }
 
 let showDate = computed(shouldShowDate);
-let ElementVisibleObserver;
-let targetElement;
+
 if (!item.hasChecked) {
+    let ElementVisibleObserver;
+    let targetElement;
+
     onMounted(() => {
         // 监视新消息是否能够被看见
         ElementVisibleObserver = new IntersectionObserver((entries, observer) => {

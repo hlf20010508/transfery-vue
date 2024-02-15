@@ -13,9 +13,8 @@ import { isAuthorized } from "@/stores/admin.js";
 import { obj_length } from "@/utils";
 
 function toggleItemRemoving() {
-    if (obj_length(messageBuffer.value) > 0) {
+    if (obj_length(messageBuffer.value) > 0)
         messageItemRemoving.value = !messageItemRemoving.value;
-    }
 }
 </script>
 

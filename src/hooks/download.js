@@ -22,7 +22,8 @@ export function download(item) {
     http
         .get("/downloadUrl", { params: { fileName: item.fileName } })
         .then(res => {
-            let data = res.data;
+            const data = res.data;
+
             if (data.success) {
                 window.open(data.url, '_blank');
             }

@@ -29,43 +29,52 @@ const loginForm = ref();
 async function validateForm() {
     try {
         await loginForm.value.validate();
+
         return true;
     } catch (errors) {
-        for (let error of errors) {
+        for (let error of errors)
             console.error(error[0].message);
-        }
+
         return false;
     }
 }
 
 const message = useMessage();
 const router = useRouter();
+
 async function auth(e) {
     e.preventDefault();
 
     const isValid = await validateForm();
 
-    if (!isValid) return;
+    if (!isValid)
+        return;
 
     authData.fingerprint = fingerprint;
 
     const messageReactive = message.loading("登录中...", { duration: 0 });
 
-    http.post("/auth", authData).then((res) => {
+    http.post("/auth", authData).then(res => {
         const data = res.data;
         if (data.success) {
             localStorage.setItem('certification', data.certification);
-            isAuthorized.value = true;
-            console.log("登录成功");
-            message.success("登录成功");
+
             messageReactive.destroy();
             messageBuffer.value = {};
+
+            isAuthorized.value = true;
+
+            message.success("登录成功");
+            console.log("登录成功");
+
             socket.emit("joinRoom", "private");
-            router.push({name: 'index'});
+
+            router.push({ name: 'index' });
         } else {
-            console.error("登录失败");
-            message.error("登录失败");
             messageReactive.destroy();
+
+            message.error("登录失败");
+            console.error("登录失败");
         }
     });
 }

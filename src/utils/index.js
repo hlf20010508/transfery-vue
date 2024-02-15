@@ -16,8 +16,9 @@ export function getCurrentTimeStamp() {
 }
 
 export function isSameDate(timestamp1, timestamp2) {
-    let date1 = new Date(timestamp1).toLocaleDateString();
-    let date2 = new Date(timestamp2).toLocaleDateString();
+    const date1 = new Date(timestamp1).toLocaleDateString();
+    const date2 = new Date(timestamp2).toLocaleDateString();
+
     return date1 === date2;
 }
 
