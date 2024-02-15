@@ -19,10 +19,9 @@ import {
     socketProgress,
     socketRemoveItem,
     socketRemoveAll,
+    socketLeaveRoom
 } from "@/hooks/socket.js";
-import { isAuthorized } from "@/stores/admin.js";
 import { isDemo } from "@/utils";
-import { socket } from "@/socket";
 
 onMounted(() => {
     updateMessageAreaHeight();
@@ -44,7 +43,7 @@ if (!isDemo()) {
         socketIO.subscribe("removeAll", socketRemoveAll);
     });
 
-    onBeforeUnmount(() => socket.emit("leaveRoom", isAuthorized.value ? "private" : "public"));
+    onBeforeUnmount(socketLeaveRoom);
 }
 </script>
 

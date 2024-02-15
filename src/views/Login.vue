@@ -1,3 +1,10 @@
+<!--
+:project: transfery-vue
+:author: L-ING
+:copyright: (C) 2024 L-ING <hlf01@icloud.com>
+:license: MIT, see LICENSE for more details.
+-->
+
 <script setup>
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -5,7 +12,7 @@ import { NForm, NFormItem, NCheckbox, NInput, NButton, NFlex, useMessage } from 
 import http from "@/http";
 import { isAuthorized, fingerprint } from "@/stores/admin.js";
 import { messageBuffer } from "@/stores/message.js";
-import { socket } from "@/socket";
+import { socketJoinRoom } from "@/hooks/socket.js";
 
 let authData = reactive({
     username: "",
@@ -57,17 +64,16 @@ async function auth(e) {
     http.post("/auth", authData).then(res => {
         const data = res.data;
         if (data.success) {
-            localStorage.setItem('certification', data.certification);
+            localStorage.setItem('certificate', data.certificate);
 
             messageReactive.destroy();
             messageBuffer.value = {};
 
             isAuthorized.value = true;
+            socketJoinRoom();
 
             message.success("登录成功");
             console.log("登录成功");
-
-            socket.emit("joinRoom", "private");
 
             router.push({ name: 'index' });
         } else {

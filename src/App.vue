@@ -9,7 +9,7 @@
 import { onMounted } from "vue";
 import { NConfigProvider, NSpin, NMessageProvider } from "naive-ui";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
-import { showRefreshSpin } from "@/stores/refresh.js"
+import { showRefreshSpin } from "@/stores/refresh.js";
 import {
     socketConnect,
     socketConnectionNumber,

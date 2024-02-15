@@ -6,7 +6,9 @@
 */
 
 import { isMessageAreaAtBottom, messageAreaScrollToBottom } from "@/hooks/message.js";
+import { getCertificate } from "@/hooks/certificate.js";
 import { messageBuffer, newMessageNumber, showToBottomButton } from "@/stores/message.js";
+import { isAuthorized } from "@/stores/admin.js";
 import { connectionNumber } from "@/stores/connection.js";
 import { socket } from "@/socket";
 
@@ -58,6 +60,21 @@ export function socketEmitProgress(item) {
         pause: item.pause,
         isComplete: item.isComplete
     });
+}
+
+export function socketJoinRoom() {
+    if (isAuthorized.value) {
+        const data = {
+            authorization: getCertificate(),
+            roomName: "private"
+        };
+        socket.emit("joinRoom", data);
+    } else
+        socket.emit("joinRoom", { roomName: "public" });
+}
+
+export function socketLeaveRoom() {
+    socket.emit("leaveRoom", isAuthorized.value ? "private" : "public")
 }
 
 export function socketConnectionNumber(number) {

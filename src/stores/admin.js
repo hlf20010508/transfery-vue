@@ -1,12 +1,13 @@
-import { ref} from "vue";
-import { getFingerPrint } from "@/hooks/admin.js";
+/*
+:project: transfery-vue
+:author: L-ING
+:copyright: (C) 2024 L-ING <hlf01@icloud.com>
+:license: MIT, see LICENSE for more details.
+*/
 
-export const fingerprint = await getFingerPrint();
+import { ref } from "vue";
+import { getFingerprint } from "@/utils";
+
+export const fingerprint = getFingerprint();
 export let isAuthorized = ref(false);
 export let isPrivate = ref(false);
-
-export function getBaseHeaders() {
-    return {
-        Authorization: `fingerprint: ${fingerprint}, certification: ${localStorage.getItem('certification')}`
-    };
-};

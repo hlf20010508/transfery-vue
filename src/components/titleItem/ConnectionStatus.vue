@@ -1,3 +1,10 @@
+<!--
+:project: transfery-vue
+:author: L-ING
+:copyright: (C) 2024 L-ING <hlf01@icloud.com>
+:license: MIT, see LICENSE for more details.
+-->
+
 <script setup>
 import { connectionNumber } from "@/stores/connection.js";
 import { isDemo } from "@/utils";
