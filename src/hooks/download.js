@@ -5,6 +5,7 @@
 :license: MIT, see LICENSE for more details.
 */
 
+import jquery from "jquery";
 import http from "@/http";
 import { isDemo } from "@/utils";
 
@@ -25,7 +26,17 @@ export function download(item) {
             const data = res.data;
 
             if (data.success) {
-                window.open(data.url, '_blank');
+                // 在安卓浏览器上可能会无法唤起下载
+                // window.open(data.url, '_blank');
+
+                let eleLink = jquery("<a></a>")
+                    .attr("target", "_blank")
+                    .attr("href", data.url)
+                    .css("display", "none")
+                    .appendTo("body");
+
+                eleLink[0].click();
+                eleLink.remove();
             }
         });
 }
