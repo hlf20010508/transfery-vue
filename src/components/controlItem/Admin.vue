@@ -17,33 +17,61 @@ import { socketJoinRoom, socketLeaveRoom } from "@/hooks/socket.js"
 const router = useRouter();
 const message = useMessage();
 
-const options = [{
-    label: "退出",
-    key: "quit"
-}];
+const options = [
+    {
+        label: "设备",
+        key: "device"
+    },
+    {
+        label: "授权",
+        key: "token"
+    },
+    {
+        label: "退出",
+        key: "quit"
+    },
+];
+
+function quit() {
+    socketLeaveRoom();
+    isAuthorized.value = false;
+    socketJoinRoom();
+
+    isPrivate.value = false;
+
+    localStorage.clear();
+    messageBuffer.value = {};
+
+    infiniteLoadingReset.value = !infiniteLoadingReset.value;
+
+    message.success("退出成功");
+    console.log("退出成功");
+}
+
+function manageDevice() { }
+
+function manageToken() { }
 
 function handleSelect(key) {
-    if (key === "quit") {
-        socketLeaveRoom();
-        isAuthorized.value = false;
-        socketJoinRoom();
-
-        isPrivate.value = false;
-
-        localStorage.clear();
-        messageBuffer.value = {};
-
-        infiniteLoadingReset.value = !infiniteLoadingReset.value;
-
-        message.success("退出成功");
-        console.log("退出成功");
+    switch(key) {
+        case "device":
+            manageDevice();
+            break;
+        case "token":
+            manageToken();
+            break;
+        case "quit":
+            quit();
+            break;
+        default:
+            return;
     }
 }
 </script>
 
 <template>
     <ControlItemBase>
-        <n-dropdown v-if="isAuthorized" trigger="click" :options="options" @select="handleSelect">
+        <n-dropdown v-if="isAuthorized" trigger="click" :options="options" @select="handleSelect" placement="top">
             <User />
         </n-dropdown>
         <User v-else @click="router.push({ name: 'login' })" />
