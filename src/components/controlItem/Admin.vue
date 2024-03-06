@@ -48,7 +48,9 @@ function quit() {
     console.log("退出成功");
 }
 
-function manageDevice() { }
+function manageDevice() {
+    router.push({ name: 'device' });
+}
 
 function manageToken() { }
 

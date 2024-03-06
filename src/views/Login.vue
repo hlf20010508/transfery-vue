@@ -10,7 +10,7 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { NForm, NFormItem, NCheckbox, NInput, NButton, NFlex, useMessage } from "naive-ui";
 import http from "@/http";
-import { isAuthorized, fingerprint } from "@/stores/admin.js";
+import { isAuthorized, fingerprint, browser } from "@/stores/admin.js";
 import { messageBuffer } from "@/stores/message.js";
 import { socketJoinRoom } from "@/hooks/socket.js";
 
@@ -58,6 +58,7 @@ async function auth(e) {
         return;
 
     authData.fingerprint = fingerprint;
+    authData.browser = browser;
 
     const messageReactive = message.loading("登录中...", { duration: 0 });
 
