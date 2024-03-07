@@ -6,14 +6,13 @@
 -->
 
 <script setup>
-import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
+import { onMounted, onBeforeUnmount } from "vue";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
 import TitleBar from "@/components/TitleBar.vue";
 import MessageArea from "@/components/MessageArea.vue";
 import ControlBar from "@/components/ControlBar.vue";
 import InputArea from "@/components/InputArea.vue";
 import { updateMessageAreaHeight } from "@/hooks/message.js";
-import { auto_login } from "@/hooks/admin.js"
 import {
     socketNewItem,
     socketProgress,
@@ -33,8 +32,6 @@ onBeforeUnmount(() => window.visualViewport.removeEventListener("resize", update
 
 if (!isDemo()) {
     const socketIO = useSocketIO();
-
-    onBeforeMount(async () => await auto_login());
 
     onMounted(() => {
         socketIO.subscribe("newItem", item => socketNewItem(item));

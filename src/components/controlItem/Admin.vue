@@ -10,9 +10,10 @@ import { User } from "@element-plus/icons-vue";
 import { NDropdown, useMessage } from "naive-ui";
 import { useRouter } from "vue-router";
 import ControlItemBase from "./ControlItemBase.vue";
-import { isAuthorized, isPrivate } from "@/stores/admin.js"
+import { isAuthorized, isPrivate, fingerprint } from "@/stores/admin.js"
 import { messageBuffer, infiniteLoadingReset } from "@/stores/message.js"
 import { socketJoinRoom, socketLeaveRoom } from "@/hooks/socket.js"
+import http from "@/http";
 
 const router = useRouter();
 const message = useMessage();
@@ -33,19 +34,24 @@ const options = [
 ];
 
 function quit() {
-    socketLeaveRoom();
-    isAuthorized.value = false;
-    socketJoinRoom();
+    http.get("/deviceSignOut", { params: { fingerprint } }).then(res => {
+        const data = res.data;
+        if (data.success) {
+            socketLeaveRoom();
+            isAuthorized.value = false;
+            socketJoinRoom();
 
-    isPrivate.value = false;
+            isPrivate.value = false;
 
-    localStorage.clear();
-    messageBuffer.value = {};
+            localStorage.clear();
+            messageBuffer.value = {};
 
-    infiniteLoadingReset.value = !infiniteLoadingReset.value;
+            infiniteLoadingReset.value = !infiniteLoadingReset.value;
 
-    message.success("退出成功");
-    console.log("退出成功");
+            message.success("退出成功");
+            console.log("退出成功");
+        }
+    });
 }
 
 function manageDevice() {
@@ -55,7 +61,7 @@ function manageDevice() {
 function manageToken() { }
 
 function handleSelect(key) {
-    switch(key) {
+    switch (key) {
         case "device":
             manageDevice();
             break;

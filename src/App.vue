@@ -6,7 +6,7 @@
 -->
 
 <script setup>
-import { onMounted } from "vue";
+import { onBeforeMount, onMounted } from "vue";
 import { NConfigProvider, NSpin, NMessageProvider } from "naive-ui";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
 import { showRefreshSpin } from "@/stores/refresh.js";
@@ -14,6 +14,7 @@ import {
     socketConnect,
     socketConnectionNumber,
 } from "@/hooks/socket.js";
+import { auto_login } from "@/hooks/admin.js"
 import { isDemo } from "@/utils";
 
 /** @type import('naive-ui').GlobalThemeOverrides */
@@ -25,6 +26,8 @@ const customTheme = {
 }
 
 if (!isDemo()) {
+    onBeforeMount(async () => await auto_login());
+
     const socketIO = useSocketIO();
 
     onMounted(() => {
