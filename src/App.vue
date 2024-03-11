@@ -6,13 +6,15 @@
 -->
 
 <script setup>
-import { onBeforeMount, onMounted } from "vue";
+import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
 import { NConfigProvider, NSpin, NMessageProvider } from "naive-ui";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
 import { showRefreshSpin } from "@/stores/refresh.js";
 import {
     socketConnect,
     socketConnectionNumber,
+    socketSignOut,
+    socketLeaveRoom
 } from "@/hooks/socket.js";
 import { auto_login } from "@/hooks/admin.js"
 import { isDemo } from "@/utils";
@@ -33,7 +35,10 @@ if (!isDemo()) {
     onMounted(() => {
         socketIO.subscribe("connect", socketConnect);
         socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
+        socketIO.subscribe("signOut", fingerprint => socketSignOut(fingerprint));
     });
+
+    onBeforeUnmount(socketLeaveRoom);
 }
 </script>
 

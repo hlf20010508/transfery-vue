@@ -10,10 +10,10 @@ import { User } from "@element-plus/icons-vue";
 import { NDropdown, useMessage } from "naive-ui";
 import { useRouter } from "vue-router";
 import ControlItemBase from "./ControlItemBase.vue";
-import { isAuthorized, isPrivate, fingerprint } from "@/stores/admin.js"
-import { messageBuffer, infiniteLoadingReset } from "@/stores/message.js"
-import { socketJoinRoom, socketLeaveRoom } from "@/hooks/socket.js"
+import { isAuthorized, fingerprint } from "@/stores/admin.js"
+import { signOut } from "@/hooks/admin.js"
 import http from "@/http";
+import { socket } from "@/socket";
 
 const router = useRouter();
 const message = useMessage();
@@ -34,19 +34,13 @@ const options = [
 ];
 
 function quit() {
-    http.get("/deviceSignOut", { params: { fingerprint } }).then(res => {
+    http.post("/deviceSignOut", {
+        fingerprint,
+        sid: socket.id
+    }).then(res => {
         const data = res.data;
         if (data.success) {
-            socketLeaveRoom();
-            isAuthorized.value = false;
-            socketJoinRoom();
-
-            isPrivate.value = false;
-
-            localStorage.clear();
-            messageBuffer.value = {};
-
-            infiniteLoadingReset.value = !infiniteLoadingReset.value;
+            signOut();
 
             message.success("退出成功");
             console.log("退出成功");

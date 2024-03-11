@@ -7,8 +7,9 @@
 
 import { isMessageAreaAtBottom, messageAreaScrollToBottom } from "@/hooks/message.js";
 import { getCertificate } from "@/hooks/certificate.js";
+import { signOut, getDeviceData } from "@/hooks/admin.js";
 import { messageBuffer, newMessageNumber, showToBottomButton } from "@/stores/message.js";
-import { isAuthorized } from "@/stores/admin.js";
+import { isAuthorized, fingerprint } from "@/stores/admin.js";
 import { connectionNumber } from "@/stores/connection.js";
 import { socket } from "@/socket";
 
@@ -79,4 +80,13 @@ export function socketLeaveRoom() {
 
 export function socketConnectionNumber(number) {
     connectionNumber.value = number;
+}
+
+export function socketSignOut(rFingerprint) {
+    if (rFingerprint == fingerprint) {
+        signOut();
+
+        alert("已被管理员退出");
+    } else
+        getDeviceData();
 }

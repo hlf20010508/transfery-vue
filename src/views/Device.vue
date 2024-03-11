@@ -1,13 +1,17 @@
 <script setup>
-import { h, ref, onMounted } from "vue";
+import { h, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { NPageHeader, NDataTable, NButton, NTime } from "naive-ui";
 import jquery from "jquery";
+import { useSocketIO } from "@hlf01/vue3-socket.io";
 import { messageBuffer } from "@/stores/message.js";
-import { fingerprint } from "@/stores/admin.js";
+import { fingerprint, isDeviceLoading, deviceList } from "@/stores/admin.js";
+import { getDeviceData } from "@/hooks/admin.js";
 import http from "@/http";
+import { socket } from "@/socket";
 
 const router = useRouter();
+const socketIO = useSocketIO();
 
 function handleBack() {
     messageBuffer.value = {};
@@ -65,7 +69,10 @@ const createColumns = ({ signOut }) => {
 
 const columns = createColumns({
     signOut(row) {
-        http.get("/deviceSignOut", { params: { fingerprint: row.fingerprint } }).then(res => {
+        http.post("/deviceSignOut", {
+            fingerprint: row.fingerprint,
+            sid: socket.id
+        }).then(res => {
             const data = res.data;
             if (data.success) {
                 getDeviceData();
@@ -73,19 +80,6 @@ const columns = createColumns({
         })
     },
 });
-
-let isLoading = ref(true);
-let device = ref([]);
-
-function getDeviceData() {
-    http.get("/device").then(res => {
-        const data = res.data;
-        if (data.success) {
-            device.value = data.device;
-            isLoading.value = false;
-        }
-    });
-}
 
 let maxHeight = ref(0);
 function updateDeviceTableHeight() {
@@ -101,7 +95,11 @@ onMounted(() => {
     window.visualViewport.addEventListener("resize", updateDeviceTableHeight);
 
     getDeviceData();
+
+    socketIO.subscribe('signIn', getDeviceData);
 });
+
+onBeforeUnmount(() => window.visualViewport.removeEventListener("resize", updateDeviceTableHeight));
 </script>
 
 <template>
@@ -110,7 +108,7 @@ onMounted(() => {
             设备管理
         </template>
     </n-page-header>
-    <n-data-table id="device-table" :columns="columns" :data="device" :bordered="false" :loading="isLoading"
+    <n-data-table id="device-table" :columns="columns" :data="deviceList" :bordered="false" :loading="isDeviceLoading"
         :max-height="maxHeight" />
 </template>
 

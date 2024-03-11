@@ -18,7 +18,6 @@ import {
     socketProgress,
     socketRemoveItem,
     socketRemoveAll,
-    socketLeaveRoom
 } from "@/hooks/socket.js";
 import { isDemo } from "@/utils";
 
@@ -39,8 +38,6 @@ if (!isDemo()) {
         socketIO.subscribe("removeItem", id => socketRemoveItem(id));
         socketIO.subscribe("removeAll", socketRemoveAll);
     });
-
-    onBeforeUnmount(socketLeaveRoom);
 }
 </script>
 

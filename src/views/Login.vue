@@ -13,11 +13,15 @@ import http from "@/http";
 import { isAuthorized, fingerprint, browser } from "@/stores/admin.js";
 import { messageBuffer } from "@/stores/message.js";
 import { socketJoinRoom } from "@/hooks/socket.js";
+import { socket } from "@/socket"
 
 let authData = reactive({
     username: "",
     password: "",
     rememberMe: false,
+    fingerprint,
+    browser,
+    sid: socket.id
 });
 
 const rules = {
@@ -56,9 +60,6 @@ async function auth(e) {
 
     if (!isValid)
         return;
-
-    authData.fingerprint = fingerprint;
-    authData.browser = browser;
 
     const messageReactive = message.loading("登录中...", { duration: 0 });
 

@@ -6,8 +6,10 @@
 */
 
 import http from "@/http";
-import { isAuthorized } from "@/stores/admin.js"
-import { socketJoinRoom } from "@/hooks/socket.js"
+import router from "@/router";
+import { messageBuffer, infiniteLoadingReset } from "@/stores/message.js"
+import { socketJoinRoom, socketLeaveRoom } from "@/hooks/socket.js"
+import { isAuthorized, isPrivate, isDeviceLoading, deviceList } from "@/stores/admin.js"
 
 export async function auto_login() {
     if (!isAuthorized.value)
@@ -17,4 +19,29 @@ export async function auto_login() {
         });
 
     socketJoinRoom();
+}
+
+export function signOut() {
+    socketLeaveRoom();
+    isAuthorized.value = false;
+    socketJoinRoom();
+
+    isPrivate.value = false;
+
+    localStorage.clear();
+    messageBuffer.value = {};
+
+    infiniteLoadingReset.value = !infiniteLoadingReset.value;
+
+    router.push({ name: "index"});
+}
+
+export function getDeviceData() {
+    http.get("/device").then(res => {
+        const data = res.data;
+        if (data.success) {
+            deviceList.value = data.device;
+            isDeviceLoading.value = false;
+        }
+    });
 }

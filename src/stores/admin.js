@@ -16,3 +16,5 @@ export const fingerprint = getFingerprint();
 export const browser  = `${browserInfo.name} ${browserInfo.version}`;
 export let isAuthorized = ref(false);
 export let isPrivate = ref(false);
+export let isDeviceLoading = ref(true);
+export let deviceList = ref([]);
