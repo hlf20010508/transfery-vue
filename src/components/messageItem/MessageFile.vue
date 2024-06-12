@@ -71,8 +71,10 @@ if (item.isHost) {
                 <div v-html="svg" @click="download(item)" class="file-icon"></div>
                 <div v-if="!item.isComplete" :id="'progress-div-' + index" class="progress-div">
                     <n-progress type="circle" :percentage="item.percentage">
-                        <span v-show="!item.pause && !isIconHovered" class="percentage-span">{{ item.percentage }}%</span>
-                        <n-icon v-show="!item.pause && isIconHovered" @click="pauseUpload(item.id)" size="34" color="white">
+                        <span v-show="!item.pause && !isIconHovered" class="percentage-span">{{ item.percentage
+                            }}%</span>
+                        <n-icon v-show="!item.pause && isIconHovered" @click="pauseUpload(item.id)" size="34"
+                            color="white">
                             <Pause />
                         </n-icon>
                         <n-icon v-show="item.pause" @click="resumeUpload(item.id)" size="34" color="white">

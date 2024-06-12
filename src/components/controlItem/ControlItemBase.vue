@@ -19,6 +19,7 @@ import { NIcon } from "naive-ui";
 .n-icon {
     margin: 0 14px;
 }
+
 .n-icon:hover {
     cursor: pointer;
     color: var(--primary-color-hover);

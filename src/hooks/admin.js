@@ -33,7 +33,7 @@ export function signOut() {
 
     infiniteLoadingReset.value = !infiniteLoadingReset.value;
 
-    router.push({ name: "index"});
+    router.push({ name: "index" });
 }
 
 export function getDeviceData() {

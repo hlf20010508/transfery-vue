@@ -15,7 +15,7 @@ import Admin from "./controlItem/Admin.vue";
 </script>
 
 <template>
-    <div  id="control-bar" class="control-bar">
+    <div id="control-bar" class="control-bar">
         <n-divider style="--n-color: #dcdfe6" />
         <n-flex>
             <UploadFile />
