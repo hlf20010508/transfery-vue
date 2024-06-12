@@ -19,7 +19,6 @@ import {
     socketRemoveItem,
     socketRemoveAll,
 } from "@/hooks/socket.js";
-import { isDemo } from "@/utils";
 
 onMounted(() => {
     updateMessageAreaHeight();
@@ -29,16 +28,14 @@ onMounted(() => {
 
 onBeforeUnmount(() => window.visualViewport.removeEventListener("resize", updateMessageAreaHeight));
 
-if (!isDemo()) {
-    const socketIO = useSocketIO();
+const socketIO = useSocketIO();
 
-    onMounted(() => {
-        socketIO.subscribe("newItem", item => socketNewItem(item));
-        socketIO.subscribe("progress", data => socketProgress(data));
-        socketIO.subscribe("removeItem", id => socketRemoveItem(id));
-        socketIO.subscribe("removeAll", socketRemoveAll);
-    });
-}
+onMounted(() => {
+    socketIO.subscribe("newItem", item => socketNewItem(item));
+    socketIO.subscribe("progress", data => socketProgress(data));
+    socketIO.subscribe("removeItem", id => socketRemoveItem(id));
+    socketIO.subscribe("removeAll", socketRemoveAll);
+});
 </script>
 
 <template>

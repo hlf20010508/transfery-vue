@@ -11,7 +11,7 @@ import { NInput } from "naive-ui";
 import { messageBuffer, messageItemRemoving } from "@/stores/message.js";
 import { isPrivate } from "@/stores/admin.js";
 import { messageAreaScrollToBottom } from "@/hooks/message.js";
-import { getCurrentTimeStamp, isDemo } from "@/utils"
+import { getCurrentTimeStamp } from "@/utils"
 import http from "@/http";
 import { socket } from "@/socket";
 
@@ -29,14 +29,6 @@ function submitContent(content) {
             timestamp: timestamp,
             type: "text",
         };
-
-        if (isDemo()) {
-            import("@/demo").then(module => {
-                let useDemo = module.default();
-                useDemo.submitContent(newItem);
-            })
-            return;
-        }
 
         newItem.isPrivate = isPrivate.value;
         newItem.sid = socket.id;

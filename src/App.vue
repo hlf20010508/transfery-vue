@@ -17,7 +17,6 @@ import {
     socketLeaveRoom
 } from "@/hooks/socket.js";
 import { auto_login } from "@/hooks/admin.js"
-import { isDemo } from "@/utils";
 
 /** @type import('naive-ui').GlobalThemeOverrides */
 const customTheme = {
@@ -27,19 +26,17 @@ const customTheme = {
     },
 }
 
-if (!isDemo()) {
-    onBeforeMount(async () => await auto_login());
+onBeforeMount(async () => await auto_login());
 
-    const socketIO = useSocketIO();
+const socketIO = useSocketIO();
 
-    onMounted(() => {
-        socketIO.subscribe("connect", socketConnect);
-        socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
-        socketIO.subscribe("signOut", fingerprint => socketSignOut(fingerprint));
-    });
+onMounted(() => {
+    socketIO.subscribe("connect", socketConnect);
+    socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
+    socketIO.subscribe("signOut", fingerprint => socketSignOut(fingerprint));
+});
 
-    onBeforeUnmount(socketLeaveRoom);
-}
+onBeforeUnmount(socketLeaveRoom);
 </script>
 
 <template>

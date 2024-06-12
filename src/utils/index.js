@@ -7,12 +7,6 @@
 
 import getFingerprint from "@/utils/fingerprint.js"
 
-const mode = import.meta.env.MODE
-
-export function isDemo() {
-    return mode === 'demo';
-}
-
 export function getCurrentTimeStamp() {
     return new Date().getTime()
 }

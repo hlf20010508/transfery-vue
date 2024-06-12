@@ -10,7 +10,7 @@ import { computed, onMounted, onUnmounted } from "vue";
 import { NTime, NIcon, NFlex, NCard } from "naive-ui";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { messageItemRemoving, messageBuffer, newMessageNumber } from "@/stores/message.js";
-import { isSameDate, isDemo } from "@/utils";
+import { isSameDate } from "@/utils";
 import { socket } from "@/socket";
 import http from "@/http";
 
@@ -35,14 +35,6 @@ function shouldShowDate() {
 
 function removeItem() {
     console.log("remove item:", item);
-
-    if (isDemo()) {
-        import("@/demo").then(module => {
-            const useDemo = module.default();
-            useDemo.removeItem(item);
-        })
-        return;
-    }
 
     item.sid = socket.id;
 
@@ -97,7 +89,6 @@ if (!item.hasChecked) {
                         <slot name="container"></slot>
                         <n-flex :wrap="false" align="center" justify="end">
                             <span v-if="item.isPrivate" class="mode-hint">私密</span>
-                            <span v-if="isDemo()" class="mode-hint">模拟</span>
                             <slot name="footer"></slot>
                             <n-time :time="item.timestamp" format="HH:mm:ss" />
                         </n-flex>

@@ -7,9 +7,8 @@
 
 <script setup>
 import { connectionNumber } from "@/stores/connection.js";
-import { isDemo } from "@/utils";
 
-const hint = isDemo() ? "Demo模式" : "连接中";
+const hint = "连接中";
 </script>
 
 <template>

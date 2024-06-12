@@ -18,17 +18,9 @@ import { messageBuffer, showToBottomButton, infiniteLoadingReset } from "@/store
 import RemoveAll from "./messageItem/RemoveAll.vue";
 import { messageAreaScrollToBottom, isMessageAreaAtBottom } from "@/hooks/message.js"
 import { refreshPage } from "@/hooks/refresh.js"
-import { isDemo, obj_length } from "@/utils";
+import { obj_length } from "@/utils";
 
 function getNewPage($state) {
-    if (isDemo()) {
-        import("@/demo").then(module => {
-            const useDemo = module.default();
-            useDemo.getNewPage($state);
-        })
-        return;
-    }
-
     http.get(
         "/page",
         { params: { size: obj_length(messageBuffer.value) } }
@@ -142,14 +134,6 @@ function handleScroll() {
 }
 
 onMounted(() => {
-    if (isDemo()) {
-        import("@/demo").then(module => {
-            const useDemo = module.default();
-            useDemo.genNewItem();
-        })
-        return;
-    }
-
     window.addEventListener("visibilitychange", autoSync);
 });
 
@@ -159,8 +143,8 @@ onBeforeUnmount(() => window.removeEventListener("visibilitychange", autoSync));
 <template>
     <div style="position: relative;">
         <div id="message-area" @scroll="handleScroll">
-            <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area" :identifier="infiniteLoadingReset"
-                style="text-align: center;" class="infinite-loading">
+            <InfiniteLoading :top="true" @infinite="getNewPage" target="#message-area"
+                :identifier="infiniteLoadingReset" style="text-align: center;" class="infinite-loading">
                 <template #complete>
                     <span>{{ "" }}</span>
                 </template>

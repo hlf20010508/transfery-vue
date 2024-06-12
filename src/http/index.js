@@ -7,18 +7,16 @@
 
 import axios from "axios"
 import axiosRetry from "axios-retry";
-import { isDemo } from "@/utils";
 import { getCertificate } from "@/hooks/certificate.js"
 
 if (import.meta.env.DEV)
     axios.defaults.baseURL = '/api'
 
-if (!isDemo())
-    axios.interceptors.request.use(function (config) {
-        config.headers = { Authorization: getCertificate() };
+axios.interceptors.request.use(function (config) {
+    config.headers = { Authorization: getCertificate() };
 
-        return config;
-    });
+    return config;
+});
 
 axiosRetry(axios, {
     retryCondition: error => {

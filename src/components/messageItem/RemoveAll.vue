@@ -12,7 +12,7 @@ import { CircleClose } from "@element-plus/icons-vue";
 import { messageBuffer, messageItemRemoving, showToBottomButton } from "@/stores/message.js"
 import { socket } from "@/socket";
 import http from "@/http";
-import { obj_length, isDemo } from "@/utils";
+import { obj_length } from "@/utils";
 
 watch(() => obj_length(messageBuffer.value), newValue => {
     if (newValue == 0)
@@ -27,14 +27,6 @@ const messageConfig = {
 
 function removeAll() {
     if (confirm("确定要删除全部吗")) {
-        if (isDemo()) {
-            import("@/demo").then(module => {
-                const useDemo = module.default();
-                useDemo.removeAll(message, messageConfig);
-            })
-            return;
-        }
-
         http.get("/removeAll", {
             params: {
                 sid: socket.id,
