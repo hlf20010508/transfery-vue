@@ -14,20 +14,16 @@ export function download(item) {
     http
         .get("/downloadUrl", { params: { fileName: item.fileName } })
         .then(res => {
-            const data = res.data;
+            // 在安卓浏览器上可能会无法唤起下载
+            // window.open(data.url, '_blank');
 
-            if (data.success) {
-                // 在安卓浏览器上可能会无法唤起下载
-                // window.open(data.url, '_blank');
+            let eleLink = jquery("<a></a>")
+                .attr("target", "_blank")
+                .attr("href", res.data)
+                .css("display", "none")
+                .appendTo("body");
 
-                let eleLink = jquery("<a></a>")
-                    .attr("target", "_blank")
-                    .attr("href", data.url)
-                    .css("display", "none")
-                    .appendTo("body");
-
-                eleLink[0].click();
-                eleLink.remove();
-            }
+            eleLink[0].click();
+            eleLink.remove();
         });
 }

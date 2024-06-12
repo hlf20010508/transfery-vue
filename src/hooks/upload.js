@@ -53,19 +53,17 @@ async function uploadParts(item, startPartNumber) {
             data: form,
             headers: { "Content-Type": "multipart/form-data" },
         }).then(res => {
-            const data = res.data
-            if (data.success) {
-                item.percentage = parseInt(endBytes / fileSize * 100);
-                item.parts.push({
-                    partNumber: partNumber,
-                    etag: data.etag,
-                });
+            item.percentage = parseInt(endBytes / fileSize * 100);
+            item.parts.push({
+                partNumber: partNumber,
+                etag: res.data,
+            });
 
-                socketEmitProgress(item);
+            socketEmitProgress(item);
 
-                // 此后可以resume
-                item.resumeAllowed = true;
-            }
+            // 此后可以resume
+            item.resumeAllowed = true;
+
         });
     }
 
@@ -83,14 +81,13 @@ async function completeUpload(item) {
             uploadId: item.uploadId,
             parts: item.parts,
         })
-        .then(res => {
-            if (res.data.success) {
-                item.isComplete = true;
+        .then(() => {
+            item.isComplete = true;
 
-                socketEmitProgress(item);
+            socketEmitProgress(item);
 
-                console.log("upload complete:", item.fileName);
-            }
+            console.log("upload complete:", item.fileName);
+
         });
 }
 
@@ -122,34 +119,30 @@ export function uploadFile(params) {
     http
         .post("/fetchUploadId", { content: item.content, timestamp: item.timestamp })
         .then(async res => {
-            const data = res.data;
-            if (data.success) {
-                item.uploadId = data.uploadId;
-                item.fileName = data.fileName;
+            item.uploadId = res.data.uploadId;
+            item.fileName = res.data.fileName;
 
-                http.post("/newItem", {
-                    content: item.content,
-                    timestamp: item.timestamp,
-                    isPrivate: item.isPrivate,
-                    type: item.type,
-                    fileName: item.fileName,
-                    isComplete: item.isComplete,
-                    sid: socket.id,
-                }).then(async res => {
-                    const data = res.data;
-                    if (data.success) {
-                        item.id = data.id;
+            http.post("/newItem", {
+                content: item.content,
+                timestamp: item.timestamp,
+                isPrivate: item.isPrivate,
+                type: item.type,
+                fileName: item.fileName,
+                isComplete: item.isComplete,
+                sid: socket.id,
+            }).then(async res => {
+                item.id = res.data.id;
 
-                        messageBuffer.value[item.id] = item;
+                messageBuffer.value[item.id] = item;
 
-                        console.log("upload item:", item)
+                console.log("upload item:", item)
 
-                        messageAreaScrollToBottom();
+                messageAreaScrollToBottom();
 
-                        await uploadParts(item, 0);
-                    }
-                });
-            }
+                await uploadParts(item, 0);
+
+            });
+
         });
 }
 

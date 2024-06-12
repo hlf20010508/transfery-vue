@@ -34,17 +34,14 @@ function submitContent(content) {
         newItem.sid = socket.id;
 
         http.post("/newItem", newItem).then(res => {
-            const data = res.data;
-            if (data.success) {
-                newItem.id = data.id;
-                newItem.hasChecked = true;
+            newItem.id = res.data.id;
+            newItem.hasChecked = true;
 
-                messageBuffer.value[newItem.id] = newItem;
+            messageBuffer.value[newItem.id] = newItem;
 
-                messageAreaScrollToBottom();
+            messageAreaScrollToBottom();
 
-                console.log("pushed");
-            }
+            console.log("pushed");
         });
     }
 }

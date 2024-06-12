@@ -25,9 +25,8 @@ function getNewPage($state) {
         "/page",
         { params: { size: obj_length(messageBuffer.value) } }
     ).then(res => {
-        const data = res.data;
-        if (data.messages.length > 0) {
-            const messages = data.messages;
+        const messages = res.data;
+        if (messages.length > 0) {
             for (let i = 0; i < messages.length; i++) {
                 let message = messages[i];
 
@@ -81,7 +80,7 @@ function sync() {
             },
         })
         .then((res) => {
-            const itemsToBeSynced = res.data.newItems;
+            const itemsToBeSynced = res.data;
             console.log("received synced new items:", itemsToBeSynced);
 
             // 如果有真正的新消息，就在同步完毕后滚动到底部

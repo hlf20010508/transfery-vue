@@ -31,16 +31,15 @@ function removeAll() {
             params: {
                 sid: socket.id,
             },
-        }).then(res => {
-            if (res.data.success) {
-                messageBuffer.value = {};
+        }).then(() => {
+            messageBuffer.value = {};
 
-                messageItemRemoving.value = false;
-                showToBottomButton.value = false;
+            messageItemRemoving.value = false;
+            showToBottomButton.value = false;
 
-                message.success("删除成功", messageConfig);
-                console.log("removed all items");
-            }
+            message.success("删除成功", messageConfig);
+            console.log("removed all items");
+
         })
     } else
         message.info("已取消删除", messageConfig);

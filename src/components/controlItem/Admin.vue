@@ -37,14 +37,11 @@ function quit() {
     http.post("/deviceSignOut", {
         fingerprint,
         sid: socket.id
-    }).then(res => {
-        const data = res.data;
-        if (data.success) {
-            signOut();
+    }).then(() => {
+        signOut();
 
-            message.success("退出成功");
-            console.log("退出成功");
-        }
+        message.success("退出成功");
+        console.log("退出成功");
     });
 }
 

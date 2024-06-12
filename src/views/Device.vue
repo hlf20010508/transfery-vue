@@ -1,3 +1,10 @@
+<!--
+:project: transfery-vue
+:author: L-ING
+:copyright: (C) 2024 L-ING <hlf01@icloud.com>
+:license: MIT, see LICENSE for more details.
+-->
+
 <script setup>
 import { h, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
@@ -72,11 +79,8 @@ const columns = createColumns({
         http.post("/deviceSignOut", {
             fingerprint: row.fingerprint,
             sid: socket.id
-        }).then(res => {
-            const data = res.data;
-            if (data.success) {
-                getDeviceData();
-            }
+        }).then(() => {
+            getDeviceData();
         })
     },
 });

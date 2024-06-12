@@ -38,12 +38,9 @@ function removeItem() {
 
     item.sid = socket.id;
 
-    http.post("/removeItem", item).then(res => {
-        const data = res.data;
-        if (data.success) {
-            delete messageBuffer.value[item.id];
-            console.log("removed");
-        }
+    http.post("/removeItem", item).then(() => {
+        delete messageBuffer.value[item.id];
+        console.log("removed");
     });
 }
 

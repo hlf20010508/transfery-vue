@@ -64,26 +64,23 @@ async function auth(e) {
     const messageReactive = message.loading("登录中...", { duration: 0 });
 
     http.post("/auth", authData).then(res => {
-        const data = res.data;
-        if (data.success) {
-            localStorage.setItem('certificate', data.certificate);
+        localStorage.setItem('certificate', res.data);
 
-            messageReactive.destroy();
-            messageBuffer.value = {};
+        messageReactive.destroy();
+        messageBuffer.value = {};
 
-            isAuthorized.value = true;
-            socketJoinRoom();
+        isAuthorized.value = true;
+        socketJoinRoom();
 
-            message.success("登录成功");
-            console.log("登录成功");
+        message.success("登录成功");
+        console.log("登录成功");
 
-            router.push({ name: 'index' });
-        } else {
-            messageReactive.destroy();
+        router.push({ name: 'index' });
+    }).catch(() => {
+        messageReactive.destroy();
 
-            message.error("登录失败");
-            console.error("登录失败");
-        }
+        message.error("登录失败");
+        console.error("登录失败");
     });
 }
 </script>

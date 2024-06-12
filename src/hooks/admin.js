@@ -13,9 +13,8 @@ import { isAuthorized, isPrivate, isDeviceLoading, deviceList } from "@/stores/a
 
 export async function auto_login() {
     if (!isAuthorized.value)
-        await http.get('/login').then(res => {
-            if (res.data.success)
-                isAuthorized.value = true;
+        await http.get('/autoLogin').then(() => {
+            isAuthorized.value = true;
         });
 
     socketJoinRoom();
@@ -38,10 +37,7 @@ export function signOut() {
 
 export function getDeviceData() {
     http.get("/device").then(res => {
-        const data = res.data;
-        if (data.success) {
-            deviceList.value = data.device;
-            isDeviceLoading.value = false;
-        }
+        deviceList.value = res.data;
+        isDeviceLoading.value = false;
     });
 }
