@@ -49,7 +49,9 @@ function manageDevice() {
     router.push({ name: 'device' });
 }
 
-function manageToken() { }
+function manageToken() {
+    router.push({ name: 'token' });
+}
 
 function handleSelect(key) {
     switch (key) {

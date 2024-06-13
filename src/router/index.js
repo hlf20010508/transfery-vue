@@ -9,6 +9,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Index from '@/views/Index.vue';
 import Login from '@/views/Login.vue';
 import Device from '@/views/Device.vue';
+import Token from '@/views/Token.vue';
 
 const routes = [
     {
@@ -25,6 +26,11 @@ const routes = [
         name: "device",
         path: "/device",
         component: Device,
+    },
+    {
+        name: "token",
+        path: "/token",
+        component: Token,
     },
 ];
 
