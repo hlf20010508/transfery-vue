@@ -8,31 +8,29 @@
 import http from "@/http";
 import router from "@/router";
 import { messageBuffer, infiniteLoadingReset } from "@/stores/message.js"
-import { socketJoinRoom, socketLeaveRoom } from "@/hooks/socket.js"
 import { isAuthorized, isPrivate, isDeviceLoading, deviceList } from "@/stores/admin.js"
+import { socket } from "@/socket";
 
-export async function auto_login() {
+export function auto_login() {
     if (!isAuthorized.value)
-        await http.get('/autoLogin').then(() => {
+        http.get('/autoLogin', { params: { sid: socket.id } }).then(() => {
             isAuthorized.value = true;
         });
-
-    socketJoinRoom();
 }
 
 export function signOut() {
-    socketLeaveRoom();
-    isAuthorized.value = false;
-    socketJoinRoom();
+    http.get('/signOut', { params: { sid: socket.id } }).then(() => {
+        isAuthorized.value = false;
 
-    isPrivate.value = false;
+        isPrivate.value = false;
 
-    localStorage.clear();
-    messageBuffer.value = {};
+        localStorage.clear();
+        messageBuffer.value = {};
 
-    infiniteLoadingReset.value = !infiniteLoadingReset.value;
+        infiniteLoadingReset.value = !infiniteLoadingReset.value;
 
-    router.push({ name: "index" });
+        router.push({ name: "index" });
+    });
 }
 
 export function getDeviceData() {

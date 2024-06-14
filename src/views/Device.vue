@@ -100,7 +100,7 @@ onMounted(() => {
 
     getDeviceData();
 
-    socketIO.subscribe('signIn', getDeviceData);
+    socketIO.subscribe('device', getDeviceData);
 });
 
 onBeforeUnmount(() => window.visualViewport.removeEventListener("resize", updateDeviceTableHeight));

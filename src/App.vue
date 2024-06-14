@@ -6,7 +6,7 @@
 -->
 
 <script setup>
-import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
+import { onMounted } from "vue";
 import { NConfigProvider, NSpin, NMessageProvider } from "naive-ui";
 import { useSocketIO } from "@hlf01/vue3-socket.io";
 import { showRefreshSpin } from "@/stores/refresh.js";
@@ -14,9 +14,7 @@ import {
     socketConnect,
     socketConnectionNumber,
     socketSignOut,
-    socketLeaveRoom
 } from "@/hooks/socket.js";
-import { auto_login } from "@/hooks/admin.js"
 
 /** @type import('naive-ui').GlobalThemeOverrides */
 const customTheme = {
@@ -26,8 +24,6 @@ const customTheme = {
     },
 }
 
-onBeforeMount(async () => await auto_login());
-
 const socketIO = useSocketIO();
 
 onMounted(() => {
@@ -35,8 +31,6 @@ onMounted(() => {
     socketIO.subscribe("connectionNumber", number => socketConnectionNumber(number));
     socketIO.subscribe("signOut", fingerprint => socketSignOut(fingerprint));
 });
-
-onBeforeUnmount(socketLeaveRoom);
 </script>
 
 <template>

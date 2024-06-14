@@ -12,7 +12,6 @@ import { NForm, NFormItem, NCheckbox, NInput, NButton, NFlex, useMessage } from 
 import http from "@/http";
 import { isAuthorized, fingerprint, browser } from "@/stores/admin.js";
 import { messageBuffer } from "@/stores/message.js";
-import { socketJoinRoom } from "@/hooks/socket.js";
 import { socket } from "@/socket"
 
 let authData = reactive({
@@ -70,7 +69,6 @@ async function auth(e) {
         messageBuffer.value = {};
 
         isAuthorized.value = true;
-        socketJoinRoom();
 
         message.success("登录成功");
         console.log("登录成功");
