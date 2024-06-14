@@ -8,6 +8,6 @@
 - 异步框架，支持边上传边发送消息
 - 适配移动端键盘
 - 删除消息和文件
-
-## Demo
-[前往体验](https://hlf20010508.github.io/transfery-vue/)
+- 支持私密消息
+- 提供消息发送和接收的API
+- 自动初始化Minio和MySQL
