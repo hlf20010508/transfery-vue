@@ -55,7 +55,7 @@ async function uploadParts(item, startPartNumber) {
         }).then(res => {
             item.percentage = parseInt(endBytes / fileSize * 100);
             item.parts.push({
-                partNumber: partNumber,
+                number: partNumber,
                 etag: res.data,
             });
 
