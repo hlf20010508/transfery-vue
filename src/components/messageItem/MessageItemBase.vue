@@ -63,7 +63,7 @@ if (!item.hasChecked) {
         }, {
             threshold: 1.0 // 1.0表示元素100%进入视口时触发
         });
-        targetElement = document.querySelector('#message-item-' + item.id);
+        targetElement = document.querySelector('#message-item-bottom-' + item.id);
         ElementVisibleObserver.observe(targetElement);
     })
 
@@ -93,6 +93,7 @@ if (!item.hasChecked) {
                 </n-flex>
             </n-card>
         </n-flex>
+        <div :id="'message-item-bottom-' + item.id"></div>
     </div>
 </template>
 
